@@ -1,0 +1,891 @@
+<div class="surface-0 flex justify-content-center">
+  <div id="home" class="landing-wrapper overflow-hidden">
+    <div
+      class="py-4 px-4 mx-0 md:mx-6 lg:mx-8 lg:px-8 flex align-items-center justify-content-between relative lg:static mb-3"
+    >
+      <a class="flex align-items-center" href="#">
+        <img
+          src="assets/layout/images/{{
+            layoutService.config.colorScheme === 'light'
+              ? 'logo-dark'
+              : 'logo-white'
+          }}.svg"
+          alt="Sakai Logo"
+          height="50"
+          class="mr-0 lg:mr-2"
+        /><span class="text-900 font-medium text-2xl line-height-3 mr-8"
+          >3T Business</span
+        >
+      </a>
+      <a
+        pRipple
+        class="cursor-pointer block lg:hidden text-700"
+        pStyleClass="@next"
+        enterClass="hidden"
+        leaveToClass="hidden"
+        [hideOnOutsideClick]="true"
+      >
+        <i class="pi pi-bars text-4xl"></i>
+      </a>
+      <div
+        class="align-items-center surface-0 flex-grow-1 justify-content-between hidden lg:flex absolute lg:static w-full left-0 px-6 lg:px-0 z-2"
+        style="top: 120px"
+      >
+        <ul
+          class="list-none p-0 m-0 flex lg:align-items-center select-none flex-column lg:flex-row cursor-pointer"
+        >
+          <li>
+            <a
+              (click)="scrolleTo('home')"
+              pRipple
+              class="flex m-0 md:ml-5 px-0 py-3 text-900 font-medium line-height-3"
+            >
+              <span>Acceuil</span>
+            </a>
+          </li>
+          <li>
+            <a
+              (click)="scrolleTo('features')"
+              pRipple
+              class="flex m-0 md:ml-5 px-0 py-3 text-900 font-medium line-height-3"
+            >
+              <span>Nos services</span>
+            </a>
+          </li>
+          <li>
+            <a
+              (click)="scrolleTo('about')"
+              pRipple
+              class="flex m-0 md:ml-5 px-0 py-3 text-900 font-medium line-height-3"
+            >
+              <span>A propos</span>
+            </a>
+          </li>
+          <li>
+            <a
+              (click)="router.navigate(['/'], { fragment: 'partners' })"
+              pRipple
+              class="flex m-0 md:ml-5 px-0 py-3 text-900 font-medium line-height-3"
+            >
+              <span>Nos partenaires</span>
+            </a>
+          </li>
+          <li>
+            <a
+              (click)="scrolleTo('contact')"
+              pRipple
+              class="flex m-0 md:ml-5 px-0 py-3 text-900 font-medium line-height-3"
+            >
+              <span>Nous contacter</span>
+            </a>
+          </li>
+        </ul>
+        <div
+          *ngIf="isLogged"
+          class="flex justify-content-between lg:block border-top-1 lg:border-top-none surface-border py-3 lg:py-0 mt-3 lg:mt-0"
+        >
+          <button
+            pButton
+            pRipple
+            label="Tableau de bord"
+            (click)="router.navigate(['/welcome'])"
+            class="p-button-text p-button-rounded border-none font-light line-height-2 bg-green-500 text-white"
+          ></button>
+          <button
+            pButton
+            pRipple
+            label="Déconnexion"
+            (click)="router.navigate(['/logout'])"
+            class="p-button-rounded border-none ml-5 font-light line-height-2 bg-blue-500 text-white"
+          ></button>
+        </div>
+        <div
+          *ngIf="!isLogged"
+          class="flex justify-content-between lg:block border-top-1 lg:border-top-none surface-border py-3 lg:py-0 mt-3 lg:mt-0"
+        >
+          <button
+            pButton
+            pRipple
+            label="Connexion"
+            (click)="router.navigate(['/auth/login'])"
+            class="p-button-text p-button-rounded border-none font-light line-height-2 bg-green-500 text-white"
+          ></button>
+        </div>
+      </div>
+    </div>
+
+    <!--   3TBusiness, votre succès,     -->
+    <div class="grid grid-nogutter surface-section text-800 mt-5">
+      <div
+        class="col-12 md:col-6 p-6 text-center md:text-left flex align-items-center"
+      >
+        <section>
+          <span class="block text-6xl font-bold mb-1">3T BUSINESS</span>
+          <div class="text-6xl text-blue-700 font-bold mb-3">
+            Votre succès, notre destination ...
+          </div>
+          <p class="mt-0 mb-4 text-700 line-height-3">
+            Trade Transit Transport Business est bien plus qu'une entreprise,
+            nous sommes votre partenaire complet pour toutes vos nécessités en
+            transport, logistique, mobilité et équipement
+          </p>
+
+          <button
+            pButton
+            pRipple
+            (click)="scrolleTo('features')"
+            label="Savoir plus"
+            type="button"
+            class="mr-3 p-button-raised bg-blue-700"
+          ></button>
+          <button
+            pButton
+            pRipple
+            (click)="scrolleTo('contact')"
+            label="Nous contacter"
+            type="button"
+            class="p-button-outlined border-blue-700 text-blue-700"
+          ></button>
+        </section>
+      </div>
+      <div class="col-12 md:col-6 overflow-hidden">
+        <img
+          src="assets/images/landing/work-3t.jpg"
+          height="900"
+          width="750"
+          alt="Image"
+          class="md:ml-auto block md:h-full w-full"
+          style="clip-path: polygon(8% 0, 100% 0%, 100% 100%, 0 100%)"
+        />
+      </div>
+    </div>
+
+    <!--   SERVICES     -->
+    <div id="features" class="py-4 px-4 lg:px-8 mt-5 mx-0 lg:mx-8">
+      <div class="grid justify-content-center">
+        <div
+          class="col-12 mt-8 mb-8 p-2 md:p-8"
+          style="
+            border-radius: 20px;
+            background: linear-gradient(
+                0deg,
+                rgba(255, 255, 255, 0.6),
+                rgba(255, 255, 255, 0.6)
+              ),
+              radial-gradient(
+                77.36% 256.97% at 77.36% 57.52%,
+                #efe1af 0%,
+                #c3dcfa 100%
+              );
+          "
+        >
+          <div
+            class="flex flex-column justify-content-center align-items-center text-center px-3 py-3 md:py-0"
+          >
+            <h3 class="text-6xl text-blue-600 font-bold mb-3">NOS SERVICES</h3>
+            <p
+              class="text-gray-900 sm:line-height-2 md:line-height-4 text-2xl mt-4"
+              style="max-width: 800px"
+            >
+              De la location d'engins et de véhicules, au transport de
+              marchandises, minéraux et produits agricoles, en passant par notre
+              service de conseil expert en import-export et la vente de
+              véhicules de toutes marques, équipements de chantier, pièces et
+              produits variés, nous vous offrons une gamme variée et intégrée de
+              solutions pour répondre à vos besoins professionnels. Avec notre
+              engagement envers la qualité, la fiabilité et la satisfaction
+              client, nous sommes là pour vous aider à prospérer à chaque étape
+              de votre entreprise.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="surface-section px-4 py-8 md:px-6 lg:px-8">
+      <div class="grid">
+        <div class="col-12 md:col-6">
+          <img
+            src="assets/images/landing/team-work-2.png"
+            alt="Image"
+            class="w-full"
+          />
+        </div>
+        <div class="col-12 md:col-6 md:pl-6">
+          <div class="text-4xl font-bold text-blue-700 text-900 mb-3">
+            Commerce générale
+          </div>
+
+          <div class="flex align-items-center mb-4 mt-6">
+            <i class="pi pi-angle-right text-green-600 mr-3"></i>
+            <div>
+              <div class="text-900 font-medium mb-2">
+                Vente des véhicules de toutes marques et tout poids
+              </div>
+              <div class="text-700 text-sm">
+                En tant que partenaire complet pour vos besoins en mobilité et
+                équipement, Trade Transit Transport Business vous offre une
+                gamme variée de solutions.
+              </div>
+            </div>
+          </div>
+          <div class="flex align-items-center mb-4">
+            <i class="pi pi-angle-right text-green-600 mr-3"></i>
+            <div>
+              <div class="text-900 font-medium mb-2">
+                Vente des équipements de chantier et domestiques
+              </div>
+              <div class="text-700 text-sm">
+                Nous facilitons vos projets de construction et vos besoins
+                domestiques en proposant une gamme complète d'équipements de
+                chantier et domestiques. Du matériel robuste pour les grands
+                projets aux outils essentiels pour la maison, notre collection
+                est conçue pour la durabilité et la performance.
+              </div>
+            </div>
+          </div>
+          <div class="flex align-items-center mb-4">
+            <i class="pi pi-angle-right text-green-600 mr-3"></i>
+            <div>
+              <div class="text-900 font-medium mb-2">
+                Vente de pièces de véhicules, d’engins miniers
+              </div>
+              <div class="text-700 text-sm">
+                Nous pour vos besoins en pièces de véhicules et d'engins
+                miniers. Notre inventaire de pièces de rechange est
+                soigneusement sélectionné pour garantir la qualité et la
+                compatibilité, contribuant ainsi à maintenir vos équipements en
+                excellent état de fonctionnement.
+              </div>
+            </div>
+          </div>
+          <div class="flex align-items-center mb-4">
+            <i class="pi pi-angle-right text-green-600 mr-3"></i>
+            <div>
+              <div class="text-900 font-medium mb-2">
+                Vente d'équipements de bureau et divers
+              </div>
+              <div class="text-700 text-sm">
+                Pour vos besoins en équipements de bureau et autres articles
+                variés, nous proposons des solutions à la fois économiques et
+                fonctionnelles
+              </div>
+            </div>
+          </div>
+          <div class="flex align-items-center">
+            <i class="pi pi-angle-right text-green-600 mr-3"></i>
+            <div>
+              <div class="text-900 font-medium mb-2">
+                Vente de produits agricoles
+              </div>
+              <div class="text-700 text-sm">
+                pour les amateurs de produits agricoles, notre offre variée
+                reflète la richesse de la terre et répond à vos exigences
+                alimentaires et commerciales.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="surface-section px-4 py-8 md:px-6 lg:px-8">
+      <div class="grid">
+        <div class="col-12 md:col-6">
+          <div class="pr-0 md:pr-8">
+            <div class="text-900 font-bold text-4xl mb-3 text-blue-700">
+              Conseil et suivi de dossier transit
+            </div>
+            <div class="text-700 line-height-3 mb-5">
+              Nous offrons un service complet de conseil et de suivi de dossiers
+              de transit.
+            </div>
+
+            <div class="mb-5 flex">
+              <div
+                class="flex flex-column align-items-center"
+                style="width: 2rem"
+              >
+                <span
+                  class="bg-cyan-600 text-white flex align-items-center justify-content-center border-circle shadow-2"
+                  style="
+                    min-width: 2rem;
+                    min-height: 2rem;
+                    border: 2px solid #ffffff;
+                  "
+                >
+                  <i class="pi pi-globe"></i>
+                </span>
+                <div
+                  class="h-full bg-cyan-500"
+                  style="width: 2px; min-height: 4rem"
+                ></div>
+              </div>
+              <div class="ml-3">
+                <div class="font-medium text-900 mb-2">Transit</div>
+                <span class="line-height-3 text-700"
+                  >Grâce à notre service de conseil et de suivi du dossier de
+                  transit, nous nous positionnons en tant que partenaire
+                  stratégique pour vos opérations d'import-export.</span
+                >
+              </div>
+            </div>
+
+            <div class="mb-5 flex">
+              <div
+                class="flex flex-column align-items-center"
+                style="width: 2rem"
+              >
+                <span
+                  class="bg-orange-500 text-white flex align-items-center justify-content-center border-circle shadow-2"
+                  style="
+                    min-width: 2rem;
+                    min-height: 2rem;
+                    border: 2px solid #ffffff;
+                  "
+                >
+                  <i class="pi pi-book"></i>
+                </span>
+                <div
+                  class="h-full bg-orange-500"
+                  style="width: 2px; min-height: 4rem"
+                ></div>
+              </div>
+              <div class="ml-3">
+                <div class="font-medium text-900 mb-2">
+                  Formalités douanières
+                </div>
+                <span class="line-height-3 text-700"
+                  >Notre équipe expérimentée vous guide à travers les
+                  complexités des formalités douanières et des réglementations,
+                  assurant un transit en douceur de vos marchandises.</span
+                >
+              </div>
+            </div>
+
+            <div class="mb-5 flex">
+              <div
+                class="flex flex-column align-items-center"
+                style="width: 2rem"
+              >
+                <span
+                  class="bg-purple-500 text-white flex align-items-center justify-content-center border-circle shadow-2"
+                  style="
+                    min-width: 2rem;
+                    min-height: 2rem;
+                    border: 2px solid #ffffff;
+                  "
+                >
+                  <i class="pi pi-calendar"></i>
+                </span>
+                <div
+                  class="h-full bg-purple-500"
+                  style="width: 2px; min-height: 4rem"
+                ></div>
+              </div>
+              <div class="ml-3">
+                <div class="font-medium text-900 mb-2">Suivi</div>
+                <span class="line-height-3 text-700"
+                  >Avec une expertise approfondie et un suivi méticuleux, nous
+                  simplifions le processus pour vous, vous permettant de vous
+                  concentrer sur vos affaires en toute confiance.</span
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-12 md:col-6">
+          <img
+            src="assets/images/landing/navire.png"
+            alt="Image"
+            class="w-full"
+          />
+        </div>
+      </div>
+    </div>
+    <div class="surface-section px-4 py-8 md:px-6 lg:px-8">
+      <div class="grid">
+        <div class="col-12 md:col-6">
+          <img
+            src="assets/images/landing/truck-1.png"
+            alt="Image"
+            class="w-full"
+          />
+        </div>
+        <div class="col-12 md:col-6 flex align-items-center">
+          <div>
+            <div class="text-blue-700 text-900 text-4xl font-bold mb-6">
+              Transport & Logistique
+            </div>
+
+            <div class="grid">
+              <div class="col-12 md:col-6">
+                <div class="text-900 font-medium mb-2">
+                  Transport de marchandises
+                </div>
+                <div class="text-700 text-sm mb-3 line-height-3">
+                  Notre expertise en transport de marchandises est inégalée. Que
+                  ce soit pour des volumes importants de produits ou des
+                  marchandises sensibles, notre équipe hautement qualifiée
+                  veille à ce que vos envois arrivent à destination en toute
+                  sécurité et en temps voulu.
+                </div>
+              </div>
+              <div class="col-12 md:col-6">
+                <div class="text-900 font-medium mb-2">
+                  Tranport de minerais
+                </div>
+                <div class="text-700 text-sm mb-3 line-height-3">
+                  Notre spécialisation dans le transport de minéraux offre une
+                  solution robuste pour déplacer ces ressources essentielles
+                  d'une manière respectueuse de l'environnement et conforme à
+                  toutes les réglementations
+                </div>
+              </div>
+              <div class="col-12 md:col-6">
+                <div class="text-900 font-medium mb-2">
+                  Location d'engins et de véhicules
+                </div>
+                <div class="text-700 text-sm mb-3 line-height-3">
+                  Nous vous proposons une location d'engins et de véhicules
+                  allant des poids lourds aux véhicules légers, avec une flotte
+                  moderne et bien entretenue pour garantir la fiabilité et
+                  l'efficacité de vos opérations.
+                </div>
+              </div>
+              <div class="col-12 md:col-6">
+                <div class="text-900 font-medium mb-2">Produits agricoles</div>
+                <div class="text-700 text-sm mb-3 line-height-3">
+                  Nous comprenons l'importance du secteur agricole et proposons
+                  des services de transport dédiés aux produits agricoles. Nos
+                  véhicules sont conçus pour préserver la qualité de vos
+                  produits, assurant ainsi que les récoltes arrivent sur le
+                  marché avec leur fraîcheur et leurs bienfaits nutritifs
+                  intacts.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Les statistiques -->
+    <div class="surface-ground px-4 py-8 md:px-6 lg:px-8">
+      <div>
+        <div class="text-900 font-bold text-4xl line-height-3 mb-3 text-center">
+          NOS STATISTIQUES
+        </div>
+      </div>
+
+      <div class="grid mt-7">
+        <div class="col-12 md:col-3">
+          <div class="shadow-1 p-5 surface-card text-center">
+            <div
+              class="border-circle bg-blue-50 p-4 text-blue-600 inline-flex justify-content-center align-items-center mb-4"
+            >
+              <i class="pi pi-users text-5xl"></i>
+            </div>
+            <div class="text-900 font-bold text-4xl mb-3 line-height-3">
+              {{ stats.people }}
+            </div>
+            <div class="text-900 font-medium text-xl mb-4">Collaborateurs</div>
+          </div>
+        </div>
+        <div class="col-12 md:col-3">
+          <div class="shadow-1 p-5 surface-card text-center">
+            <div
+              class="border-circle bg-purple-50 p-4 text-purple-600 inline-flex justify-content-center align-items-center mb-4"
+            >
+              <i class="pi pi-chart-line text-5xl"></i>
+            </div>
+            <div class="text-900 font-bold text-4xl mb-3 line-height-3">
+              ${{ stats.sales }}K
+            </div>
+            <div class="text-900 font-medium text-xl mb-4">
+              Chiffre d'affaire
+            </div>
+          </div>
+        </div>
+        <div class="col-12 md:col-3">
+          <div class="shadow-1 p-5 surface-card text-center">
+            <div
+              class="border-circle bg-orange-50 p-4 text-orange-600 inline-flex justify-content-center align-items-center mb-4"
+            >
+              <i class="pi pi-globe text-5xl"></i>
+            </div>
+            <div class="text-900 font-bold text-4xl mb-3 line-height-3">
+              {{ stats.experience }}
+            </div>
+            <div class="text-900 font-medium text-xl mb-4">
+              Années d'experience
+            </div>
+          </div>
+        </div>
+        <div class="col-12 md:col-3">
+          <div class="shadow-1 p-5 surface-card text-center">
+            <div
+              class="border-circle bg-orange-50 p-4 text-orange-600 inline-flex justify-content-center align-items-center mb-4"
+            >
+              <i class="pi pi-map text-5xl"></i>
+            </div>
+            <div class="text-900 font-bold text-4xl mb-3 line-height-3">
+              {{ stats.destination }}
+            </div>
+            <div class="text-900 font-medium text-xl mb-4">Destinations</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- A PROPOS   -->
+    <div id="about" class="surface-section px-4 py-8 md:px-6 lg:px-8">
+      <div
+        class="flex flex-column lg:flex-row align-items-center justify-content-between"
+      >
+        <div class="text-center lg:text-left lg:pr-8">
+          <div class="text-900 font-bold text-6xl mb-5">A PROPOS</div>
+
+          <div class="text-gray-800 font-medium mb-1 text-xl">
+            <p
+              class="sm:line-height-2 md:line-height-4 text-2xl mt-4"
+              style="max-width: 800px"
+            >
+              Chez Trade Transit Transport Business, nous avons bâti notre
+              réputation surune solide base de fiabilité, d'innovation et
+              d'engagement envers l'excellence. Forts d'une expérience
+              approfondie dans le secteur de la logistique, du transport et de
+              la mobilité, nous nous efforçons d'être bien plus qu'un simple
+              prestataire de services. Notre mission est de servir en tant que
+              partenaire stratégique pour nos clients, les guidant à travers les
+              complexités du commerce international, de la mobilité et de la
+              gestion d'équipement.
+            </p>
+          </div>
+        </div>
+        <div class="mt-5 lg:mt-0 flex flex-wrap lg:flex-nowrap">
+          <button
+            pButton
+            pRipple
+            (click)="scrolleTo('features')"
+            label="Nos services"
+            class="px-5 py-3 mr-0 lg:mr-3 p-button-rounded bg-blue-700 font-bold mb-3 lg:mb-0 w-full lg:w-auto white-space-nowrap"
+          ></button>
+          <button
+            pButton
+            pRipple
+            (click)="scrolleTo('contact')"
+            label="Nous contacter"
+            iconPos="right"
+            class="px-5 py-3 p-button-outlined p-button-rounded text-blue-700 border-blue-700 font-bold w-full lg:w-auto white-space-nowrap"
+            style="white-space: nowrap"
+          ></button>
+        </div>
+      </div>
+    </div>
+
+    <!--    &lt;!&ndash;    GALERY &ndash;&gt;-->
+    <!--    <div-->
+    <!--      id="about"-->
+    <!--      class="grid-nogutter surface-section px-4 py-8 md:px-6 lg:px-8 grid text-800 mt-5"-->
+    <!--    >-->
+    <!--      <div class="col-12 md:col-6 overflow-hidden">-->
+    <!--        <app-landing-gallery></app-landing-gallery>-->
+    <!--      </div>-->
+    <!--      <div-->
+    <!--        class="col-12 md:col-6 p-6 text-center md:text-right flex align-items-center"-->
+    <!--      >-->
+    <!--        <section>-->
+    <!--          <span class="block text-6xl font-bold mb-1">Create the screens</span>-->
+    <!--          <div class="text-6xl text-primary font-bold mb-3">-->
+    <!--            your visitors deserve to see-->
+    <!--          </div>-->
+    <!--          <p class="mt-0 mb-4 text-700 line-height-3">-->
+    <!--            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do-->
+    <!--            eiusmod tempor incididunt ut labore et dolore magna aliqua.-->
+    <!--          </p>-->
+
+    <!--          <button-->
+    <!--            pButton-->
+    <!--            pRipple-->
+    <!--            label="Learn More"-->
+    <!--            type="button"-->
+    <!--            class="mr-3 p-button-raised"-->
+    <!--          ></button>-->
+    <!--          <button-->
+    <!--            pButton-->
+    <!--            pRipple-->
+    <!--            label="Live Demo"-->
+    <!--            type="button"-->
+    <!--            class="p-button-outlined"-->
+    <!--          ></button>-->
+    <!--        </section>-->
+    <!--      </div>-->
+    <!--    </div>-->
+
+    <!--    TRUSTED BY     -->
+    <!--    <div id="partners" class="surface-ground px-4 py-8 md:px-6 lg:px-8">-->
+    <!--      <div>-->
+    <!--        <div class="text-900 mb-3 font-bold text-4xl text-center">-->
+    <!--          Trusted By-->
+    <!--        </div>-->
+    <!--        <div class="text-600 mb-6 line-height-3 text-xl text-center">-->
+    <!--          We provide many of the Planet Earth’s most powerful companies with-->
+    <!--          extraordinary infrastructural capabilities.-->
+    <!--        </div>-->
+
+    <!--        <div class="grid">-->
+    <!--          <div class="col-12 md:col-6 lg:col-3">-->
+    <!--            <div class="flex align-items-center justify-content-center p-3">-->
+    <!--              <img src="assets/images/logos/alfred-500.svg" alt="Image" />-->
+    <!--            </div>-->
+    <!--          </div>-->
+    <!--          <div class="col-12 md:col-6 lg:col-3">-->
+    <!--            <div class="flex align-items-center justify-content-center p-3">-->
+    <!--              <img src="assets/images/logos/hyper-500.svg" alt="Image" />-->
+    <!--            </div>-->
+    <!--          </div>-->
+    <!--          <div class="col-12 md:col-6 lg:col-3">-->
+    <!--            <div class="flex align-items-center justify-content-center p-3">-->
+    <!--              <img src="assets/images/logos/bastion-500.svg" alt="Image" />-->
+    <!--            </div>-->
+    <!--          </div>-->
+    <!--          <div class="col-12 md:col-6 lg:col-3">-->
+    <!--            <div class="flex align-items-center justify-content-center p-3">-->
+    <!--              <img src="assets/images/logos/peak-500.svg" alt="Image" />-->
+    <!--            </div>-->
+    <!--          </div>-->
+    <!--          <div class="col-12 md:col-6 lg:col-3">-->
+    <!--            <div class="flex align-items-center justify-content-center p-3">-->
+    <!--              <img src="assets/images/logos/charot-500.svg" alt="Image" />-->
+    <!--            </div>-->
+    <!--          </div>-->
+    <!--          <div class="col-12 md:col-6 lg:col-3">-->
+    <!--            <div class="flex align-items-center justify-content-center p-3">-->
+    <!--              <img src="assets/images/logos/shodan-500.svg" alt="Image" />-->
+    <!--            </div>-->
+    <!--          </div>-->
+    <!--          <div class="col-12 md:col-6 lg:col-3">-->
+    <!--            <div class="flex align-items-center justify-content-center p-3">-->
+    <!--              <img src="assets/images/logos/hodly-500.svg" alt="Image" />-->
+    <!--            </div>-->
+    <!--          </div>-->
+    <!--          <div class="col-12 md:col-6 lg:col-3">-->
+    <!--            <div class="flex align-items-center justify-content-center p-3">-->
+    <!--              <img src="assets/images/logos/franki-500.svg" alt="Image" />-->
+    <!--            </div>-->
+    <!--          </div>-->
+    <!--        </div>-->
+    <!--      </div>-->
+    <!--    </div>-->
+
+    <!-- CONTACT US -->
+    <div id="contact" class="surface-ground">
+      <div class="grid grid-nogutter">
+        <div
+          class="col-12 md:col-6 bg-no-repeat bg-cover p-8"
+          style="background-image: url('assets/images/landing/contact-2.jpg')"
+        >
+          <div class="text-white text-2xl font-medium mb-6">Nous contacter</div>
+          <div class="text-gray-300 line-height-3 mb-6">
+            Contactez-nous dès aujourd'hui pour concrétiser vos projets
+          </div>
+          <a
+            target="_blank"
+            href="#"
+            class="inline-flex align-items-center text-blue-300 font-bold no-underline cursor-pointer"
+          >
+            <span class="mr-3">View Address on Google Maps</span>
+            <i class="pi pi-arrow-right"></i>
+          </a>
+          <ul class="list-none p-0 m-0 mt-6 text-white">
+            <li class="flex align-items-center mb-3">
+              <i class="pi pi-phone mr-2"></i>
+              <span>+226 70 05 20 22 / +226 77 27 37 27</span>
+            </li>
+            <li class="flex align-items-center mb-3">
+              <i class="pi pi-twitter mr-2"></i>
+              <span>@3t_Business</span>
+            </li>
+            <li class="flex align-items-center">
+              <i class="pi pi-inbox mr-2"></i>
+              <span>contact@3tb-business.com</span>
+            </li>
+          </ul>
+        </div>
+        <div class="col-12 md:col-6">
+          <form
+            [formGroup]="contactForm"
+            class="p-fluid formgrid grid px-4 py-8 md:px-6 lg:px-8"
+          >
+            <div class="field col-12 lg:col-6 mb-4">
+              <input
+                id="firstname"
+                type="text"
+                class="py-3 px-2 text-lg"
+                pInputText
+                formControlName="firstname"
+                aria-describedby="firstname-error"
+                placeholder="Prénom"
+              />
+              <small
+                id="firstname-error"
+                class="p-error block"
+                *ngIf="
+                  contactForm.get('firstname')?.invalid &&
+                  contactForm.get('firstname')?.dirty
+                "
+                >Prénom requis</small
+              >
+            </div>
+            <div class="field col-12 lg:col-6 mb-4">
+              <input
+                id="lastname"
+                type="text"
+                formControlName="lastname"
+                aria-describedby="lastname-error"
+                class="py-3 px-2 text-lg"
+                pInputText
+                placeholder="Nom"
+              />
+              <small
+                id="lastname-error"
+                class="p-error block"
+                *ngIf="
+                  contactForm.get('lastname')?.invalid &&
+                  contactForm.get('lastname')?.dirty
+                "
+                >Nom requis</small
+              >
+            </div>
+            <div class="field col-12 mb-4">
+              <input
+                id="email"
+                type="text"
+                pInputText
+                formControlName="email"
+                aria-describedby="email-error"
+                class="py-3 px-2 text-lg"
+                placeholder="Email"
+              />
+              <small
+                id="email-error"
+                class="p-error block"
+                *ngIf="
+                  contactForm.get('email')?.invalid &&
+                  contactForm.get('email')?.dirty
+                "
+                >Email invalide</small
+              >
+            </div>
+            <div class="field col-12 mb-4">
+              <input
+                id="phone"
+                type="text"
+                pInputText
+                class="py-3 px-2 text-lg"
+                placeholder="Téléphone"
+                formControlName="phone"
+                aria-describedby="phone-error"
+              />
+              <small
+                id="phone-error"
+                class="p-error block"
+                *ngIf="
+                  contactForm.get('phone')?.invalid &&
+                  contactForm.get('phone')?.dirty
+                "
+                >Téléphone requis</small
+              >
+            </div>
+            <div class="field col-12 mb-4">
+              <textarea
+                id="message"
+                pInputTextarea
+                formControlName="message"
+                aria-describedby="message-error"
+                rows="3"
+                [autoResize]="true"
+                class="py-3 px-2 text-lg"
+                placeholder="Message"
+              ></textarea>
+              <small
+                id="message-error"
+                class="p-error block"
+                *ngIf="
+                  contactForm.get('message')?.invalid &&
+                  contactForm.get('message')?.dirty
+                "
+                >Minimun 10 caractères</small
+              >
+            </div>
+            <div class="col-12 text-right">
+              <re-captcha (resolved)="resolved($event)"></re-captcha>
+              <button
+                (click)="submit()"
+                [loading]="isLoading"
+                type="button"
+                pButton
+                pRipple
+                label="Envoyer"
+                icon="pi pi-envelope"
+                class="px-5 py-3 w-auto bg-blue-700"
+              ></button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    <div class="bg-gray-900 px-4 py-8 md:px-6 lg:px-8">
+      <div class="bg-gray-900">
+        <div class="grid">
+          <div
+            class="col-12 md:col-3 flex flex-wrap justify-content-start md:mb-0 mb-3"
+          >
+            <img
+              src="assets/layout/images/logo-white.svg"
+              alt="footer sections"
+              width="50"
+              height="50"
+              class="mr-3"
+            />
+            <div class="text-gray-300 font-bold text-5xl">3T-Business</div>
+          </div>
+          <div class="col-12 md:col-3">
+            <div
+              class="text-white text-lg mb-4 flex flex-wrap"
+              style="max-width: 290px"
+            >
+              Bobo-Dioulasso,
+            </div>
+            <div class="text-white mb-3">
+              <i class="pi pi-phone surface-800 border-round p-1 mr-2"></i>+226
+              70 05 20 22 / +226 77 27 37 27
+            </div>
+            <div class="text-white mb-3">
+              <i class="pi pi-inbox surface-800 border-round p-1 mr-2"></i
+              >contact@3t-business.com
+            </div>
+          </div>
+          <div class="col-12 md:col-3 text-gray-200">
+            <div class="text-white font-bold line-height-3 mb-3">Liens</div>
+            <a class="line-height-3 text-white block cursor-pointer mb-2"
+              >Accueil</a
+            >
+            <a class="line-height-3 text-white block cursor-pointer mb-2"
+              >Nos services</a
+            >
+            <a class="line-height-3 text-white block cursor-pointer mb-2"
+              >A propos</a
+            >
+            <a class="line-height-3 text-white block cursor-pointer mb-2"
+              >Nous contacter</a
+            >
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <p-scrollTop></p-scrollTop>
+  </div>
+</div>
+
+<p-toast></p-toast>

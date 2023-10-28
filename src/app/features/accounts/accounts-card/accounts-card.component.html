@@ -1,0 +1,46 @@
+<div
+  class="fadein animation-duration-400 surface-card shadow-4 border-round p-4 shadow-2 hover:shadow-8 cursor-pointer"
+  (click)="open()"
+>
+  <div class="flex justify-content-between align-items-start">
+    <div>
+      <span class="font-medium text-900 text-xl mb-2">{{ user.name }}</span>
+      <p class="text-600 font-medium mb-2">{{ user.numTel }}</p>
+    </div>
+  </div>
+  <ul class="list-none m-0 p-0">
+    <li
+      class="px-0 py-2 flex justify-content-between align-items-center border-bottom-1 surface-border"
+    >
+      <span class="text-600 font-medium text-sm">Email</span>
+      <span class="text-900 font-medium text-sm">{{ user.email }}</span>
+    </li>
+    <li
+      class="px-0 py-2 flex justify-content-between align-items-center border-bottom-1 surface-border"
+    >
+      <span class="text-600 font-medium text-sm">Roles</span>
+      <span class="text-900 font-medium text-sm"
+        ><p-tag
+          class="mr-1"
+          *ngFor="let role of user.roles"
+          [value]="role"
+          [severity]="roleSeverity(role)"
+        ></p-tag>
+      </span>
+    </li>
+    <li class="px-0 py-2 flex justify-content-between align-items-center">
+      <span class="text-600 font-medium text-sm">Etat du compte</span>
+      <span class="text-900 font-medium text-sm"
+        ><p-tag
+          [value]="user.isAccountDisabled ? 'Suspendu' : 'Actif'"
+          [icon]="
+            user.isAccountDisabled
+              ? 'pi pi-exclamation-triangle'
+              : 'pi pi-check'
+          "
+          [severity]="user.isAccountDisabled ? 'warning' : 'success'"
+        ></p-tag
+      ></span>
+    </li>
+  </ul>
+</div>

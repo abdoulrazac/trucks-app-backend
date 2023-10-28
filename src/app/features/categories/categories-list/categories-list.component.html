@@ -1,0 +1,65 @@
+<div class="grid">
+  <div class="col-12">
+    <div class="card px-6 py-6">
+      <p-toast></p-toast>
+      <p-table
+        #dt
+        [value]="categories"
+        [columns]="cols"
+        responsiveLayout="scroll"
+        selectionMode="multiple"
+      >
+        <ng-template pTemplate="caption">
+          <div
+            class="flex flex-column md:flex-row md:justify-content-between md:align-items-center"
+          >
+            <h5 class="m-0">Gestion des utilisateurs</h5>
+            <p-button
+              label="Ajouter"
+              icon="pi pi-plus"
+              styleClass="p-button-rounded p-button-info mr-2 mb-2"
+              (onClick)="openDialog()"
+            ></p-button>
+          </div>
+        </ng-template>
+        <ng-template pTemplate="header">
+          <tr>
+            <th>Libellé</th>
+            <th>Description</th>
+            <th></th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-category>
+          <tr>
+            <td style="width: 20%; min-width: 10rem">
+              <span class="p-column-title">Libellé</span>
+              {{ category.label }}
+            </td>
+            <td style="width: 70%; min-width: 10rem">
+              <span class="p-column-title">Description</span>
+              {{ category.description }}
+            </td>
+            <td style="width: 10%; min-width: 10rem">
+              <div class="flex">
+                <button
+                  pButton
+                  pRipple
+                  icon="pi pi-pencil"
+                  class="p-button-rounded p-button-success mr-2"
+                  (click)="openDialog(category)"
+                ></button>
+              </div>
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+
+    <p-confirmDialog
+      acceptLabel="Oui"
+      rejectLabel="Non"
+      [style]="{ width: '30vw' }"
+      rejectButtonStyleClass="p-button-outlined"
+    ></p-confirmDialog>
+  </div>
+</div>

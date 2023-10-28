@@ -1,0 +1,77 @@
+<div [style]="{ width: '650px' }" class="p-fluid">
+  <!--   [visible]="true" -->
+  <!--    [modal]="true"-->
+  <!--    [closable]="false"-->
+  <div class="col-12">
+    <form [formGroup]="form">
+      <div class="p-fluid p-formgrid grid mt-2">
+        <div class="field col-12 md:col-12 mb-2">
+          <span class="p-float-label">
+            <input
+              id="label"
+              type="text"
+              pInputText
+              formControlName="label"
+              aria-describedby="label-error"
+            />
+            <label for="label" class="block text-900 mb-2">Libellé</label>
+          </span>
+          <small
+            id="name-error"
+            class="p-error block"
+            *ngIf="form.get('label')?.invalid && form.get('label')?.dirty"
+            >Minimum 5 caractères</small
+          >
+        </div>
+        <div class="field col-12 md:col-12 mb-2">
+          <span class="p-float-label">
+            <textarea
+              rows="5"
+              cols="40"
+              id="description"
+              placeholder="Description"
+              pInputTextarea
+              formControlName="description"
+              aria-describedby="description-error"
+            ></textarea>
+            <label for="description" class="block text-900 mb-2"
+              >Description</label
+            >
+          </span>
+          <small
+            id="description-error"
+            class="p-error block"
+            *ngIf="
+              form.get('description')?.invalid && form.get('description')?.dirty
+            "
+            >Minimum 10 caractères</small
+          >
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <div class="flex justify-content-start flex-wrap col-12">
+    <div class="col-6 align-items-center justify-content-center">
+      <button
+        pButton
+        pRipple
+        label="Cancel"
+        icon="pi pi-times"
+        class="p-button"
+        (click)="hideDialog(category, false)"
+      ></button>
+    </div>
+    <div class="col-6 align-items-center justify-content-center">
+      <button
+        pButton
+        pRipple
+        label="Save"
+        icon="pi pi-check"
+        class="p-button"
+        [disabled]="form.invalid"
+        (click)="save()"
+      ></button>
+    </div>
+  </div>
+</div>

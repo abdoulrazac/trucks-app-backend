@@ -1,0 +1,189 @@
+<div class="grid p-fluid pt-3">
+  <div class="col-12 md:col-6 px-6" style="border-radius: 12px">
+    <div class="flex justify-content-center align-items-center">
+      <img
+        [src]="user.avatar ? user.avatar : 'assets/images/default/avatar.png'"
+        class="mr-5 mb-3 lg:mb-0"
+        style="width: 250px; height: 250px"
+      />
+    </div>
+    <div class="align-items-center text-sm mt-5 p-5">
+      <div class="flex justify-content-between align-items-center mb-5">
+        <span class="text-900 font-medium text-3xl pt-5">{{ user.name }}</span>
+        <div>
+          <button
+            pButton
+            pRipple
+            pTooltip="Modifier"
+            tooltipPosition="top"
+            icon="pi pi-pencil"
+            class="p-button-rounded p-button-ou p-button-success mr-2"
+            (click)="openDialog(false)"
+          ></button>
+          <button
+            pButton
+            pRipple
+            pTooltip="Changer mot de passe"
+            tooltipPosition="top"
+            icon="pi pi-key"
+            class="p-button-rounded p-button-ou p-button-warning mr-2"
+            (click)="openDialog(true)"
+          ></button>
+        </div>
+      </div>
+      <ul class="list-none m-0 p-0">
+        <li
+          class="px-0 py-2 flex justify-content-between align-items-center border-bottom-1 surface-border"
+        >
+          <span class="text-600 font-medium text-sm">Email</span>
+          <span class="text-900 font-medium text-sm">{{ user.email }}</span>
+        </li>
+        <li
+          class="px-0 py-2 flex justify-content-between align-items-center border-bottom-1 surface-border"
+        >
+          <span class="text-600 font-medium text-sm">Non d'utilisateur</span>
+          <span class="text-900 font-medium text-sm">{{ user.username }}</span>
+        </li>
+        <li
+          class="px-0 py-2 flex justify-content-between align-items-center border-bottom-1 surface-border"
+        >
+          <span class="text-600 font-medium text-sm">Téléphone</span>
+          <span class="text-900 font-medium text-sm">{{ user.numTel }}</span>
+        </li>
+        <li
+          class="px-0 py-2 flex justify-content-between align-items-center border-bottom-1 surface-border"
+        >
+          <span class="text-600 font-medium text-sm">Roles</span>
+          <span class="text-900 font-medium text-sm"
+            ><p-tag
+              class="mr-1"
+              *ngFor="let role of user.roles"
+              [value]="role"
+              [severity]="roleSeverity(role)"
+            ></p-tag
+          ></span>
+        </li>
+        <li
+          class="px-0 py-2 flex justify-content-between align-items-center border-bottom-1 surface-border"
+        >
+          <span class="text-600 font-medium text-sm">Statut</span>
+          <span class="text-900 font-medium text-sm"
+            ><p-tag
+              [value]="user.status ? user.status : ''"
+              [severity]="statusSeverity(user.status ? user.status : '')"
+            ></p-tag
+          ></span>
+        </li>
+        <li class="px-0 py-2 flex justify-content-between align-items-center">
+          <span class="text-600 font-medium text-sm">Etat du compte</span>
+          <span class="text-900 font-medium text-sm"
+            ><p-tag
+              [value]="user.isAccountDisabled ? 'Suspendu' : 'Actif'"
+              [icon]="
+                user.isAccountDisabled
+                  ? 'pi pi-exclamation-triangle'
+                  : 'pi pi-check'
+              "
+              [severity]="user.isAccountDisabled ? 'warning' : 'success'"
+            ></p-tag
+          ></span>
+        </li>
+        <li class="px-0 py-2 flex justify-content-between align-items-center">
+          <span class="text-600 font-medium text-sm">Possède un camion</span>
+          <span class="text-900 font-medium text-sm"
+            ><p-tag
+              class="mr-1"
+              [value]="user.isAssigned ? 'Oui' : 'Non'"
+              [icon]="user.isAssigned ? 'pi pi-truck' : 'pi pi-times'"
+              [severity]="user.isAccountDisabled ? 'success' : 'warning'"
+            ></p-tag
+          ></span>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <div class="col-12 md:col-6 px-6">
+    <!--      STATISTIQUES-->
+    <div>
+      <div class="grid">
+        <div class="col-6 p-3">
+          <div class="shadow-2 surface-card p-3" style="border-radius: 12px">
+            <div class="flex align-items-center justify-content-between">
+              <div>
+                <span class="text-3xl text-900 font-bold">35</span>
+                <p class="mt-1 mb-0 text-600 text-xl">Total voyages</p>
+              </div>
+              <div>
+                <img
+                  src="assets/images/illustrations/travels.svg"
+                  width="100px"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-6 p-3">
+          <div class="shadow-2 surface-card p-3" style="border-radius: 12px">
+            <div class="flex align-items-center justify-content-between">
+              <div>
+                <span class="text-3xl text-900 font-bold">3</span>
+                <p class="mt-1 mb-0 text-600 text-xl">Voyages du mois</p>
+              </div>
+              <div>
+                <img
+                  src="assets/images/illustrations/calendar.svg"
+                  width="100px"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-6 p-3">
+          <div class="shadow-2 surface-card p-3" style="border-radius: 12px">
+            <div class="flex align-items-center justify-content-between">
+              <div>
+                <span class="text-3xl text-900 font-bold">3</span>
+                <p class="mt-1 mb-0 text-600 text-xl">Total pannes</p>
+              </div>
+              <div>
+                <img
+                  src="assets/images/illustrations/pannes.svg"
+                  width="100px"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-6 p-3">
+          <div class="shadow-2 surface-card p-3" style="border-radius: 12px">
+            <div class="flex align-items-center justify-content-between">
+              <div>
+                <span class="text-3xl text-900 font-bold">3</span>
+                <p class="mt-1 mb-0 text-600 text-xl">Primes</p>
+              </div>
+              <div>
+                <img
+                  src="assets/images/illustrations/prime.svg"
+                  width="100px"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-6 p-3">
+          <div class="shadow-2 surface-card p-3" style="border-radius: 12px">
+            <div class="flex align-items-center justify-content-between">
+              <div>
+                <span class="text-3xl text-900 font-bold">3</span>
+                <p class="mt-1 mb-0 text-600 text-xl">Documents</p>
+              </div>
+              <div>
+                <img src="assets/images/illustrations/docs.svg" width="100px" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
