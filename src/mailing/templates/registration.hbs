@@ -1,0 +1,37 @@
+<html lang='en'>
+  <head>
+    <meta charset='UTF-8' />
+    <meta name='viewport' content='width=device-width, initial-scale=1.0' />
+    <title>${title}</title>
+    <style>
+      body { background-color: #f1f8f5; } .container { max-width: 600px; margin:
+      0 auto; padding: 40px; background-color: #e2f3e0; text-align: center; } h1
+      { color: #333333; } p { color: #555555; fon margin-bottom: 20px; } .button
+      { display: inline-block; padding: 12px 24px; background-color: #4CAF50;
+      color: #ffffff; text-decoration: none; border-radius: 4px; font-weight:
+      bold; }
+    </style>
+  </head>
+  <body>
+    <div class='container'>
+      <div class='header'>
+        <img
+          src='lien_vers_votre_logo.png'
+          alt='Logo de 3T-BUSINESS'
+          class='logo'
+        />
+        <h1>Confirmation et Activation de Votre Nouveau Compte</h1>
+      </div>
+      <div class='content'>
+        <p>Cher(e) {{name}},</p>
+        <p>Votre nouveau compte a été créé avec succès sur notre plateforme.
+          Veuillez cliquer sur le bouton ci-dessous pour activer votre compte :</p>
+        <p><a href='{{url}}' target='_blank' class='button'>Activer mon compte</a></p>
+        <p>Merci de nous rejoindre !</p>
+      </div>
+      <div class='footer'>
+        <p>Cordialement,<br />L'équipe de 3T-BUSINESS</p>
+      </div>
+    </div>
+  </body>
+</html>

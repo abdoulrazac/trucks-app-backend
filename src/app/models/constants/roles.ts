@@ -1,6 +1,0 @@
-export enum ROLES {
-  CONDUCTOR = "CONDUCTOR",
-  ACCOUNTANT = "ACCOUNTANT",
-  MANAGER = "MANAGER",
-  ADMIN = "ADMIN",
-}

@@ -1,0 +1,7 @@
+nest g mo vehicule
+nest g s vehicule/services/vehicule --flat
+nest g s vehicule/services/vehicule-acl --flat
+nest g co vehicule/services/vehicule-acl --flat
+
+nest g mo mailing
+nest g s mail/services/mailing --flat

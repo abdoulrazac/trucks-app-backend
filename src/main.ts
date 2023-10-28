@@ -1,12 +1,35 @@
-import { enableProdMode } from '@angular/core';
-import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
+import { ValidationPipe } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { NestFactory } from '@nestjs/core';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
-import { AppModule } from './app/app.module';
-import { environment } from './environments/environment';
+import { AppModule } from './app.module';
+import { VALIDATION_PIPE_OPTIONS } from './shared/constants';
+import { RequestIdMiddleware } from './shared/middlewares/request-id/request-id.middleware';
 
-if (environment.production) {
-  enableProdMode();
+async function bootstrap() {
+  const app = await NestFactory.create(AppModule);
+  app.setGlobalPrefix('api/v1');
+
+  app.useGlobalPipes(new ValidationPipe(VALIDATION_PIPE_OPTIONS));
+  app.use(RequestIdMiddleware);
+  app.enableCors({ origin: '*' });
+
+  /** Swagger configuration*/
+  const options = new DocumentBuilder()
+    .setTitle('Truck-APP API starter')
+    .setDescription('Truck-APP API description')
+    .setVersion('1.0')
+    .addBearerAuth()
+    .build();
+
+  const document = SwaggerModule.createDocument(app, options);
+  SwaggerModule.setup('api/docs', app, document);
+
+  const configService = app.get(ConfigService);
+  const port = configService.get<number>('port');
+  const host = configService.get<string>('host');
+
+  await app.listen(port, host);
 }
-
-platformBrowserDynamic().bootstrapModule(AppModule)
-  .catch(err => console.error(err));
+bootstrap();
