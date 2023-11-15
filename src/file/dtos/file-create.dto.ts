@@ -1,17 +1,6 @@
-import { ApiProperty } from '@nestjs/swagger';
-import {
-  IsNotEmpty,
-  IsNumber,
-  IsOptional,
-  IsString,
-  Min,
-  MinLength,
-} from 'class-validator';
-import { User } from '../../user/entities/user.entity';
-import { Company } from '../../company/entities/company.entity';
-import { Expense } from '../../expense/entities/expense.entity';
-import { Vehicle } from '../../vehicle/entities/vehicle.entity';
-import { Transform } from 'class-transformer';
+import {ApiProperty} from '@nestjs/swagger';
+import {IsNotEmpty, IsNumber, IsOptional, IsString, Min, MinLength,} from 'class-validator';
+import {Transform} from 'class-transformer';
 
 export class FileCreateDto {
   @ApiProperty()
@@ -27,8 +16,7 @@ export class FileCreateDto {
 
   @ApiProperty()
   @IsNotEmpty()
-  @IsString()
-  type: string;
+  category: string[];
 
   @ApiProperty()
   @IsOptional()

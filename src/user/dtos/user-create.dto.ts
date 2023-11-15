@@ -13,8 +13,7 @@ import {
   MaxLength,
 } from 'class-validator';
 
-import { ROLE } from '../../auth/constants/role.constant';
-import { ACCOUNT_STATUS } from '../../auth/constants/status.constant';
+import { ROLE, ACCOUNT_STATUS  } from '../../shared/constants';
 import { Transform } from 'class-transformer';
 
 export class UserCreateDto {

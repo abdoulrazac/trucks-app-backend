@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
 
-import { ROLE } from '../../auth/constants/role.constant';
+import { ROLE } from '../../shared/constants';
 
 export class UserOutputDto {
   @Expose()

@@ -2,7 +2,7 @@ import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { DataSource } from 'typeorm';
 
-import { ROLE } from '../../auth/constants/role.constant';
+import { ROLE, ACCOUNT_STATUS } from '../../shared/constants';
 import { User } from '../entities/user.entity';
 import { UserRepository } from './user.repository';
 
@@ -45,12 +45,21 @@ describe('UserRepository', () => {
         name: 'Default User',
         username: 'default-user',
         password: 'random-password',
-        roles: [ROLE.USER],
+        roles: [ROLE.CONDUCTOR],
         isAccountDisabled: false,
         email: 'default-user@random.com',
+        status : ACCOUNT_STATUS.AVAILABLE,
+        isAssigned : false,
+        numTel : "123456789",
+        avatar : '',
+        passwordResets : [],
+        emailChanges : [],
+        emailVerifications : [],
+        trucks : [],
+        contracts : [],
+        files : [],
         createdAt: currentDate,
         updatedAt: currentDate,
-        articles: [],
       };
 
       jest.spyOn(repository, 'findOne').mockResolvedValue(expectedOutput);
@@ -64,12 +73,21 @@ describe('UserRepository', () => {
         name: 'Default User',
         username: 'default-user',
         password: 'random-password',
-        roles: [ROLE.USER],
+        roles: [ROLE.CONDUCTOR],
         isAccountDisabled: false,
         email: 'default-user@random.com',
+        status : ACCOUNT_STATUS.AVAILABLE,
+        isAssigned : false,
+        numTel : "123456789",
+        avatar : '',
+        passwordResets : [],
+        emailChanges : [],
+        emailVerifications : [],
+        trucks : [],
+        contracts : [],
+        files : [],
         createdAt: currentDate,
         updatedAt: currentDate,
-        articles: [],
       };
 
       jest.spyOn(repository, 'findOne').mockResolvedValue(expectedOutput);

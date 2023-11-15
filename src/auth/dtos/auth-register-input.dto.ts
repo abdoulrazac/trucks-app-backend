@@ -7,7 +7,7 @@ import {
   MaxLength,
 } from 'class-validator';
 
-import { ROLE } from '../constants/role.constant';
+import { ROLE } from '../../shared/constants';
 
 export class RegisterInput {
   @ApiProperty()

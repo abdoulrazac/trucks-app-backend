@@ -13,7 +13,7 @@ import { UserModule } from "../user/user.module";
   imports: [
     SharedModule,
     TypeOrmModule.forFeature([Category]),
-    UserModule
+    UserModule,
   ],
   providers: [
     CategoryService,

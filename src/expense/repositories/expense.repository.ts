@@ -15,7 +15,6 @@ export class ExpenseRepository extends Repository<Expense>{
       where: { id },
       relations : {
         vehicle : true,
-        category : true
       } });
     if (!expense) {
       throw new NotFoundException();

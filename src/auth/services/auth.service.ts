@@ -7,7 +7,7 @@ import { AppLogger } from '../../shared/logger/logger.service';
 import { RequestContext } from '../../shared/request-context/request-context.dto';
 import { UserOutputDto } from '../../user/dtos/user-output.dto';
 import { UserService } from '../../user/services/user.service';
-import { ROLE } from '../constants/role.constant';
+import { ROLE } from '../../shared/constants';
 import { RegisterInput } from '../dtos/auth-register-input.dto';
 import { RegisterOutput } from '../dtos/auth-register-output.dto';
 import {
@@ -18,14 +18,11 @@ import {
   ResetPasswordOutputDto,
   ResetPasswordRequestDto,
 } from '../dtos/auth-reset-password.dto';
-import { CONFIRM_REGISTRATION, RESET_PASSWORD } from '../../shared/constants';
-import { MailingService } from '../../mailing/services/mailing.service';
 
 @Injectable()
 export class AuthService {
   constructor(
     private userService: UserService,
-    private mailingService: MailingService,
     private jwtService: JwtService,
     private configService: ConfigService,
     private readonly logger: AppLogger,
@@ -61,6 +58,8 @@ export class AuthService {
     return this.getAuthToken(ctx, ctx.user);
   }
 
+  
+
   async register(
     ctx: RequestContext,
     input: RegisterInput,
@@ -84,21 +83,56 @@ export class AuthService {
     this.logger.log(ctx, `${this.resetPasswordRequest.name} was called`);
 
     const user = await this.userService.findByUsername(ctx, input.username);
-    const authToken = this.getAuthToken(ctx, user, true);
-    const link = this.generateLink(authToken.accessToken, RESET_PASSWORD);
 
-    // await this.mailingService.sendResetPassword(ctx, user.name, user.email, link)
-    await this.mailingService.sendResetPassword(
-      ctx,
-      user.name,
-      'a.razacsane@yahoo.com',
-      link,
-    );
     return plainToInstance(ResetPasswordOutputDto, {
       username: user.username,
       message: 'Reset password mail is send to username email',
     });
   }
+
+  async sendResetPasswordMail(email: string): Promise<void> {
+    // const user = await this.prisma.user.findUnique({
+    //   where: { email: email.toLowerCase() },
+    //   select: {
+    //     id: true,
+    //     firstName: true,
+    //     email: true,
+    //   },
+    // });
+
+    // if (user === null) {
+    //   throw new NotFoundException();
+    // }
+
+    // const deletePrevPasswordResetIfExist = this.prisma.passwordReset.deleteMany(
+    //   {
+    //     where: { userId: user.id },
+    //   },
+    // );
+
+    // const token = nanoid();
+
+    // const createPasswordReset = this.prisma.passwordReset.create({
+    //   data: {
+    //     userId: user.id,
+    //     token,
+    //   },
+    //   select: null,
+    // });
+
+    // await this.prisma.$transaction([
+    //   deletePrevPasswordResetIfExist,
+    //   createPasswordReset,
+    // ]);
+
+    // await this.mailSenderService.sendResetPasswordMail(
+    //   user.firstName,
+    //   user.email,
+    //   token,
+    // );
+  }
+
+
 
   async refreshToken(ctx: RequestContext): Promise<AuthTokenOutput> {
     this.logger.log(ctx, `${this.refreshToken.name} was called`);
@@ -114,7 +148,6 @@ export class AuthService {
   getAuthToken(
     ctx: RequestContext,
     user: UserAccessTokenClaims | UserOutputDto,
-    isResetPassword = false,
   ): AuthTokenOutput {
     this.logger.log(ctx, `${this.getAuthToken.name} was called`);
 
@@ -122,31 +155,20 @@ export class AuthService {
     const payload = {
       username: user.username,
       sub: user.id,
-      roles: isResetPassword ? [] : user.roles,
+      roles: user.roles,
     };
 
     const authToken = {
       refreshToken: this.jwtService.sign(subject, {
-        expiresIn: this.configService.get('jwt.refreshTokenExpiresInSec'),
+        expiresIn: this.configService.get<number>('jwt.refreshTokenExpiresInSec'),
       }),
       accessToken: this.jwtService.sign(
         { ...payload, ...subject },
-        { expiresIn: this.configService.get('jwt.accessTokenExpiresInSec') },
+        { expiresIn: this.configService.get<number>('jwt.accessTokenExpiresInSec') },
       ),
     };
     return plainToInstance(AuthTokenOutput, authToken, {
       excludeExtraneousValues: true,
     });
-  }
-
-  generateLink(token: string, type: string) {
-    let link = ''; //this.configService.get<string>('APP_AUTH_HOST');
-    if (type == CONFIRM_REGISTRATION) {
-      link = link + '/confirm-registration';
-    }
-    if (type == RESET_PASSWORD) {
-      link = link + '/reset-password';
-    }
-    return link;
   }
 }

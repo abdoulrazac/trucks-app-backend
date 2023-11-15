@@ -10,5 +10,9 @@ export class CategoryMinOutputDto {
 
   @Expose()
   @ApiProperty()
+  code : string;
+
+  @Expose()
+  @ApiProperty()
   label: string;
 }

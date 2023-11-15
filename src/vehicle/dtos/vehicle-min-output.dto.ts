@@ -13,7 +13,7 @@ export class VehicleMinOutputDto {
 
   @Expose()
   @ApiProperty()
-  type: string;
+  vehicleType: string;
 
   @Expose()
   @ApiProperty()

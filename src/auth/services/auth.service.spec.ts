@@ -5,9 +5,9 @@ import { Test, TestingModule } from '@nestjs/testing';
 
 import { AppLogger } from '../../shared/logger/logger.service';
 import { RequestContext } from '../../shared/request-context/request-context.dto';
-import { UserOutput } from '../../user/dtos/user-output.dto';
+import { UserOutputDto } from '../../user/dtos/user-output.dto';
 import { UserService } from '../../user/services/user.service';
-import { ROLE } from '../constants/role.constant';
+import { ROLE } from '../../shared/constants';
 import {
   AuthTokenOutput,
   UserAccessTokenClaims,
@@ -20,24 +20,24 @@ describe('AuthService', () => {
   const accessTokenClaims: UserAccessTokenClaims = {
     id: 6,
     username: 'jhon',
-    roles: [ROLE.USER],
+    roles: [ROLE.CONDUCTOR],
   };
 
   const registerInput = {
     username: 'jhon',
     name: 'Jhon doe',
     password: 'any password',
-    roles: [ROLE.USER],
+    roles: [ROLE.CONDUCTOR],
     isAccountDisabled: false,
     email: 'randomUser@random.com',
   };
 
   const currentDate = new Date().toString();
 
-  const userOutput: UserOutput = {
+  const userOutput: UserOutputDto = {
     username: 'jhon',
     name: 'Jhon doe',
-    roles: [ROLE.USER],
+    roles: [ROLE.CONDUCTOR],
     isAccountDisabled: false,
     email: 'randomUser@random.com',
     createdAt: currentDate,

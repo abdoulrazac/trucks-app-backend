@@ -58,7 +58,6 @@ export class ExpenseService {
       order: orderClean(order),
       relations: {
         vehicle: true,
-        category: true,
       },
       take: limit,
       skip: offset,
@@ -88,17 +87,6 @@ export class ExpenseService {
       throw new UnauthorizedException();
     }
 
-    try {
-      const category = await this.categoryService.getCategoryById(
-        ctx,
-        input.categoryId,
-      );
-      expense.category = plainToInstance(Category, category);
-    } catch {
-      throw new NotFoundException(
-        `Category with ID '${input.categoryId}'  Not Found`,
-      );
-    }
     try {
       const vehicle = await this.vehicleService.getVehicleById(
         ctx,
@@ -160,19 +148,6 @@ export class ExpenseService {
       throw new UnauthorizedException();
     }
 
-    if (input.categoryId) {
-      try {
-        const category = await this.categoryService.getCategoryById(
-          ctx,
-          input.categoryId,
-        );
-        expense.category = plainToInstance(Category, category);
-      } catch {
-        throw new NotFoundException(
-          `Category with ID '${input.categoryId}'  Not Found`,
-        );
-      }
-    }
     if (input.vehicleId) {
       try {
         const vehicle = await this.vehicleService.getVehicleById(

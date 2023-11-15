@@ -8,7 +8,7 @@ import {
   IsString,
 } from 'class-validator';
 
-import { ROLE } from '../../auth/constants/role.constant';
+import { ROLE } from '../../shared/constants';
 
 export class UserParamDto {
   @ApiPropertyOptional()

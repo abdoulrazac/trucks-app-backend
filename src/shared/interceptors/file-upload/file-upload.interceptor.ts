@@ -14,7 +14,7 @@ function FileUploadInterceptor (options: LocalFilesInterceptorOptions): Type<Nes
   class Interceptor implements NestInterceptor {
     fileInterceptor: NestInterceptor;
     constructor(configService: ConfigService) {
-      const filesDestination = configService.get('FILE_UPLOAD_DESTINATION');
+      const filesDestination = configService.get<string>('file.uploadDestination');
 
       const destination = `${filesDestination}${options.path}`
 

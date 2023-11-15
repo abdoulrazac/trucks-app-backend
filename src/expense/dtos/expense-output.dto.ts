@@ -30,16 +30,15 @@ export class ExpenseOutputDto {
 
   @Expose()
   @ApiProperty()
+  categories : CategoryMinOutputDto[];
+
+  @Expose()
+  @ApiProperty()
   createdAt: Date;
 
   @Expose()
   @ApiProperty()
   updatedAt: Date;
-
-  @Expose()
-  @Type(() => CategoryMinOutputDto)
-  @ApiProperty()
-  category : CategoryMinOutputDto;
 
   @Expose()
   @Type(() => VehicleMinOutputDto)

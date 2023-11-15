@@ -1,12 +1,18 @@
-import { ApiPropertyOptional } from '@nestjs/swagger';
+import {ApiProperty, ApiPropertyOptional} from '@nestjs/swagger';
 import {
   IsDateString,
-  IsNotEmpty,
+  IsNotEmpty, IsNumber,
   IsOptional,
-  IsString,
+  IsString, Min,
 } from 'class-validator';
+import {Transform} from "class-transformer";
 
 export class CategoryParamDto {
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  code: string;
+
   @ApiPropertyOptional()
   @IsOptional()
   @IsString()
@@ -16,6 +22,13 @@ export class CategoryParamDto {
   @IsOptional()
   @IsString()
   description: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsNumber()
+  @Min(0)
+  @Transform(({ value }) => parseInt(value, 10), { toClassOnly: true })
+  groupId: number;
 
   @ApiPropertyOptional()
   @IsOptional()

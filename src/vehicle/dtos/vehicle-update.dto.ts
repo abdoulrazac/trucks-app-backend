@@ -14,13 +14,13 @@ export class VehicleUpdateDto {
   @IsOptional()
   @IsNotEmpty()
   @IsString()
-  type: string;
+  vehicleType: string;
 
   @ApiProperty()
   @IsOptional()
   @IsNotEmpty()
   @IsString()
-  color: string;
+  vehicleColor: string;
 
   @ApiProperty()
   @IsOptional()
@@ -32,7 +32,7 @@ export class VehicleUpdateDto {
   @IsOptional()
   @IsNotEmpty()
   @IsString()
-  model: string;
+  vehicleModel: string;
 
   @ApiProperty()
   @IsOptional()

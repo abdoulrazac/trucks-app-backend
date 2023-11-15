@@ -22,8 +22,7 @@ export class FileParamDto {
 
   @ApiPropertyOptional()
   @IsOptional()
-  @IsString()
-  type: string;
+  category: string[];
 
   @ApiPropertyOptional()
   @IsOptional()

@@ -10,7 +10,12 @@ export class CategoryRepository extends Repository<Category> {
   }
 
   async getById(id: number): Promise<Category> {
-    const category = await this.findOne({ where: { id } });
+    const category = await this.findOne({
+      where: { id },
+      relations: {
+        group: true
+      }
+    });
     if (!category) {
       throw new NotFoundException();
     }

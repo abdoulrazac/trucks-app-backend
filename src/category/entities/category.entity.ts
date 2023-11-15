@@ -1,15 +1,21 @@
-import { Column, Entity, OneToMany } from 'typeorm';
-import { Expense } from '../../expense/entities/expense.entity';
-import { AbstractEntity } from '../../shared/entities/abstract.entity';
+import {Column, Entity, ManyToOne, OneToMany} from 'typeorm';
+import {AbstractEntity} from '../../shared/entities/abstract.entity';
 
 @Entity('categories')
 export class Category extends AbstractEntity {
+
+  @Column({length : 20, default : ''})
+  code : string;
+
   @Column({ length: 200 })
   label: string;
 
   @Column()
   description: string;
 
-  @OneToMany(() => Expense, (expense) => expense.category)
-  expenses: Expense[];
+  @OneToMany(() => Category, (category) => category.group)
+  categories: Category[];
+
+  @ManyToOne(() => Category, (category) => category.categories)
+  group: Category;
 }

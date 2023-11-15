@@ -11,6 +11,7 @@ import {
   UploadedFile,
   UseGuards,
   UseInterceptors,
+  Response,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -19,7 +20,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 
-import { ROLE } from '../../auth/constants/role.constant';
+import { ROLE } from '../../shared/constants';
 import { Roles } from '../../auth/decorators/role.decorator';
 import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../../auth/guards/roles.guard';
@@ -125,8 +126,9 @@ export class UserController {
     type: BaseApiErrorResponse,
   })
   @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(ROLE.ADMIN, ROLE.MANAGER, ROLE.ACCOUNTANT)
+  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard, RolesGuard)
+  // @Roles(ROLE.ADMIN, ROLE.MANAGER, ROLE.ACCOUNTANT)
   async getUser(
     @ReqContext() ctx: RequestContext,
     @Param('id') id: number,
@@ -213,10 +215,11 @@ export class UserController {
   async getAvatar(
     @ReqContext() ctx: RequestContext,
     @Param('id') id: number,
-  ): Promise<BaseApiResponse<BufferOutputDto>> {
+    @Response() res ,
+  ) {
     this.logger.log(ctx, `${this.getUser.name} was called`);
 
-    const file = await this.userService.downloadAvatarByUserId(ctx, id);
-    return { data: file, meta: {} };
+    const filePath = await this.userService.downloadAvatarByUserId(ctx, id);
+    return res.sendFile(filePath);
   }
 }

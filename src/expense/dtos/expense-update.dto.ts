@@ -26,10 +26,8 @@ export class ExpenseUpdateDto {
   @ApiProperty()
   @IsOptional()
   @IsNotEmpty()
-  @IsNumber()
-  @Min(0)
-  @Transform(({ value }) => parseInt(value, 10), { toClassOnly: true })
-  unitNumber : number ;
+  @IsString()
+  categories: string[];
 
   @ApiProperty()
   @IsOptional()
@@ -37,7 +35,7 @@ export class ExpenseUpdateDto {
   @IsNumber()
   @Min(0)
   @Transform(({ value }) => parseInt(value, 10), { toClassOnly: true })
-  categoryId : number;
+  unitNumber : number ;
 
   @ApiProperty()
   @IsOptional()

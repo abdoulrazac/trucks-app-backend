@@ -22,7 +22,7 @@ export class FileOutputDto {
 
   @Expose()
   @ApiProperty()
-  type: string;
+  category: string[];
 
   @Expose()
   @ApiProperty()

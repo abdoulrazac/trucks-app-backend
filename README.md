@@ -164,7 +164,7 @@ $ npm run migration:revert
 
 ## Architecture
 
-- [Project Structure](./docs/project-structure.md)
+- [Project Structure](files/project-structure.md)
 
 ## Contributors
 

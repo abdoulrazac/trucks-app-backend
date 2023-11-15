@@ -2,7 +2,7 @@ import { HttpStatus, INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { createConnection, getConnection } from 'typeorm';
 
-import { ROLE } from '../src/auth/constants/role.constant';
+import { ROLE } from '../src/shared/constants';
 import { LoginInput } from '../src/auth/dtos/auth-login-input.dto';
 import { AuthTokenOutput } from '../src/auth/dtos/auth-token-output.dto';
 import { RequestContext } from '../src/shared/request-context/request-context.dto';

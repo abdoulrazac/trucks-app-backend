@@ -10,7 +10,7 @@ export enum OrderColumn {
   description = 'description',
   unitPrice = 'unitPrice',
   unitNumber = 'unitNumber',
-  category = 'category',
+  categories = 'categories',
   vehicle = 'vehicle',
   createdAt = 'createdAt',
   updatedAt = 'updatedAt',

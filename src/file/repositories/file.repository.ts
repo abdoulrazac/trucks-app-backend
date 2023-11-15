@@ -17,8 +17,7 @@ export class FileRepository extends Repository<File>{
     }
     return file;
   }
-
-  async getFileExpensesById(id: number): Promise<File> {
+  async getFullById(id: number): Promise<File> {
     const file = await this.findOne({
       where: { id },
       relations : {
@@ -26,7 +25,16 @@ export class FileRepository extends Repository<File>{
         expense : true,
         vehicle : true,
         company : true
-      }
+      } });
+    if (!file) {
+      throw new NotFoundException();
+    }
+    return file;
+  }
+
+  async getFileExpensesById(id: number): Promise<File> {
+    const file = await this.findOne({
+      where: { id }
     });
     if (!file) {
       throw new NotFoundException();

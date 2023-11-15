@@ -11,7 +11,6 @@ import { AuthService } from './services/auth.service';
 import { JwtAuthStrategy } from './strategies/jwt-auth.strategy';
 import { JwtRefreshStrategy } from './strategies/jwt-refresh.strategy';
 import { LocalStrategy } from './strategies/local.strategy';
-import { MailingModule } from "../mailing/mailing.module";
 
 @Module({
   imports: [
@@ -28,8 +27,7 @@ import { MailingModule } from "../mailing/mailing.module";
       }),
       inject: [ConfigService],
     }),
-    UserModule,
-    MailingModule
+    UserModule
   ],
   controllers: [AuthController],
   providers: [AuthService, LocalStrategy, JwtAuthStrategy, JwtRefreshStrategy],

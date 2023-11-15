@@ -2,12 +2,12 @@ import { HttpStatus, INestApplication, ValidationPipe } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import * as request from 'supertest';
 
-import { ROLE } from '../../src/auth/constants/role.constant';
+import { ROLE } from '../../src/shared/constants';
 import { LoginInput } from '../../src/auth/dtos/auth-login-input.dto';
 import { RefreshTokenInput } from '../../src/auth/dtos/auth-refresh-token-input.dto';
 import { RegisterInput } from '../../src/auth/dtos/auth-register-input.dto';
 import { AuthTokenOutput } from '../../src/auth/dtos/auth-token-output.dto';
-import { AppModule } from './../../src/app.module';
+import { AppModule } from '../../src/app.module';
 import {
   closeDBAfterTest,
   createDBEntities,

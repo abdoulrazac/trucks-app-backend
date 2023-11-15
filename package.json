@@ -61,6 +61,7 @@
     "dotenv": "^16.0.2",
     "hbs": "^4.2.0",
     "mysql2": "^3.6.0",
+    "nanoid": "^3.1.31",
     "nodemailer": "^6.9.4",
     "passport": "^0.6.0",
     "passport-jwt": "^4.0.0",

@@ -23,16 +23,16 @@ export class Vehicle {
   numImat: string;
 
   @Column()
-  type: string;
+  vehicleType: string;
 
   @Column()
-  color: string;
+  vehicleColor: string;
 
   @Column()
   brand: string;
 
   @Column()
-  model: string;
+  vehicleModel: string;
 
   @Column()
   volume: number;

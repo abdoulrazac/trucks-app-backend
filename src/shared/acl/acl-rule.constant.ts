@@ -1,4 +1,4 @@
-import { ROLE } from '../../auth/constants/role.constant';
+import { ROLE } from '../constants';
 import { Action } from './action.constant';
 import { Actor } from './actor.constant';
 

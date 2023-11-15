@@ -31,6 +31,11 @@ export class ExpenseParamDto {
 
   @ApiPropertyOptional()
   @IsOptional()
+  @IsString()
+  categories: string[];
+
+  @ApiPropertyOptional()
+  @IsOptional()
   @IsDateString()
   createdAt: Date;
 
@@ -38,13 +43,6 @@ export class ExpenseParamDto {
   @IsOptional()
   @IsDateString()
   updatedAt: Date;
-
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsNumber()
-  @Min(0)
-  @Transform(({ value }) => parseInt(value, 10), { toClassOnly: true })
-  categoryId: number;
 
   @ApiPropertyOptional()
   @IsOptional()

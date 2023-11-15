@@ -1,19 +1,11 @@
-import {
-  Column,
-  CreateDateColumn,
-  Entity,
-  ManyToOne,
-  OneToMany,
-  PrimaryGeneratedColumn,
-  UpdateDateColumn,
-} from 'typeorm';
-import { Expense } from '../../expense/entities/expense.entity';
-import { User } from '../../user/entities/user.entity';
-import { Company } from '../../company/entities/company.entity';
-import { Vehicle } from '../../vehicle/entities/vehicle.entity';
-import { Invoice } from '../../invoice/entities/invoice.entity';
-import { AbstractEntity } from '../../shared/entities/abstract.entity';
-import { Travel } from '../../travel/entities/travel.entity';
+import {Column, Entity, ManyToOne} from 'typeorm';
+import {Expense} from '../../expense/entities/expense.entity';
+import {User} from '../../user/entities/user.entity';
+import {Company} from '../../company/entities/company.entity';
+import {Vehicle} from '../../vehicle/entities/vehicle.entity';
+import {Invoice} from '../../invoice/entities/invoice.entity';
+import {AbstractEntity} from '../../shared/entities/abstract.entity';
+import {Travel} from '../../travel/entities/travel.entity';
 
 @Entity('files')
 export class File extends AbstractEntity {
@@ -23,8 +15,8 @@ export class File extends AbstractEntity {
   @Column()
   description: string;
 
-  @Column()
-  type: string;
+  @Column('simple-array')
+  category: string[];
 
   @Column()
   extension: string;

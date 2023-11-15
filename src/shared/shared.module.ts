@@ -8,6 +8,7 @@ import { AllExceptionsFilter } from './filters/all-exceptions.filter';
 import { LoggingInterceptor } from './interceptors/logging/logging.interceptor';
 import { AppLoggerModule } from './logger/logger.module';
 import { MulterModule } from '@nestjs/platform-express';
+import {MailSenderModule} from "../mail-sender/mail-sender.module";
 
 @Module({
   imports: [
@@ -16,7 +17,7 @@ import { MulterModule } from '@nestjs/platform-express';
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: async (configService: ConfigService) => ({
-        dest: configService.get<string>('FILE_UPLOAD_DESTINATION'),
+        dest: configService.get<string>('file.uploadDestination'),
       }),
     }),
     TypeOrmModule.forRootAsync({

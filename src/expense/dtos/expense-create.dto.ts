@@ -36,10 +36,8 @@ export class ExpenseCreateDto {
 
   @ApiProperty()
   @IsNotEmpty()
-  @IsNumber()
-  @Min(0)
-  @Transform(({ value }) => parseInt(value, 10), { toClassOnly: true })
-  categoryId : number;
+  @IsString()
+  categories : string[];
 
   @ApiProperty()
   @IsNotEmpty()

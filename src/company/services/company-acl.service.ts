@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 
-import { ROLE } from '../../auth/constants/role.constant';
+import { ROLE } from '../../shared/constants';
 import { BaseAclService } from '../../shared/acl/acl.service';
 import { Action } from '../../shared/acl/action.constant';
 import { Company } from '../entities/company.entity';

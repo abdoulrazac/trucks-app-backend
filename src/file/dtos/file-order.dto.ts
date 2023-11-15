@@ -4,7 +4,7 @@ import { IsEnum, IsOptional, IsString } from 'class-validator';
 export enum OrderColumn {
   label = 'label',
   description = 'description',
-  type = 'type',
+  category = 'category',
   extension = 'extension',
   size = 'size',
   author = 'author',

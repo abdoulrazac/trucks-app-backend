@@ -104,29 +104,6 @@ export class VehicleService {
     });
   }
 
-  // async getVehicleExpensesById(
-  //   ctx: RequestContext,
-  //   id: number,
-  // ): Promise<{ vehicles: ExpenseOutputDto[]; count: number }> {
-  //   this.logger.log(ctx, `${this.getVehicleById.name} was called`);
-  //
-  //   const actor: Actor = ctx.user;
-  //
-  //   this.logger.log(ctx, `calling ${VehicleRepository.name}.getById`);
-  //   const vehicle = await this.repository.getById(id);
-  //
-  //   const isAllowed = this.aclService
-  //     .forActor(actor)
-  //     .canDoAction(Action.Read, vehicle);
-  //   if (!isAllowed) {
-  //     throw new UnauthorizedException();
-  //   }
-  //
-  //   return plainToInstance(VehicleOutputDto, vehicle, {
-  //     excludeExtraneousValues: true,
-  //   });
-  // }
-
   async updateVehicle(
     ctx: RequestContext,
     vehicleId: number,

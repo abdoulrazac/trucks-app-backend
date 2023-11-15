@@ -14,11 +14,11 @@ export class VehicleOutputDto {
 
   @Expose()
   @ApiProperty()
-  type: string;
+  vehicleType: string;
 
   @Expose()
   @ApiProperty()
-  color: string;
+  vehicleColor: string;
 
   @Expose()
   @ApiProperty()
@@ -26,7 +26,7 @@ export class VehicleOutputDto {
 
   @Expose()
   @ApiProperty()
-  model: string;
+  vehicleModel: string;
 
   @Expose()
   @ApiProperty()

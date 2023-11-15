@@ -25,8 +25,7 @@ export class FileUpdateDto {
   @ApiProperty()
   @IsOptional()
   @IsNotEmpty()
-  @IsString()
-  type: string;
+  category: string[];
 
   @ApiProperty()
   @IsOptional()

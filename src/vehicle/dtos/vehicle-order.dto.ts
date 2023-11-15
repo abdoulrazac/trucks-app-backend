@@ -8,10 +8,10 @@ import {
 export enum OrderColumn {
   label = 'label',
   numImat = 'numImat',
-  type = 'type',
-  color = 'color',
+  vehicleType = 'vehicleType',
+  vehicleColor = 'vehicleColor',
   brand = 'brand',
-  model = 'model',
+  vehicleModel = 'vehicleModel',
   volume = 'volume',
   axleNumber = 'axleNumber',
   isAssigned = 'isAssigned',

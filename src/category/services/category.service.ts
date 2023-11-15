@@ -1,28 +1,24 @@
-import {
-  Injectable,
-  NotAcceptableException,
-  UnauthorizedException,
-} from '@nestjs/common';
-import { plainToInstance } from 'class-transformer';
+import {BadRequestException, Injectable, NotAcceptableException, UnauthorizedException,} from '@nestjs/common';
+import {plainToInstance} from 'class-transformer';
 
-import { Action } from '../../shared/acl/action.constant';
-import { Actor } from '../../shared/acl/actor.constant';
-import { orderClean, whereClauseClean } from '../../shared/helpers';
-import { AppLogger } from '../../shared/logger/logger.service';
-import { RequestContext } from '../../shared/request-context/request-context.dto';
-import { CategoryCreateDto } from '../dtos/category-create.dto';
-import { CategoryOrderDto } from '../dtos/category-order.dto';
-import { CategoryOutputDto } from '../dtos/category-output.dto';
-import { CategoryParamDto } from '../dtos/category-param.dto';
-import { CategoryUpdateDto } from '../dtos/category-update.dto';
-import { Category } from '../entities/category.entity';
-import { CategoryRepository } from '../repositories/category.repository';
-import { CategoryAclService } from './category-acl.service';
+import {Action} from '../../shared/acl/action.constant';
+import {Actor} from '../../shared/acl/actor.constant';
+import {orderClean, whereClauseClean} from '../../shared/helpers';
+import {AppLogger} from '../../shared/logger/logger.service';
+import {RequestContext} from '../../shared/request-context/request-context.dto';
+import {CategoryCreateDto} from '../dtos/category-create.dto';
+import {CategoryOrderDto} from '../dtos/category-order.dto';
+import {CategoryOutputDto} from '../dtos/category-output.dto';
+import {CategoryParamDto} from '../dtos/category-param.dto';
+import {CategoryUpdateDto} from '../dtos/category-update.dto';
+import {Category} from '../entities/category.entity';
+import {CategoryRepository} from '../repositories/category.repository';
+import {CategoryAclService} from './category-acl.service'; 
 
 @Injectable()
 export class CategoryService {
   constructor(
-    private repository: CategoryRepository,
+    private repository: CategoryRepository, 
     private aclService: CategoryAclService,
     private readonly logger: AppLogger,
   ) {
@@ -48,6 +44,9 @@ export class CategoryService {
     this.logger.log(ctx, `calling ${CategoryRepository.name}.findAndCount`);
     const [categories, count] = await this.repository.findAndCount({
       where: whereClauseClean(filters),
+      relations: {
+        group: true,
+      },
       order: orderClean(order),
       take: limit,
       skip: offset,
@@ -75,6 +74,16 @@ export class CategoryService {
       .canDoAction(Action.Create, category);
     if (!isAllowed) {
       throw new UnauthorizedException();
+    }
+
+    if (input.groupId) {
+      try {
+        this.logger.log(ctx, `calling ${CategoryRepository.name}.getById`);
+        const group = await this.repository.getById(input.groupId);
+        category.group = plainToInstance(Category, group);
+      } catch {
+        throw new BadRequestException(`Category group with ID '${input.groupId}' is Not Found`);
+      }
     }
 
     this.logger.log(ctx, `calling ${CategoryRepository.name}.save`);
@@ -125,6 +134,16 @@ export class CategoryService {
       .canDoAction(Action.Update, category);
     if (!isAllowed) {
       throw new UnauthorizedException();
+    }
+
+    if(input.groupId){
+      try {
+        this.logger.log(ctx, `calling ${CategoryRepository.name}.getById`);
+        const group = await this.repository.getById(input.groupId);
+        category.group = plainToInstance(Category, group);
+      } catch {
+        throw new BadRequestException(`Category group with ID '${input.groupId}' is Not Found`);
+      }
     }
 
     const updatedCategory: Category = {

@@ -3,44 +3,37 @@ import {
   Injectable,
   NotAcceptableException,
   NotFoundException,
-  StreamableFile,
   UnauthorizedException,
 } from '@nestjs/common';
-import { plainToInstance } from 'class-transformer';
+import {plainToInstance} from 'class-transformer';
 
-import { Action } from '../../shared/acl/action.constant';
-import { Actor } from '../../shared/acl/actor.constant';
-import {
-  creteUploadFile,
-  orderClean,
-  readUploadFile,
-  removeUploadFile,
-  whereClauseClean,
-} from '../../shared/helpers';
-import { AppLogger } from '../../shared/logger/logger.service';
-import { RequestContext } from '../../shared/request-context/request-context.dto';
-import { FileCreateDto } from '../dtos/file-create.dto';
-import { FileOrderDto } from '../dtos/file-order.dto';
-import { FileOutputDto } from '../dtos/file-output.dto';
-import { FileParamDto } from '../dtos/file-param.dto';
-import { FileUpdateDto } from '../dtos/file-update.dto';
-import { File } from '../entities/file.entity';
-import { FileRepository } from '../repositories/file.repository';
-import { FileAclService } from './file-acl.service';
-import { UserService } from '../../user/services/user.service';
-import { VehicleService } from '../../vehicle/services/vehicle.service';
-import { ExpenseService } from '../../expense/services/expense.service';
-import { CompanyService } from '../../company/services/company.service';
+import {Action} from '../../shared/acl/action.constant';
+import {Actor} from '../../shared/acl/actor.constant';
+import {creteUploadFile, getFilePath, orderClean, removeUploadFile, whereClauseClean,} from '../../shared/helpers';
+import {AppLogger} from '../../shared/logger/logger.service';
+import {RequestContext} from '../../shared/request-context/request-context.dto';
+import {FileCreateDto} from '../dtos/file-create.dto';
+import {FileOrderDto} from '../dtos/file-order.dto';
+import {FileOutputDto} from '../dtos/file-output.dto';
+import {FileParamDto} from '../dtos/file-param.dto';
+import {FileUpdateDto} from '../dtos/file-update.dto';
+import {File} from '../entities/file.entity';
+import {FileRepository} from '../repositories/file.repository';
+import {FileAclService} from './file-acl.service';
+import {UserService} from '../../user/services/user.service';
+import {VehicleService} from '../../vehicle/services/vehicle.service';
+import {ExpenseService} from '../../expense/services/expense.service';
+import {CompanyService} from '../../company/services/company.service';
 import * as path from 'path';
-import { ConfigService } from '@nestjs/config';
-import { DOCS_TYPES } from '../../shared/constants';
-import { Company } from '../../company/entities/company.entity';
-import { Vehicle } from '../../vehicle/entities/vehicle.entity';
-import { User } from '../../user/entities/user.entity';
-import { Expense } from '../../expense/entities/expense.entity';
-import { join } from 'path';
-import { InvoiceService } from '../../invoice/services/invoice.service';
-import { Invoice } from '../../invoice/entities/invoice.entity';
+import {join} from 'path';
+import {ConfigService} from '@nestjs/config';
+import {DOCS_TYPES} from '../../shared/constants';
+import {Company} from '../../company/entities/company.entity';
+import {Vehicle} from '../../vehicle/entities/vehicle.entity';
+import {User} from '../../user/entities/user.entity';
+import {Expense} from '../../expense/entities/expense.entity';
+import {InvoiceService} from '../../invoice/services/invoice.service';
+import {Invoice} from '../../invoice/entities/invoice.entity';
 
 @Injectable()
 export class FileService {
@@ -57,7 +50,7 @@ export class FileService {
     private readonly logger: AppLogger,
   ) {
     this.logger.setContext(FileService.name);
-    this.basePath = this.configService.get<string>('FILE_UPLOAD_DESTINATION');
+    this.basePath = this.configService.get<string>('file.uploadDestination');
   }
 
   async getFiles(
@@ -114,7 +107,7 @@ export class FileService {
       this.basePath,
       new Date().getFullYear().toString(),
     );
-    const maxSize = this.configService.get<number>('FILE_MAX_SIZE');
+    const maxSize = this.configService.get<number>('file.maxSize');
     let fileName = '';
 
     if (input.authorId) {
@@ -183,7 +176,9 @@ export class FileService {
       if (!DOCS_TYPES.includes(file.extension)) {
         errorMessages.push(`Only [${DOCS_TYPES}] are allowed !`);
       }
-      fileName = `${new Date().getTime()}.${ctx.user.id}.${file.extension}`;
+      fileName = `${ctx.user.id}.${new Date().getTime()}${file.extension}`;
+    } else {
+      errorMessages.push(`File is required !`);
     }
     if (errorMessages.length != 0) {
       throw new BadRequestException(errorMessages);
@@ -220,7 +215,10 @@ export class FileService {
     });
   }
 
-  async downloadFileById(ctx: RequestContext, id: number): Promise<Buffer> {
+  async downloadFileById(
+    ctx: RequestContext,
+    id: number,
+  ): Promise<string> {
     this.logger.log(ctx, `${this.downloadFileById.name} was called`);
 
     const actor: Actor = ctx.user;
@@ -234,13 +232,12 @@ export class FileService {
     if (!isAllowed) {
       throw new UnauthorizedException();
     }
-    const fileToStream = file.link
-      ? await readUploadFile(join(process.cwd(), file.link))
-      : null;
-    if (!fileToStream) {
-      throw new NotFoundException();
+
+    const filePath =  await getFilePath(file.link)
+    if (!file.link || !filePath ){
+      throw new NotFoundException('File Not Found');
     }
-    return fileToStream;
+    return filePath
   }
 
   async updateFile(
@@ -252,10 +249,9 @@ export class FileService {
     this.logger.log(ctx, `${this.updateFile.name} was called`);
 
     this.logger.log(ctx, `calling ${FileRepository.name}.getById`);
-    const file = await this.repository.getById(fileId);
+    const file = await this.repository.getFullById(fileId);
 
     const actor: Actor = ctx.user;
-
     const isAllowed = this.aclService
       .forActor(actor)
       .canDoAction(Action.Update, file);
@@ -268,7 +264,7 @@ export class FileService {
       this.basePath,
       new Date().getFullYear().toString(),
     );
-    const maxSize = this.configService.get<number>('FILE_MAX_SIZE');
+    const maxSize = this.configService.get<number>('file.maxSize');
     let fileName = '';
 
     if (input.authorId && input.authorId != file.author.id) {
@@ -279,6 +275,7 @@ export class FileService {
         errorMessages.push(`Author with ID '${input.authorId}'  Not Found`);
       }
     }
+
     if (input.companyId && input.companyId != file.company.id) {
       try {
         const company = await this.companyService.getCompanyById(
@@ -326,7 +323,7 @@ export class FileService {
 
     if (fileUploaded) {
       file.size = fileUploaded.size;
-      file.extension = path.extname(fileUploaded.originalname);
+      file.extension = path.extname(fileUploaded.originalname).toLowerCase();
 
       if (Number(file.size) > maxSize) {
         errorMessages.push(
@@ -337,7 +334,7 @@ export class FileService {
       if (!DOCS_TYPES.includes(file.extension)) {
         errorMessages.push(`Only [${DOCS_TYPES}] are allowed !`);
       }
-      fileName = `${new Date().getTime()}.${ctx.user.id}.${file.extension}`;
+      fileName = `${ctx.user.id}.${new Date().getTime()}${file.extension}`;
     }
     if (errorMessages.length != 0) {
       throw new BadRequestException(errorMessages);

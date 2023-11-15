@@ -1,37 +1,27 @@
-import {
-  Injectable,
-  NotAcceptableException,
-  NotFoundException,
-  UnauthorizedException,
-} from '@nestjs/common';
-import { compare, hash } from 'bcrypt';
-import { plainToInstance } from 'class-transformer';
+import {Injectable, NotAcceptableException, NotFoundException, UnauthorizedException,} from '@nestjs/common';
+import {compare, hash} from 'bcrypt';
+import {plainToInstance} from 'class-transformer';
+import {nanoid} from 'nanoid';
 
-import { AppLogger } from '../../shared/logger/logger.service';
-import { RequestContext } from '../../shared/request-context/request-context.dto';
-import { UserCreateDto } from '../dtos/user-create.dto';
-import { UserOutputDto } from '../dtos/user-output.dto';
-import { UserUpdateDto } from '../dtos/user-update-input.dto';
-import { User } from '../entities/user.entity';
-import { UserRepository } from '../repositories/user.repository';
-import {
-  creteUploadFile,
-  orderClean,
-  readUploadFile,
-  whereClauseClean,
-} from '../../shared/helpers';
-import { UserParamDto } from '../dtos/user-param.dto';
-import { UserOrderDto } from '../dtos/user-order.dto';
-import { MailingService } from '../../mailing/services/mailing.service';
-import { RegisterInput } from '../../auth/dtos/auth-register-input.dto';
-import { Action } from '../../shared/acl/action.constant';
-import { UserAclService } from './user-acl.service';
-import { Actor } from '../../shared/acl/actor.constant';
+import {AppLogger} from '../../shared/logger/logger.service';
+import {RequestContext} from '../../shared/request-context/request-context.dto';
+import {UserCreateDto} from '../dtos/user-create.dto';
+import {UserOutputDto} from '../dtos/user-output.dto';
+import {UserUpdateDto} from '../dtos/user-update-input.dto';
+import {User} from '../entities/user.entity';
+import {UserRepository} from '../repositories/user.repository';
+import {creteUploadFile, getFilePath, orderClean, whereClauseClean,} from '../../shared/helpers';
+import {UserParamDto} from '../dtos/user-param.dto';
+import {UserOrderDto} from '../dtos/user-order.dto';
+import {RegisterInput} from '../../auth/dtos/auth-register-input.dto';
+import {Action} from '../../shared/acl/action.constant';
+import {UserAclService} from './user-acl.service';
+import {Actor} from '../../shared/acl/actor.constant';
 import * as path from 'path';
-import { join } from 'path';
-import { DOCS_TYPES_AVATAR } from '../../shared/constants';
-import { ConfigService } from '@nestjs/config';
-import { BufferOutputDto } from '../../shared/dtos/buffer-output.dto';
+import {DOCS_TYPES_AVATAR} from '../../shared/constants';
+import {ConfigService} from '@nestjs/config';
+import {EmailVerification} from "../entities/email-verification.entity";
+import {MailSenderService} from "../../mail-sender/services/mail-sender.service";
 
 @Injectable()
 export class UserService {
@@ -40,16 +30,14 @@ export class UserService {
   bas;
   constructor(
     private configService: ConfigService,
-    private repository: UserRepository,
-    private mailingService: MailingService,
+    private repository: UserRepository, 
     private aclService: UserAclService,
     private readonly logger: AppLogger,
+    private mailSenderService: MailSenderService
   ) {
     this.logger.setContext(UserService.name);
-    this.basePathAvatar = this.configService.get<string>(
-      'FILE_UPLOAD_DESTINATION_AVATAR',
-    );
-    this.maxSize = this.configService.get<number>('FILE_MAX_SIZE');
+    this.basePathAvatar = this.configService.get<string>('file.uploadDestinationAvatar');
+    this.maxSize = this.configService.get<number>('file.maxSize');
   }
   async createUser(
     ctx: RequestContext,
@@ -66,6 +54,11 @@ export class UserService {
       throw new UnauthorizedException();
     }
     const user = plainToInstance(User, input);
+    const emailVerification = plainToInstance(EmailVerification, {
+      token: nanoid(32),
+      newEmail: input.email,
+    })
+    user.emailVerifications = [emailVerification];
 
     user.password = await hash(input.password, 10);
 
@@ -114,7 +107,7 @@ export class UserService {
     if (fileUploaded) {
       const fileSize = fileUploaded.size;
       const fileExtension = path.extname(fileUploaded.originalname);
-      fileName = `${user.id}-${new Date().getTime()}${fileExtension}`;
+      fileName = `0-${new Date().getTime()}${fileExtension}`;
 
       if (Number(fileSize) > this.maxSize) {
         errorMessages.push(
@@ -143,17 +136,13 @@ export class UserService {
 
     this.logger.log(ctx, `calling ${UserRepository.name}.saveUser`);
     const savedUser = await this.repository.save(user);
-    // const savedUser = await this.repository.save(user);
-    // await this.mailingService.sendConfirmRegistration(ctx, savedUser.name, savedUser.email, 'test')
-    // return plainToInstance(UserOutputDto, savedUser, {
-    //   excludeExtraneousValues: true,
-    // });
-    // await this.mailingService.sendConfirmRegistration(
-    //   ctx,
-    //   'Abdoul Razac SANE',
-    //   'a.razacsane@yahoo.com',
-    //   'test',
-    // );
+    await this.mailSenderService.sendVerifyEmailMail(
+      ctx,
+      savedUser.name,
+      savedUser.email,
+      savedUser.emailVerifications[0].token
+    );
+
     return plainToInstance(UserOutputDto, savedUser, {
       excludeExtraneousValues: true,
     });
@@ -357,7 +346,7 @@ export class UserService {
         );
       }
 
-      if (!DOCS_TYPES_AVATAR.includes(fileExtension)) {
+      if (!DOCS_TYPES_AVATAR.includes(fileExtension.toLowerCase())) {
         errorMessages.push(`Only [${DOCS_TYPES_AVATAR}] are allowed !`);
       }
     }
@@ -393,7 +382,7 @@ export class UserService {
   async downloadAvatarByUserId(
     ctx: RequestContext,
     userId: number,
-  ): Promise<BufferOutputDto> {
+  ): Promise<string> {
     this.logger.log(ctx, `${this.downloadAvatarByUserId.name} was called`);
 
     const user = await this.repository.getById(userId);
@@ -405,12 +394,11 @@ export class UserService {
     if (!isAllowed) {
       throw new UnauthorizedException();
     }
-    const fileToStream = user.avatar
-      ? await readUploadFile(join(process.cwd(), user.avatar))
-      : false;
-    if (!fileToStream) {
-      throw new NotFoundException();
+
+    const filePath =  await getFilePath(user.avatar)
+    if (!user.avatar || !filePath ){
+      throw new NotFoundException('Avatar Not Found');
     }
-    return { buffer: fileToStream, name: user.avatar };
+    return filePath
   }
 }

@@ -1,9 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
 
-
 export class FileMinOutputDto {
-
   @Expose()
   @ApiProperty()
   id: number;
@@ -14,7 +12,7 @@ export class FileMinOutputDto {
 
   @Expose()
   @ApiProperty()
-  type: string;
+  category: string[];
 
   @Expose()
   @ApiProperty()

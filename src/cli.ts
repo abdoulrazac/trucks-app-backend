@@ -1,12 +1,11 @@
-import { ConfigService } from '@nestjs/config';
-import { NestFactory } from '@nestjs/core';
+import {ConfigService} from '@nestjs/config';
+import {NestFactory} from '@nestjs/core';
 
-import { AppModule } from './app.module';
-import { ROLE } from './auth/constants/role.constant';
-import { RequestContext } from './shared/request-context/request-context.dto';
-import { UserCreateDto } from './user/dtos/user-create.dto';
-import { UserService } from './user/services/user.service';
-import { ACCOUNT_STATUS } from './auth/constants/status.constant';
+import {AppModule} from './app.module';
+import {ACCOUNT_STATUS, ROLE} from './shared/constants';
+import {RequestContext} from './shared/request-context/request-context.dto';
+import {UserCreateDto} from './user/dtos/user-create.dto';
+import {UserService} from './user/services/user.service';
 
 async function bootstrap() {
   const app = await NestFactory.createApplicationContext(AppModule);

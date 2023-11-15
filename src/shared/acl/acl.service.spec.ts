@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 
-import { ROLE } from './../../auth/constants/role.constant';
+import { ROLE } from '../constants';
 import { BaseAclService } from './acl.service';
 import { RuleCallback } from './acl-rule.constant';
 import { Action } from './action.constant';
@@ -40,22 +40,22 @@ describe('AclService', () => {
 
   describe('canDo', () => {
     it('should add acl rule', () => {
-      service.canDo(ROLE.USER, [Action.Read]);
+      service.canDo(ROLE.CONDUCTOR, [Action.Read]);
       const aclRules = service.getAclRules();
       expect(aclRules).toContainEqual({
-        role: ROLE.USER,
+        role: ROLE.CONDUCTOR,
         actions: [Action.Read],
       });
     });
 
     it('should add acl rule with custom rule', () => {
       const customRuleCallback = () => true;
-      service.canDo(ROLE.USER, [Action.Read], customRuleCallback);
+      service.canDo(ROLE.CONDUCTOR, [Action.Read], customRuleCallback);
 
       const aclRules = service.getAclRules();
 
       expect(aclRules).toContainEqual({
-        role: ROLE.USER,
+        role: ROLE.CONDUCTOR,
         actions: [Action.Read],
         ruleCallback: customRuleCallback,
       });
@@ -66,7 +66,7 @@ describe('AclService', () => {
     const user = {
       id: 6,
       username: 'foo',
-      roles: [ROLE.USER],
+      roles: [ROLE.CONDUCTOR],
     };
 
     const admin = {
@@ -81,33 +81,33 @@ describe('AclService', () => {
     });
 
     it('should return false when no role sepcific rules found', () => {
-      service.canDo(ROLE.USER, [Action.Read]);
+      service.canDo(ROLE.CONDUCTOR, [Action.Read]);
       const userAcl = service.forActor(admin);
       expect(userAcl.canDoAction(Action.Read)).toBeFalsy();
     });
 
     it('should return false when no action sepcific rules found', () => {
-      service.canDo(ROLE.USER, [Action.Read]);
+      service.canDo(ROLE.CONDUCTOR, [Action.Read]);
       const userAcl = service.forActor(user);
       expect(userAcl.canDoAction(Action.Create)).toBeFalsy();
     });
 
     it('should return true when role has action permission', () => {
-      service.canDo(ROLE.USER, [Action.Read]);
+      service.canDo(ROLE.CONDUCTOR, [Action.Read]);
       const userAcl = service.forActor(user);
       expect(userAcl.canDoAction(Action.Read)).toBeTruthy();
     });
 
     it('should return true when ruleCallback is true', () => {
       const customOwnerRule = () => true;
-      service.canDo(ROLE.USER, [Action.Manage], customOwnerRule);
+      service.canDo(ROLE.CONDUCTOR, [Action.Manage], customOwnerRule);
       const userAcl = service.forActor(user);
       expect(userAcl.canDoAction(Action.Read)).toBeTruthy();
     });
 
     it('should return false when ruleCallback is false', () => {
       const customOwnerRule = () => false;
-      service.canDo(ROLE.USER, [Action.Manage], customOwnerRule);
+      service.canDo(ROLE.CONDUCTOR, [Action.Manage], customOwnerRule);
       const userAcl = service.forActor(user);
       expect(userAcl.canDoAction(Action.Read)).toBeFalsy();
     });

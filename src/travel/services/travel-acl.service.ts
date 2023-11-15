@@ -1,11 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import {Injectable} from '@nestjs/common';
 
-import { ROLE } from '../../auth/constants/role.constant';
-import { BaseAclService } from '../../shared/acl/acl.service';
-import { Action } from '../../shared/acl/action.constant';
-import { Actor } from '../../shared/acl/actor.constant';
-import { User } from '../../user/entities/user.entity';
-import { Travel } from '../entities/travel.entity';
+import {ROLE} from '../../shared/constants';
+import {BaseAclService} from '../../shared/acl/acl.service';
+import {Action} from '../../shared/acl/action.constant';
+import {Travel} from '../entities/travel.entity';
 
 @Injectable()
 export class TravelAclService extends BaseAclService<Travel> {

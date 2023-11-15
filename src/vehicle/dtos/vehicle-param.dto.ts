@@ -10,22 +10,17 @@ export class VehicleParamDto {
   @ApiPropertyOptional()
   @IsOptional()
   @IsString()
-  fullSearch: string;
-
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsString()
   numImat: string;
 
   @ApiPropertyOptional()
   @IsOptional()
   @IsString()
-  type: string;
+  vehicleType: string;
 
   @ApiPropertyOptional()
   @IsOptional()
   @IsString()
-  color: string;
+  vehicleColor: string;
 
   @ApiPropertyOptional()
   @IsOptional()
@@ -35,7 +30,7 @@ export class VehicleParamDto {
   @ApiPropertyOptional()
   @IsOptional()
   @IsString()
-  model: string;
+  vehicleModel: string;
 
   @ApiPropertyOptional()
   @IsOptional()

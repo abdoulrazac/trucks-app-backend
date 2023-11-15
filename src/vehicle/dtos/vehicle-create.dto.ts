@@ -8,20 +8,20 @@ import { Transform } from "class-transformer";
 
 export class VehicleCreateDto {
 
-  @ApiProperty()
-  @IsNotEmpty()
-  @IsString()
+  @ApiProperty({description : "Numéro d'immatriculation du véhicule"})
+  @IsNotEmpty({message : 'Veuillez saisir un numImat'})
+  @IsString({message : 'Veuillez saisir un numImat'})
   numImat: string;
 
   @ApiProperty()
   @IsNotEmpty()
   @IsString()
-  type: string;
+  vehicleType: string;
 
   @ApiProperty()
   @IsNotEmpty()
   @IsString()
-  color: string;
+  vehicleColor: string;
 
   @ApiProperty()
   @IsOptional()
@@ -31,7 +31,7 @@ export class VehicleCreateDto {
   @ApiProperty()
   @IsNotEmpty()
   @IsString()
-  model: string;
+  vehicleModel: string;
 
   @ApiProperty()
   @IsNotEmpty()

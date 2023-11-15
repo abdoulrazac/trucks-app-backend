@@ -8,10 +8,14 @@ import { User } from './entities/user.entity';
 import { UserRepository } from './repositories/user.repository';
 import { UserService } from './services/user.service';
 import { UserAclService } from './services/user-acl.service';
-import { MailingModule } from "../mailing/mailing.module";
+import {MailSenderModule} from "../mail-sender/mail-sender.module";
 
 @Module({
-  imports: [SharedModule, MailingModule, TypeOrmModule.forFeature([User])],
+  imports: [
+    SharedModule,
+    TypeOrmModule.forFeature([User]),
+    MailSenderModule
+  ],
   providers: [UserService, JwtAuthStrategy, UserAclService, UserRepository],
   controllers: [UserController],
   exports: [UserService],
