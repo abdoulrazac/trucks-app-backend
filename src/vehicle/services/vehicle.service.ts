@@ -32,7 +32,7 @@ export class VehicleService {
     limit: number,
     offset: number,
   ): Promise<{ vehicles: VehicleOutputDto[]; count: number }> {
-    this.logger.log(ctx, `${this.getVehicles.name} was called`);
+    this.logger.log(ctx, `${this.getVehicles.name} was called`); 
 
     const actor: Actor = ctx.user;
 

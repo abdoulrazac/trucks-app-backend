@@ -1,13 +1,9 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import {
-  IsEmail,
-  IsNotEmpty,
-  IsString,
-  Length,
-  MaxLength,
-} from 'class-validator';
+import {ApiProperty} from '@nestjs/swagger';
 
-import { ROLE } from '../../shared/constants';
+import {IsBoolean, IsEmail, IsNotEmpty, IsString, Length, MaxLength,} from 'class-validator';
+import {Transform} from 'class-transformer';
+import {transformToBoolean} from '../../shared/helpers';
+import {ROLE} from '../../shared/constants';
 
 export class RegisterInput {
   @ApiProperty()
@@ -40,5 +36,15 @@ export class RegisterInput {
 
   // These keys can only be set by ADMIN user.
   roles: ROLE[] = [ROLE.CONDUCTOR];
+
+
+
+  @ApiProperty()
+  @IsNotEmpty()
+  @Transform(
+    ({ value }) => transformToBoolean(value),
+    { toClassOnly: true },
+  )
+  @IsBoolean()
   isAccountDisabled: boolean;
 }

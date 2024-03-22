@@ -1,9 +1,10 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { Expose, Type } from "class-transformer";
+import {ApiProperty} from '@nestjs/swagger';
+import {Expose, Type} from "class-transformer";
 
-import { CompanyMinOutputDto } from "../../company/dtos/company-min-output.dto";
-import { TruckOutputDto } from "../../truck/dtos/truck-output.dto";
-import { InvoiceMinOutputDto } from "../../invoice/dtos/invoice-min-output.dto";
+import {CompanyMinOutputDto} from "../../company/dtos/company-min-output.dto";
+import {TruckOutputDto} from "../../truck/dtos/truck-output.dto";
+import {InvoiceMinOutputDto} from "../../invoice/dtos/invoice-min-output.dto";
+import {TRAVEL_STATUS} from "../../shared/constants";
 
 export class TravelOutputDto {
   @Expose()
@@ -20,7 +21,7 @@ export class TravelOutputDto {
 
   @Expose()
   @ApiProperty()
-  status :  string;
+  status: TRAVEL_STATUS;
 
   @Expose()
   @ApiProperty()

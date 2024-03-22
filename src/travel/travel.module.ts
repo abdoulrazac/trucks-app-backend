@@ -2,8 +2,7 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { JwtAuthStrategy } from '../auth/strategies/jwt-auth.strategy';
-import { CompanyModule } from '../company/company.module';
-import { InvoiceModule } from '../invoice/invoice.module';
+import { CompanyModule } from '../company/company.module'; 
 import { SharedModule } from '../shared/shared.module';
 import { TruckModule } from '../truck/truck.module';
 import { UserModule } from '../user/user.module';
@@ -15,12 +14,11 @@ import { TravelAclService } from './services/travel-acl.service';
 
 @Module({
   imports: [
-    SharedModule,
     TypeOrmModule.forFeature([Travel]),
+    SharedModule,
     UserModule,
     TruckModule,
-    CompanyModule,
-    InvoiceModule,
+    CompanyModule, 
   ],
   providers: [
     TravelService,

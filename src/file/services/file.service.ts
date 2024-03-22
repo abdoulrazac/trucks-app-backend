@@ -5,11 +5,13 @@ import {
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
+import { Cron, CronExpression } from '@nestjs/schedule';
 import {plainToInstance} from 'class-transformer';
+import { v4 as uuidv4 } from 'uuid';
 
 import {Action} from '../../shared/acl/action.constant';
 import {Actor} from '../../shared/acl/actor.constant';
-import {creteUploadFile, getFilePath, orderClean, removeUploadFile, whereClauseClean,} from '../../shared/helpers';
+import {createUploadFile, getFilePath, orderClean, moveToTrash, whereClauseClean,} from '../../shared/helpers';
 import {AppLogger} from '../../shared/logger/logger.service';
 import {RequestContext} from '../../shared/request-context/request-context.dto';
 import {FileCreateDto} from '../dtos/file-create.dto';
@@ -38,6 +40,7 @@ import {Invoice} from '../../invoice/entities/invoice.entity';
 @Injectable()
 export class FileService {
   basePath: string;
+  maxSize: number;
   constructor(
     private configService: ConfigService,
     private repository: FileRepository,
@@ -51,6 +54,18 @@ export class FileService {
   ) {
     this.logger.setContext(FileService.name);
     this.basePath = this.configService.get<string>('file.uploadDestination');
+    this.maxSize = this.configService.get<number>('file.maxSize');
+  }
+
+  @Cron(CronExpression.EVERY_DAY_AT_2AM, { //'* * * * *'
+    name: 'triggerNotifications',
+    timeZone: 'UTC',
+  })
+  async triggerNotifications() {
+    this.logger.internalLog(`Cron: ${this.triggerNotifications.name} was called`);
+    const files = await this.repository.getFutureExpiredFiles()
+    console.log('triggerNotifications was called');
+    console.log(files)
   }
 
   async getFiles(
@@ -107,8 +122,6 @@ export class FileService {
       this.basePath,
       new Date().getFullYear().toString(),
     );
-    const maxSize = this.configService.get<number>('file.maxSize');
-    let fileName = '';
 
     if (input.authorId) {
       try {
@@ -165,18 +178,18 @@ export class FileService {
 
     if (fileUploaded) {
       file.size = fileUploaded.size;
-      file.extension = path.extname(fileUploaded.originalname);
+      file.extension = path.extname(fileUploaded.originalname).toLocaleLowerCase();
 
-      if (Number(file.size) > maxSize) {
+      if (Number(file.size) > this.maxSize) {
         errorMessages.push(
-          `File max size is ${maxSize.toString().slice(0, 1)}M`,
+          `File max size is ${this.maxSize.toString().slice(0, 1)}M`,
         );
       }
 
       if (!DOCS_TYPES.includes(file.extension)) {
         errorMessages.push(`Only [${DOCS_TYPES}] are allowed !`);
       }
-      fileName = `${ctx.user.id}.${new Date().getTime()}${file.extension}`;
+
     } else {
       errorMessages.push(`File is required !`);
     }
@@ -185,8 +198,9 @@ export class FileService {
     }
 
     this.logger.log(ctx, `calling ${FileRepository.name}.save`);
+    const fileName = this.generateFileName(ctx.user, file);
     file.link = fileUploaded
-      ? await creteUploadFile(basePathWithYear, fileName, fileUploaded.buffer)
+      ? await createUploadFile(basePathWithYear, fileName, fileUploaded.buffer)
       : '';
     const savedFile = await this.repository.save(file);
 
@@ -264,8 +278,6 @@ export class FileService {
       this.basePath,
       new Date().getFullYear().toString(),
     );
-    const maxSize = this.configService.get<number>('file.maxSize');
-    let fileName = '';
 
     if (input.authorId && input.authorId != file.author.id) {
       try {
@@ -325,16 +337,15 @@ export class FileService {
       file.size = fileUploaded.size;
       file.extension = path.extname(fileUploaded.originalname).toLowerCase();
 
-      if (Number(file.size) > maxSize) {
+      if (Number(file.size) > this.maxSize) {
         errorMessages.push(
-          `File max size is ${maxSize.toString().slice(0, 1)}M`,
+          `File max size is ${this.maxSize.toString().slice(0, 1)}M`,
         );
       }
 
       if (!DOCS_TYPES.includes(file.extension)) {
         errorMessages.push(`Only [${DOCS_TYPES}] are allowed !`);
       }
-      fileName = `${ctx.user.id}.${new Date().getTime()}${file.extension}`;
     }
     if (errorMessages.length != 0) {
       throw new BadRequestException(errorMessages);
@@ -342,8 +353,9 @@ export class FileService {
 
     this.logger.log(ctx, `calling ${FileRepository.name}.save`);
     if (fileUploaded) {
-      await removeUploadFile(file.link);
-      file.link = await creteUploadFile(
+      await moveToTrash(this.basePath,  file.link);
+      const fileName = this.generateFileName(ctx.user, file);
+      file.link = await createUploadFile(
         basePathWithYear,
         fileName,
         fileUploaded.buffer,
@@ -380,11 +392,25 @@ export class FileService {
     this.logger.log(ctx, `calling ${FileRepository.name}.remove`);
     try {
       await this.repository.remove(file);
-      await removeUploadFile(file.link);
+      await moveToTrash(this.basePath, file.link);
     } catch (err) {
       throw new NotAcceptableException(
         'Cannot delete a parent : a forein key constraint',
       );
     }
+  }
+
+  generateFileName(actor : Actor, file : File): string {
+    let fileName = '';
+    fileName += 'u' + (actor.id?actor.id:0).toString()
+    fileName += '-a' + (file.author?.id?file.author.id:0).toString()
+    fileName += '-c' + (file.company?.id?file.company.id:0).toString()
+    fileName += '-v' + (file.vehicle?.id?file.vehicle.id:0).toString()
+    fileName += '-e' + (file.expense?.id?file.expense.id:0).toString()
+    fileName += '-i' + (file.invoice?.id?file.invoice.id:0).toString()
+    fileName += '-t' + (file.travel?.id?file.travel.id:0).toString()
+    fileName += '_' + uuidv4() +  file.extension
+
+    return fileName;
   }
 }

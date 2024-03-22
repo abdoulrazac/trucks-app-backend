@@ -1,5 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
+  IsBoolean,
+  IsDate,
+  IsDateString,
   IsNotEmpty,
   IsNumber,
   IsOptional,
@@ -8,6 +11,7 @@ import {
   MinLength,
 } from 'class-validator';
 import { Transform } from 'class-transformer';
+import { transformToBoolean } from 'src/shared/helpers';
 
 export class FileUpdateDto {
   @ApiProperty()
@@ -25,7 +29,31 @@ export class FileUpdateDto {
   @ApiProperty()
   @IsOptional()
   @IsNotEmpty()
+  @Transform(
+    ({ value }) => transformToBoolean(value),
+    { toClassOnly: true },
+  )
+  @IsBoolean()
+  notification: boolean;
+
+  @ApiProperty()
+  @IsOptional()
+  @IsNotEmpty()
   category: string[];
+
+  @ApiProperty()
+  @IsOptional()
+  @IsNotEmpty()
+  @IsDate()
+  @Transform(({ value }) => new Date(value), { toClassOnly: true })
+  deliverAt: Date;
+
+  @ApiProperty()
+  @IsOptional()
+  @IsNotEmpty()
+  @IsDate()
+  @Transform(({ value }) => new Date(value), { toClassOnly: true })
+  expireAt: Date;
 
   @ApiProperty()
   @IsOptional()

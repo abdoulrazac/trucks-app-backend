@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform } from "class-transformer";
 import { IsBoolean, IsDateString, IsNotEmpty, IsNumber, IsOptional, IsString, Min } from "class-validator";
+import { transformToBoolean } from '../../shared/helpers';
 
 export class ContractUpdateDto {
   @ApiProperty()
@@ -47,6 +48,10 @@ export class ContractUpdateDto {
   @ApiProperty()
   @IsOptional()
   @IsNotEmpty()
+  @Transform(
+    ({ value }) => transformToBoolean(value),
+    { toClassOnly: true },
+  )
   @IsBoolean()
   isClosed: boolean;
 

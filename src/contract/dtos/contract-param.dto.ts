@@ -9,6 +9,7 @@ import {
   IsString,
   Min,
 } from 'class-validator';
+import { transformToBoolean } from '../../shared/helpers';
 
 export class ContractParamDto {
   @ApiPropertyOptional()
@@ -55,6 +56,10 @@ export class ContractParamDto {
   @ApiPropertyOptional()
   @IsOptional()
   @IsNotEmpty()
+  @Transform(
+    ({ value }) => transformToBoolean(value),
+    { toClassOnly: true },
+  )
   @IsBoolean()
   isClosed: boolean;
 

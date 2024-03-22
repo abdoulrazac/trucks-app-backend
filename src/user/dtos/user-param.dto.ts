@@ -1,12 +1,13 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import {
   IsBoolean,
-  IsDateString,
-  IsEmail,
+  IsDateString, 
   IsNotEmpty,
   IsOptional,
   IsString,
 } from 'class-validator';
+import { Transform } from 'class-transformer';
+import { transformToBoolean } from '../../shared/helpers';
 
 import { ROLE } from '../../shared/constants';
 
@@ -49,8 +50,22 @@ export class UserParamDto {
   @ApiPropertyOptional()
   @IsOptional()
   @IsNotEmpty()
+  @Transform(
+    ({ value }) => transformToBoolean(value),
+    { toClassOnly: true },
+  )
   @IsBoolean()
   isAccountDisabled: boolean;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsNotEmpty()
+  @Transform(
+    ({ value }) => transformToBoolean(value),
+    { toClassOnly: true },
+  )
+  @IsBoolean()
+  isAssigned: boolean;
 
   @ApiPropertyOptional()
   @IsOptional()

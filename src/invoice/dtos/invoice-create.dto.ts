@@ -1,12 +1,14 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Transform } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import {
+  IsArray,
   IsNotEmpty,
   IsNumber,
   IsOptional,
   IsString,
   Min,
 } from 'class-validator';
+import { TravelMinOutputDto } from 'src/travel/dtos/travel-min-output.dto';
 
 export class InvoiceCreateDto {
   @ApiProperty()
@@ -51,4 +53,11 @@ export class InvoiceCreateDto {
   @Min(0)
   @Transform(({ value }) => parseInt(value, 10), { toClassOnly: true })
   companyId: number;
+
+  @ApiProperty()
+  @IsOptional()
+  @IsArray()
+  @IsNotEmpty() 
+  @Type(() => TravelMinOutputDto)
+  travels: TravelMinOutputDto[];
 }

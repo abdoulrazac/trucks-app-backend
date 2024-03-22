@@ -6,11 +6,10 @@ export const whereClauseClean = (where = {}) => {
     if (whereKey.slice(-2) == 'Id') {
       const whereKeySliced = whereKey.slice(0, -2);
       whereOut[whereKeySliced] = { id: where[whereKey] };
+    } else if(typeof where[whereKey] === 'boolean') {
+      whereOut[whereKey] = where[whereKey];
     } else {
-      whereOut[whereKey] =
-        whereKey.slice(-2) == 'Id'
-          ? where[whereKey]
-          : Like(`%${where[whereKey]}%`);
+      whereOut[whereKey] =  Like(`%${where[whereKey]}%`);
     }
   }
 

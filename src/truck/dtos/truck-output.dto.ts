@@ -1,10 +1,9 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { Expose, Type } from "class-transformer";
+import {ApiProperty} from '@nestjs/swagger';
+import {Expose, Type} from "class-transformer";
 
-import { CategoryMinOutputDto } from "../../category/dtos/category-min-output.dto";
-import { VehicleMinOutputDto } from "../../vehicle/dtos/vehicle-min-output.dto";
-import { UserMinOutputDto } from "../../user/dtos/user-min-output.dto";
-
+import {VehicleMinOutputDto} from "../../vehicle/dtos/vehicle-min-output.dto";
+import {UserMinOutputDto} from "../../user/dtos/user-min-output.dto";
+import {VEHICLE_STATUS} from "../../shared/constants";
 
 
 export class TruckOutputDto {
@@ -15,11 +14,15 @@ export class TruckOutputDto {
 
   @Expose()
   @ApiProperty()
+  description : string;
+
+  @Expose()
+  @ApiProperty()
   isClosed : boolean ;
 
   @Expose()
   @ApiProperty()
-  status : string;
+  status: VEHICLE_STATUS;
 
   @Expose()
   @ApiProperty()

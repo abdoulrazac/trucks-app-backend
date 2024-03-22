@@ -1,4 +1,4 @@
-import { Column, Entity, ManyToOne, OneToMany, PrimaryColumn, Unique } from 'typeorm';
+import { Column, Entity, ManyToOne, OneToMany, AfterLoad, Unique } from 'typeorm';
 import { Contract } from '../../contract/entities/contract.entity';
 import { Truck } from '../../truck/entities/truck.entity';
 import { File } from '../../file/entities/file.entity';
@@ -41,25 +41,16 @@ export class User extends AbstractEntity {
   @Column({ nullable: true })
   avatar: string;
 
-  @OneToMany(
-    () => EmailChange,
-    (emailChange) => emailChange.user,
-    { cascade: ['insert', 'update'] }
-  )
+  @Column({default : 0, type : 'tinyint'})
+  attempts: number;
+
+  @OneToMany(() => EmailChange, (emailChange) => emailChange.user, { cascade: ['insert', 'update'] })
   emailChanges: EmailChange[];
 
-  @OneToMany(
-    () => EmailVerification,
-    (emailVerification) => emailVerification.user,
-    { cascade: ['insert', 'update'] }
-  )
+  @OneToMany( () => EmailVerification, (emailVerification) => emailVerification.user, { cascade: ['insert', 'update'] })
   emailVerifications: EmailVerification[];
 
-  @OneToMany(
-    () => PasswordReset,
-    (passwordReset) => passwordReset.user,
-    { cascade: ['insert', 'update'] }
-  )
+  @OneToMany( () => PasswordReset, (passwordReset) => passwordReset.user, { cascade: ['insert', 'update'] })
   passwordResets: PasswordReset[];
 
   @OneToMany(() => Truck, (truck) => truck.conductor)

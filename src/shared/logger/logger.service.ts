@@ -97,4 +97,18 @@ export class AppLogger {
       ...meta,
     });
   }
+
+  internalLog(
+    message: string,
+    meta?: Record<string, any>,
+  ): Logger {
+    const timestamp = new Date().toISOString();
+
+    return this.logger.info({
+      message,
+      contextName: this.context,
+      timestamp,
+      ...meta,
+    });
+  }
 }

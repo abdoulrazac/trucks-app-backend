@@ -1,10 +1,15 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import {
+  IsBoolean,
   IsDateString,
+  IsEnum,
   IsNotEmpty,
   IsOptional,
   IsString,
 } from 'class-validator';
+import { Transform } from 'class-transformer';
+import { transformToBoolean } from 'src/shared/helpers';
+import { VEHICLE_TYPE } from 'src/shared/constants';
 
 export class VehicleParamDto {
   @ApiPropertyOptional()
@@ -44,7 +49,11 @@ export class VehicleParamDto {
 
   @ApiPropertyOptional()
   @IsOptional()
-  @IsString()
+  @Transform(
+    ({ value }) => transformToBoolean(value),
+    { toClassOnly: true },
+  )
+  @IsBoolean()
   isAssigned: boolean;
 
   @ApiPropertyOptional()

@@ -1,13 +1,7 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { Transform } from 'class-transformer';
-import {
-  IsDate,
-  IsNotEmpty,
-  IsNumber,
-  IsOptional,
-  IsString,
-  Min,
-} from 'class-validator';
+import {ApiProperty} from '@nestjs/swagger';
+import {Transform} from 'class-transformer';
+import {IsDate, IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString, Min,} from 'class-validator';
+import {TRAVEL_STATUS} from "../../shared/constants";
 
 export class TravelCreateDto {
   @ApiProperty()
@@ -16,6 +10,7 @@ export class TravelCreateDto {
   refTravel: string;
 
   @ApiProperty()
+  @IsOptional()
   @IsNotEmpty()
   @IsDate()
   signatureDate: Date;
@@ -28,22 +23,25 @@ export class TravelCreateDto {
   @ApiProperty()
   @IsOptional()
   @IsNotEmpty()
-  @IsString()
-  status: string;
+  @IsEnum(TRAVEL_STATUS)
+  status: TRAVEL_STATUS;
 
   @ApiProperty()
   @IsOptional()
   @IsNotEmpty()
+  @Transform(({ value }) => new Date(value), { toClassOnly: true })
   @IsDate()
   departureDate: Date;
 
   @ApiProperty()
   @IsOptional()
   @IsNotEmpty()
+  @Transform(({ value }) => new Date(value), { toClassOnly: true })
   @IsDate()
   arrivalDate: Date;
 
   @ApiProperty()
+  @IsOptional()
   @IsNotEmpty()
   @IsString()
   departureCity: string;
@@ -57,12 +55,24 @@ export class TravelCreateDto {
   @IsOptional()
   @IsNotEmpty()
   @IsNumber()
+  @Min(0)
+  @Transform(({ value }) => parseInt(value, 10), { toClassOnly: true })
+  truckWeight: number;
+
+  @ApiProperty()
+  @IsOptional()
+  @IsNotEmpty()
+  @IsNumber()
+  @Min(0)
+  @Transform(({ value }) => parseInt(value, 10), { toClassOnly: true })
   departureWeight: number;
 
   @ApiProperty()
   @IsOptional()
   @IsNotEmpty()
   @IsNumber()
+  @Min(0)
+  @Transform(({ value }) => parseInt(value, 10), { toClassOnly: true })
   arrivalWeight: number;
 
   @ApiProperty()

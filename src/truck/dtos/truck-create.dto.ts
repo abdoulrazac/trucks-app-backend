@@ -1,23 +1,15 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { Transform } from "class-transformer";
-import {
-  IsBoolean,
-  IsNotEmpty, IsNumber, IsString,
-  Min
-} from "class-validator";
+import {ApiProperty} from '@nestjs/swagger';
+import {Transform} from "class-transformer";
+import {IsEnum, IsNotEmpty, IsNumber, Min} from "class-validator";
+import {VEHICLE_STATUS} from "../../shared/constants";
 
 
-export class TruckCreateDto {
+export class TruckCreateDto { 
 
   @ApiProperty()
   @IsNotEmpty()
-  @IsBoolean()
-  isClosed : boolean ;
-
-  @ApiProperty()
-  @IsNotEmpty()
-  @IsString()
-  status : string ;
+  @IsEnum(VEHICLE_STATUS)
+  status: VEHICLE_STATUS;
 
   @ApiProperty()
   @IsNotEmpty()

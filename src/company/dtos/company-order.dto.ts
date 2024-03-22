@@ -8,14 +8,15 @@ import {
 export enum OrderColumn {
   shortname = 'shortname',
   longname = 'longname',
-  address = 'address',
+  email = 'email',
   numTel = 'numTel',
+  address = 'address',
   numPostal = 'numPostal',
+  city = 'city',
   numRccm = 'numRccm',
   numIfu = 'numIfu',
   taxSystem = 'taxSystem',
   taxDivision = 'taxDivision',
-  email = 'email',
   createdAt = 'createdAt',
   updatedAt = 'updatedAt',
 }

@@ -9,9 +9,13 @@ export class AppService {
     this.logger.setContext(AppService.name);
   }
 
-  getHello(ctx: RequestContext): string {
+  getHello(ctx: RequestContext): any {
     this.logger.log(ctx, 'Hello world from App service');
 
-    return 'Hello World!';
+    // return description this API and docs link
+    return {
+      description: 'API for the management of a transport company',
+      docs : '/api/docs'
+    };
   }
 }

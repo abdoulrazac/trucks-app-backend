@@ -10,7 +10,7 @@ import {UserOutputDto} from '../dtos/user-output.dto';
 import {UserUpdateDto} from '../dtos/user-update-input.dto';
 import {User} from '../entities/user.entity';
 import {UserRepository} from '../repositories/user.repository';
-import {creteUploadFile, getFilePath, orderClean, whereClauseClean,} from '../../shared/helpers';
+import {createUploadFile, getFilePath, orderClean, whereClauseClean,} from '../../shared/helpers';
 import {UserParamDto} from '../dtos/user-param.dto';
 import {UserOrderDto} from '../dtos/user-order.dto';
 import {RegisterInput} from '../../auth/dtos/auth-register-input.dto';
@@ -107,7 +107,7 @@ export class UserService {
     if (fileUploaded) {
       const fileSize = fileUploaded.size;
       const fileExtension = path.extname(fileUploaded.originalname);
-      fileName = `0-${new Date().getTime()}${fileExtension}`;
+      fileName = `${user.id?user.id:0}-${new Date().getTime()}${fileExtension}`;
 
       if (Number(fileSize) > this.maxSize) {
         errorMessages.push(
@@ -126,8 +126,8 @@ export class UserService {
     }
 
     if (fileUploaded) {
-      this.logger.log(ctx, `calling ${creteUploadFile.name}.save`);
-      user.avatar = await creteUploadFile(
+      this.logger.log(ctx, `calling ${createUploadFile.name}.save`);
+      user.avatar = await createUploadFile(
         this.basePathAvatar,
         fileName,
         fileUploaded.buffer,
@@ -158,9 +158,20 @@ export class UserService {
     this.logger.log(ctx, `calling ${UserRepository.name}.findOne`);
     const user = await this.repository.findOne({ where: { username } });
     if (!user) throw new UnauthorizedException();
+    if (user && user.attempts >= 5) throw new UnauthorizedException("Too many attempts, please contact administrator");
 
     const match = await compare(pass, user.password);
-    if (!match) throw new UnauthorizedException();
+    if (!match){
+      user.attempts += 1;
+      if (user.attempts >= 5) user.isAccountDisabled = true;
+      this.logger.log(ctx, `calling ${UserRepository.name}.save`);
+      await this.repository.save(user);
+      throw new UnauthorizedException('Invalid username or password. It remains ' + (5 - user.attempts) + ' attempts');
+    } else {
+      user.attempts = 0;
+      this.logger.log(ctx, `calling ${UserRepository.name}.save`);
+      await this.repository.save(user);
+    }
 
     return plainToInstance(UserOutputDto, user, {
       excludeExtraneousValues: true,
@@ -331,7 +342,7 @@ export class UserService {
     // Hash the password if it exists in the input payload.
     if (input.password) {
       input.password = await hash(input.password, 10);
-    }
+    } 
 
     // File upload logic
     let fileName: string | null = null;
@@ -356,6 +367,10 @@ export class UserService {
       throw new NotAcceptableException(errorMessages);
     }
 
+    // Update user  attempts
+    if(input.isAccountDisabled){
+      user.attempts = 0;
+    }
     // merges the input (2nd line) to the found user (1st line)
     const updatedUser: User = {
       ...user,
@@ -363,8 +378,8 @@ export class UserService {
     };
 
     if (fileUploaded) {
-      this.logger.log(ctx, `calling ${creteUploadFile.name}.save`);
-      updatedUser.avatar = await creteUploadFile(
+      this.logger.log(ctx, `calling ${createUploadFile.name}.save`);
+      updatedUser.avatar = await createUploadFile(
         this.basePathAvatar,
         fileName,
         fileUploaded.buffer,

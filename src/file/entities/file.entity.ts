@@ -1,4 +1,4 @@
-import {Column, Entity, ManyToOne} from 'typeorm';
+import {AfterLoad, Column, Entity, ManyToOne} from 'typeorm';
 import {Expense} from '../../expense/entities/expense.entity';
 import {User} from '../../user/entities/user.entity';
 import {Company} from '../../company/entities/company.entity';
@@ -15,11 +15,20 @@ export class File extends AbstractEntity {
   @Column()
   description: string;
 
+  @Column({default : false})
+  notification : boolean 
+
   @Column('simple-array')
   category: string[];
 
   @Column()
   extension: string;
+
+  @Column({nullable: true})
+  deliverAt: Date;
+
+  @Column({nullable: true})
+  expireAt: Date;
 
   @Column()
   size: number;

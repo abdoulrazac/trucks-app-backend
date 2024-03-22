@@ -6,7 +6,7 @@ import {
   IsString, Min,
 } from "class-validator";
 import { Transform } from "class-transformer";
-
+import { transformToBoolean } from "../../shared/helpers";
 
 export class ContractCreateDto {
 
@@ -46,6 +46,10 @@ export class ContractCreateDto {
 
   @ApiProperty()
   @IsNotEmpty()
+  @Transform(
+    ({ value }) => transformToBoolean(value),
+    { toClassOnly: true },
+  )
   @IsBoolean()
   isClosed: boolean;
 

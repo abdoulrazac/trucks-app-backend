@@ -1,5 +1,7 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { Expose } from 'class-transformer';
+import {ApiProperty} from '@nestjs/swagger';
+import {Expose} from 'class-transformer';
+
+import {TRAVEL_STATUS} from "../../shared/constants";
 
 export class TravelMinOutputDto {
   @Expose()
@@ -12,5 +14,6 @@ export class TravelMinOutputDto {
 
   @Expose()
   @ApiProperty()
-  status: string;
+  status: TRAVEL_STATUS;
 }
+

@@ -1,14 +1,14 @@
 import {ApiProperty, ApiPropertyOptional} from '@nestjs/swagger';
-import {IsNotEmpty, IsNumber, IsOptional, IsString, MaxLength, Min, MinLength} from "class-validator";
+import {IsNotEmpty, IsNumber, IsOptional, IsString, MaxLength, MinLength} from "class-validator";
 import {Transform} from "class-transformer";
 
 
 export class CategoryCreateDto {
 
   @ApiProperty()
-  @IsNotEmpty()
+  @IsNotEmpty({ message: 'Code is required' })
   @IsString()
-  @MaxLength(20)
+  @MaxLength(20, { message: 'Code max length is 20' })
   code: string;
 
   @ApiProperty()

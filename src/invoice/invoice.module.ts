@@ -9,6 +9,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Invoice } from './entities/invoice.entity';
 import { UserModule } from '../user/user.module';
 import { CompanyModule } from '../company/company.module';
+import { TravelModule } from 'src/travel/travel.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { CompanyModule } from '../company/company.module';
     TypeOrmModule.forFeature([Invoice]),
     UserModule,
     CompanyModule,
+    TravelModule,
   ],
   providers: [
     InvoiceService,

@@ -1,13 +1,15 @@
 import {
   Injectable,
-  NotAcceptableException,
+  NotAcceptableException, 
+  NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
+import * as path from 'path';
 
 import { Action } from '../../shared/acl/action.constant';
 import { Actor } from '../../shared/acl/actor.constant';
-import { orderClean, whereClauseClean } from '../../shared/helpers';
+import { createUploadFile, getFilePath, orderClean, whereClauseClean } from '../../shared/helpers';
 import { AppLogger } from '../../shared/logger/logger.service';
 import { RequestContext } from '../../shared/request-context/request-context.dto';
 import { CompanyCreateDto } from '../dtos/company-create.dto';
@@ -18,15 +20,22 @@ import { CompanyUpdateDto } from '../dtos/company-update.dto';
 import { Company } from '../entities/company.entity';
 import { CompanyRepository } from '../repositories/company.repository';
 import { CompanyAclService } from './company-acl.service';
+import { ConfigService } from '@nestjs/config';
+import { DOCS_TYPES_AVATAR } from '../../shared/constants';
 
 @Injectable()
 export class CompanyService {
+  basePathAvatar : string ;
+  maxSize : number ;
   constructor(
+    private configService: ConfigService,
     private repository: CompanyRepository,
     private aclService: CompanyAclService,
     private readonly logger: AppLogger,
   ) {
     this.logger.setContext(CompanyService.name);
+    this.basePathAvatar = this.configService.get<string>('file.uploadDestinationAvatar');
+    this.maxSize = this.configService.get<number>('file.maxSize');
   }
 
   async getCompanies(
@@ -63,6 +72,7 @@ export class CompanyService {
   async createCompany(
     ctx: RequestContext,
     input: CompanyCreateDto,
+    fileUploaded: Express.Multer.File = null,
   ): Promise<CompanyOutputDto> {
     this.logger.log(ctx, `${this.createCompany.name} was called`);
 
@@ -75,6 +85,74 @@ export class CompanyService {
       .canDoAction(Action.Create, company);
     if (!isAllowed) {
       throw new UnauthorizedException();
+    }
+
+    const errorMessages: string[] = [];
+
+    // Check if email exists
+    try {
+      const user = await this.repository.findOne({
+        where: { email: input.email },
+      });
+      if (user) {
+        errorMessages.push(`Is already company with email '${input.email}' !`);
+      }
+    } catch {
+      errorMessages.push(`Cannot check email '${input.email}' !`);
+    }
+    
+
+    // Check if numIfu exists 
+    try {
+      const user = await this.repository.findOne({
+        where: { numIfu: input.numIfu },
+      });
+      if (user) {
+        errorMessages.push(`Is already company with numIfu '${input.numIfu}' !`);
+      }
+    } catch {
+      errorMessages.push(`Cannot check numIfu '${input.numIfu}' !`);
+    } 
+
+    // Check if numRccm exists 
+    try {
+      const user = await this.repository.findOne({
+        where: { numRccm: input.numRccm },
+      });
+      if (user) {
+        errorMessages.push(`Is already company with numRccm '${input.numRccm}' !`);
+      }
+    } catch {
+      errorMessages.push(`Cannot check numRccm '${input.numRccm}' !`);
+    } 
+
+    // File upload logic
+    let fileName: string | null = null;
+    if (fileUploaded) {
+      const fileSize = fileUploaded.size;
+      const fileExtension = path.extname(fileUploaded.originalname);
+      fileName = `${company.id?company.id:0}-${new Date().getTime()}${fileExtension}`;
+
+      if (Number(fileSize) > this.maxSize) {
+        errorMessages.push(`File max size is ${this.maxSize.toString().slice(0, 1)}M`);
+      } 
+
+      if (!DOCS_TYPES_AVATAR.includes(fileExtension)) {
+        errorMessages.push(`Only [${DOCS_TYPES_AVATAR}] are allowed !`);
+      }
+    }
+    // Check if there is an error
+    if (errorMessages.length != 0) {
+      throw new NotAcceptableException(errorMessages);
+    }
+
+    if (fileUploaded) {
+      this.logger.log(ctx, `calling ${createUploadFile.name}.save`);
+      company.avatar = await createUploadFile(
+        this.basePathAvatar,
+        fileName,
+        fileUploaded.buffer,
+      );
     }
 
     this.logger.log(ctx, `calling ${CompanyRepository.name}.save`);
@@ -112,6 +190,7 @@ export class CompanyService {
     ctx: RequestContext,
     companyId: number,
     input: CompanyUpdateDto,
+    fileUploaded: Express.Multer.File = null,
   ): Promise<CompanyOutputDto> {
     this.logger.log(ctx, `${this.updateCompany.name} was called`);
 
@@ -127,6 +206,78 @@ export class CompanyService {
       throw new UnauthorizedException();
     }
 
+    const errorMessages: string[] = [];
+
+    // Check if email exists
+    if (input.email && input.email != company.email) {
+      try {
+        const user = await this.repository.findOne({
+          where: { email: input.email },
+        });
+        if (user) {
+          errorMessages.push(`Is already company with email '${input.email}' !`);
+        }
+      } catch {
+        errorMessages.push(`Cannot check email '${input.email}' !`);
+      }
+    }
+
+    // Check if numIfu exists
+    if (input.numIfu && input.numIfu != company.numIfu) {
+      try {
+        const user = await this.repository.findOne({
+          where: { numIfu: input.numIfu },
+        });
+        if (user) {
+          errorMessages.push(`Is already company with numIfu '${input.numIfu}' !`);
+        }
+      } catch {
+        errorMessages.push(`Cannot check numIfu '${input.numIfu}' !`);
+      }
+    }
+
+    // Check if numRccm exists
+    if (input.numRccm && input.numRccm != company.numRccm) {
+      try {
+        const user = await this.repository.findOne({
+          where: { numRccm: input.numRccm },
+        });
+        if (user) {
+          errorMessages.push(`Is already company with numRccm '${input.numRccm}' !`);
+        }
+      } catch {
+        errorMessages.push(`Cannot check numRccm '${input.numRccm}' !`);
+      }
+    }
+
+     // File upload logic
+     let fileName: string | null = null;
+     if (fileUploaded) {
+       const fileSize = fileUploaded.size;
+       const fileExtension = path.extname(fileUploaded.originalname);
+       fileName = `${company.id?company.id:0}-${new Date().getTime()}${fileExtension}`;
+ 
+       if (Number(fileSize) > this.maxSize) {
+         errorMessages.push(`File max size is ${this.maxSize.toString().slice(0, 1)}M`);
+       } 
+ 
+       if (!DOCS_TYPES_AVATAR.includes(fileExtension)) {
+         errorMessages.push(`Only [${DOCS_TYPES_AVATAR}] are allowed !`);
+       }
+     }
+     // Check if there is an error
+     if (errorMessages.length != 0) {
+       throw new NotAcceptableException(errorMessages);
+     }
+ 
+     if (fileUploaded) {
+       this.logger.log(ctx, `calling ${createUploadFile.name}.save`);
+       company.avatar = await createUploadFile(
+         this.basePathAvatar,
+         fileName,
+         fileUploaded.buffer,
+       );
+     }
     const updatedCompany: Company = {
       ...company,
       ...plainToInstance(Company, input),
@@ -163,5 +314,28 @@ export class CompanyService {
         'Cannot delete a parent : a forein key constraint',
       );
     }
+  }
+
+  async downloadAvatarByUserId(
+    ctx: RequestContext,
+    companyId: number,
+  ): Promise<string> {
+    this.logger.log(ctx, `${this.downloadAvatarByUserId.name} was called`);
+
+    const company = await this.repository.getById(companyId);
+
+    const actor: Actor = ctx.user;
+    const isAllowed = this.aclService
+      .forActor(actor)
+      .canDoAction(Action.Read, company);
+    if (!isAllowed) {
+      throw new UnauthorizedException();
+    }
+
+    const filePath =  await getFilePath(company.avatar)
+    if (!company.avatar || !filePath ){
+      throw new NotFoundException('Avatar Not Found');
+    }
+    return filePath
   }
 }

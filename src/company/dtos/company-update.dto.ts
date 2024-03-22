@@ -16,9 +16,10 @@ export class CompanyUpdateDto {
 
   @ApiProperty()
   @IsOptional()
-  @IsNotEmpty()
+  @IsOptional()
+  @IsEmail()
   @IsString()
-  address: string;
+  email: string;
 
   @ApiProperty()
   @IsOptional()
@@ -28,10 +29,21 @@ export class CompanyUpdateDto {
 
   @ApiProperty()
   @IsOptional()
-  @IsOptional()
+  @IsNotEmpty()
+  @IsString()
+  address: string;
+
+  @ApiProperty()
+  @IsOptional() 
   @IsNotEmpty()
   @IsString()
   numPostal: string;
+
+  @ApiProperty()
+  @IsOptional() 
+  @IsNotEmpty()
+  @IsString()
+  city: string;
 
   @ApiProperty()
   @IsOptional()
@@ -65,11 +77,4 @@ export class CompanyUpdateDto {
   @IsNotEmpty()
   @IsString()
   avatar: string;
-
-  @ApiProperty()
-  @IsOptional()
-  @IsOptional()
-  @IsEmail()
-  @IsString()
-  email: string;
 }

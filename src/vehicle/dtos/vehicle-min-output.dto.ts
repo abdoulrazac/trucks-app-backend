@@ -1,5 +1,5 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { Expose } from 'class-transformer';
+import {ApiProperty} from '@nestjs/swagger';
+import {Expose} from 'class-transformer';
 
 export class VehicleMinOutputDto {
 
@@ -14,6 +14,14 @@ export class VehicleMinOutputDto {
   @Expose()
   @ApiProperty()
   vehicleType: string;
+
+  @Expose()
+  @ApiProperty()
+  brand: string;
+
+  @Expose()
+  @ApiProperty()
+  vehicleModel: string;
 
   @Expose()
   @ApiProperty()

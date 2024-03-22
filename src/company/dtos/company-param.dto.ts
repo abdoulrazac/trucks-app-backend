@@ -20,8 +20,9 @@ export class CompanyParamDto {
 
   @ApiPropertyOptional()
   @IsOptional()
+  @IsEmail()
   @IsString()
-  address: string;
+  email: string;
 
   @ApiPropertyOptional()
   @IsOptional()
@@ -31,7 +32,17 @@ export class CompanyParamDto {
   @ApiPropertyOptional()
   @IsOptional()
   @IsString()
+  address: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
   numPostal: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  city : string;
 
   @ApiPropertyOptional()
   @IsOptional()
@@ -57,12 +68,6 @@ export class CompanyParamDto {
   @IsOptional()
   @IsString()
   avatar: string;
-
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsEmail()
-  @IsString()
-  email: string;
 
   @ApiPropertyOptional()
   @IsOptional()

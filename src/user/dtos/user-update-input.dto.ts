@@ -1,7 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
-  ArrayNotEmpty,
-  IsAlphanumeric,
+  ArrayNotEmpty, 
   IsArray,
   IsBoolean,
   IsEmail,
@@ -13,7 +12,9 @@ import {
   Matches,
   MaxLength,
 } from 'class-validator';
+import { Transform } from 'class-transformer'
 import { ROLE, ACCOUNT_STATUS } from '../../shared/constants';
+import { transformToBoolean } from '../../shared/helpers'
 
 export class UserUpdateDto {
   @ApiPropertyOptional()
@@ -35,6 +36,16 @@ export class UserUpdateDto {
   @IsString()
   @Length(6, 100)
   password: string;
+  
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsNotEmpty()
+  @Transform(
+    ({ value }) => transformToBoolean(value),
+    { toClassOnly: true },
+  )
+  @IsBoolean()
+  isAssigned: boolean;
 
   @ApiProperty()
   @IsOptional()
@@ -63,6 +74,10 @@ export class UserUpdateDto {
 
   @ApiProperty()
   @IsOptional()
+  @Transform(
+    ({ value }) => transformToBoolean(value),
+    { toClassOnly: true },
+  )
   @IsBoolean()
   isAccountDisabled: boolean;
 }

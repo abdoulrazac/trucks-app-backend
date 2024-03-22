@@ -20,9 +20,10 @@ export class CompanyCreateDto {
   longname: string;
 
   @ApiProperty()
-  @IsNotEmpty()
+  @IsOptional()
+  @IsEmail()
   @IsString()
-  address: string;
+  email: string;
 
   @ApiProperty()
   @IsNotEmpty()
@@ -30,10 +31,21 @@ export class CompanyCreateDto {
   numTel: string;
 
   @ApiProperty()
+  @IsNotEmpty()
+  @IsString()
+  address: string;
+
+  @ApiProperty()
   @IsOptional()
   @IsNotEmpty()
   @IsString()
   numPostal: string;
+
+  @ApiProperty()
+  @IsOptional()
+  @IsNotEmpty()
+  @IsString()
+  city: string;
 
   @ApiProperty()
   @IsNotEmpty()
@@ -62,10 +74,4 @@ export class CompanyCreateDto {
   @IsNotEmpty()
   @IsString()
   avatar: string;
-
-  @ApiProperty()
-  @IsOptional()
-  @IsEmail()
-  @IsString()
-  email: string;
 }

@@ -1,7 +1,7 @@
 import {
   CreateDateColumn,
   PrimaryGeneratedColumn,
-  UpdateDateColumn,
+  UpdateDateColumn
 } from 'typeorm';
 
 export abstract class AbstractEntity {
@@ -12,5 +12,5 @@ export abstract class AbstractEntity {
   createdAt: Date;
 
   @UpdateDateColumn({ name: 'updatedAt', nullable: true })
-  updatedAt: Date;
+  updatedAt: Date; 
 }

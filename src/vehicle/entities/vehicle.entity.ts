@@ -1,17 +1,9 @@
-import {
-  Column,
-  CreateDateColumn,
-  Entity,
-  OneToMany,
-  PrimaryGeneratedColumn,
-  Unique,
-  UpdateDateColumn,
-} from 'typeorm';
+import {Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, Unique, UpdateDateColumn} from 'typeorm';
 
 import {Expense} from "../../expense/entities/expense.entity";
 import {Travel} from "../../travel/entities/travel.entity";
-import { Truck } from "../../truck/entities/truck.entity";
-import { File } from "../../file/entities/file.entity";
+import {Truck} from "../../truck/entities/truck.entity";
+import {File} from "../../file/entities/file.entity";
 
 @Entity('vehicles')
 export class Vehicle {

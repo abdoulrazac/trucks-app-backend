@@ -1,11 +1,7 @@
 import {ApiProperty} from '@nestjs/swagger';
-import { Transform } from "class-transformer";
-import {
-  IsDateString,
-  IsNotEmpty, IsNumber,
-  IsOptional,
-  IsString, Min
-} from "class-validator";
+import {Transform} from "class-transformer";
+import {IsDate, IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString, Min} from "class-validator";
+import {TRAVEL_STATUS} from "../../shared/constants";
 
 export class TravelUpdateDto {
   @ApiProperty()
@@ -17,7 +13,8 @@ export class TravelUpdateDto {
   @ApiProperty()
   @IsOptional()
   @IsNotEmpty()
-  @IsDateString()
+  @Transform(({ value }) => new Date(value), { toClassOnly: true })
+  @IsDate()
   signatureDate: Date;
 
   @ApiProperty()
@@ -29,19 +26,21 @@ export class TravelUpdateDto {
   @ApiProperty()
   @IsOptional()
   @IsNotEmpty()
-  @IsString()
-  status : string;
+  @IsEnum(TRAVEL_STATUS)
+  status: TRAVEL_STATUS;
 
   @ApiProperty()
   @IsOptional()
   @IsNotEmpty()
-  @IsDateString()
+  @Transform(({ value }) => new Date(value), { toClassOnly: true })
+  @IsDate()
   departureDate: Date;
 
   @ApiProperty()
   @IsOptional()
   @IsNotEmpty()
-  @IsDateString()
+  @Transform(({ value }) => new Date(value), { toClassOnly: true })
+  @IsDate()
   arrivalDate: Date;
 
   @ApiProperty()
@@ -60,15 +59,28 @@ export class TravelUpdateDto {
   @IsOptional()
   @IsNotEmpty()
   @IsNumber()
+  @Min(0)
+  @Transform(({ value }) => parseInt(value, 10), { toClassOnly: true })
   departureWeight: number ;
 
   @ApiProperty()
   @IsOptional()
   @IsNotEmpty()
   @IsNumber()
+  @Min(0)
+  @Transform(({ value }) => parseInt(value, 10), { toClassOnly: true })
+  truckWeight: number ;
+
+  @ApiProperty()
+  @IsOptional()
+  @IsNotEmpty()
+  @IsNumber()
+  @Min(0)
+  @Transform(({ value }) => parseInt(value, 10), { toClassOnly: true })
   arrivalWeight: number ;
 
   @ApiProperty()
+  @IsOptional()
   @IsNotEmpty()
   @IsNumber()
   @Min(0)
@@ -76,6 +88,7 @@ export class TravelUpdateDto {
   companyId: number ;
 
   @ApiProperty()
+  @IsOptional()
   @IsNotEmpty()
   @IsNumber()
   @Min(0)
@@ -83,6 +96,7 @@ export class TravelUpdateDto {
   truckId: number ;
 
   @ApiProperty()
+  @IsOptional()
   @IsNotEmpty()
   @IsNumber()
   @Min(0)

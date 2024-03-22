@@ -1,27 +1,31 @@
 import {
   Body,
   ClassSerializerInterceptor,
-  Controller, Delete,
+  Controller,
+  Delete,
   Get,
-  HttpStatus, Param, Post, Put,
+  HttpStatus,
+  Param,
+  Post,
+  Put,
   Query,
   UseGuards,
   UseInterceptors
 } from "@nestjs/common";
-import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
+import {ApiBearerAuth, ApiOperation, ApiResponse, ApiTags} from "@nestjs/swagger";
 
-import { JwtAuthGuard } from "../../auth/guards/jwt-auth.guard";
-import { BaseApiErrorResponse, BaseApiResponse, SwaggerBaseApiResponse } from "../../shared/dtos/base-api-response.dto";
-import { PaginationParamsDto } from "../../shared/dtos/pagination-params.dto";
-import { AppLogger } from "../../shared/logger/logger.service";
-import { ReqContext } from "../../shared/request-context/req-context.decorator";
-import { RequestContext } from "../../shared/request-context/request-context.dto";
-import { CategoryOutputDto } from "../dtos/category-output.dto";
-import { CategoryService } from "../services/category.service";
-import { CategoryCreateDto } from "../dtos/category-create.dto";
-import { CategoryParamDto } from "../dtos/category-param.dto";
-import { CategoryOrderDto } from "../dtos/category-order.dto";
-import { CategoryUpdateDto } from "../dtos/category-update.dto";
+import {JwtAuthGuard} from "../../auth/guards/jwt-auth.guard";
+import {BaseApiErrorResponse, BaseApiResponse, SwaggerBaseApiResponse} from "../../shared/dtos/base-api-response.dto";
+import {PaginationParamsDto} from "../../shared/dtos/pagination-params.dto";
+import {AppLogger} from "../../shared/logger/logger.service";
+import {ReqContext} from "../../shared/request-context/req-context.decorator";
+import {RequestContext} from "../../shared/request-context/request-context.dto";
+import {CategoryOutputDto} from "../dtos/category-output.dto";
+import {CategoryService} from "../services/category.service";
+import {CategoryCreateDto} from "../dtos/category-create.dto";
+import {CategoryParamDto} from "../dtos/category-param.dto";
+import {CategoryOrderDto} from "../dtos/category-order.dto";
+import {CategoryUpdateDto} from "../dtos/category-update.dto";
 
 @ApiTags('Categories')
 @Controller('categories')
@@ -43,8 +47,8 @@ export class CategoryController {
     status: HttpStatus.CREATED,
     type: SwaggerBaseApiResponse(CategoryOutputDto),
   })
-  @UseInterceptors(ClassSerializerInterceptor)
   @ApiBearerAuth()
+  @UseInterceptors(ClassSerializerInterceptor)
   @UseGuards(JwtAuthGuard)
   async createCategory(
     @ReqContext() ctx: RequestContext,

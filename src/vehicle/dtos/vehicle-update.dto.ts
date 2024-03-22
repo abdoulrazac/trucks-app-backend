@@ -1,6 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsBoolean, IsNotEmpty, IsNumber, IsOptional, IsString, Max, Min } from "class-validator";
+import { IsBoolean, IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString, Max, Min } from "class-validator";
 import { Transform } from "class-transformer";
+import { transformToBoolean } from '../../shared/helpers';
+import { VEHICLE_TYPE } from 'src/shared/constants';
 
 export class VehicleUpdateDto {
 
@@ -13,8 +15,8 @@ export class VehicleUpdateDto {
   @ApiProperty()
   @IsOptional()
   @IsNotEmpty()
-  @IsString()
-  vehicleType: string;
+  @IsEnum(VEHICLE_TYPE)
+  vehicleType: VEHICLE_TYPE;
 
   @ApiProperty()
   @IsOptional()
@@ -52,6 +54,10 @@ export class VehicleUpdateDto {
 
   @ApiProperty()
   @IsOptional()
+  @Transform(
+    ({ value }) => transformToBoolean(value),
+    { toClassOnly: true },
+  )
   @IsBoolean()
   isAssigned: boolean ;
 }

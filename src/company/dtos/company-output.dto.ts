@@ -18,7 +18,7 @@ export class CompanyOutputDto {
 
   @Expose()
   @ApiProperty()
-  address: string;
+  email: string;
 
   @Expose()
   @ApiProperty()
@@ -26,7 +26,15 @@ export class CompanyOutputDto {
 
   @Expose()
   @ApiProperty()
+  address: string;
+
+  @Expose()
+  @ApiProperty()
   numPostal: string;
+
+  @Expose()
+  @ApiProperty()
+  city: string;
 
   @Expose()
   @ApiProperty()
@@ -47,10 +55,6 @@ export class CompanyOutputDto {
   @Expose()
   @ApiProperty()
   avatar: string;
-
-  @Expose()
-  @ApiProperty()
-  email: string;
 
   @Expose()
   @ApiProperty()

@@ -1,9 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
+  IsEnum,
   IsNotEmpty, IsNumber, IsOptional,
   IsString, Max, Min
 } from "class-validator";
 import { Transform } from "class-transformer";
+import { VEHICLE_TYPE } from 'src/shared/constants';
 
 
 export class VehicleCreateDto {
@@ -15,8 +17,8 @@ export class VehicleCreateDto {
 
   @ApiProperty()
   @IsNotEmpty()
-  @IsString()
-  vehicleType: string;
+  @IsEnum(VEHICLE_TYPE)
+  vehicleType: VEHICLE_TYPE;
 
   @ApiProperty()
   @IsNotEmpty()

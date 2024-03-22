@@ -8,39 +8,30 @@ import {
   Post,
   Put,
   Query,
+  Response,
   UploadedFile,
   UseGuards,
   UseInterceptors,
-  Response,
 } from '@nestjs/common';
-import {
-  ApiBearerAuth,
-  ApiOperation,
-  ApiResponse,
-  ApiTags,
-} from '@nestjs/swagger';
+import {ApiBearerAuth, ApiOperation, ApiResponse, ApiTags,} from '@nestjs/swagger';
 
-import { ROLE } from '../../shared/constants';
-import { Roles } from '../../auth/decorators/role.decorator';
-import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
-import { RolesGuard } from '../../auth/guards/roles.guard';
-import {
-  BaseApiErrorResponse,
-  BaseApiResponse,
-  SwaggerBaseApiResponse,
-} from '../../shared/dtos/base-api-response.dto';
-import { PaginationParamsDto } from '../../shared/dtos/pagination-params.dto';
-import { AppLogger } from '../../shared/logger/logger.service';
-import { ReqContext } from '../../shared/request-context/req-context.decorator';
-import { RequestContext } from '../../shared/request-context/request-context.dto';
-import { UserOutputDto } from '../dtos/user-output.dto';
-import { UserUpdateDto } from '../dtos/user-update-input.dto';
-import { UserService } from '../services/user.service';
-import { UserParamDto } from '../dtos/user-param.dto';
-import { UserOrderDto } from '../dtos/user-order.dto';
-import { UserCreateDto } from '../dtos/user-create.dto';
-import { FileInterceptor } from '@nestjs/platform-express';
-import { BufferOutputDto } from '../../shared/dtos/buffer-output.dto';
+import {ROLE} from '../../shared/constants';
+import {Roles} from '../../auth/decorators/role.decorator';
+import {JwtAuthGuard} from '../../auth/guards/jwt-auth.guard';
+import {RolesGuard} from '../../auth/guards/roles.guard';
+import {BaseApiErrorResponse, BaseApiResponse, SwaggerBaseApiResponse,} from '../../shared/dtos/base-api-response.dto';
+import {PaginationParamsDto} from '../../shared/dtos/pagination-params.dto';
+import {AppLogger} from '../../shared/logger/logger.service';
+import {ReqContext} from '../../shared/request-context/req-context.decorator';
+import {RequestContext} from '../../shared/request-context/request-context.dto';
+import {UserOutputDto} from '../dtos/user-output.dto';
+import {UserUpdateDto} from '../dtos/user-update-input.dto';
+import {UserService} from '../services/user.service';
+import {UserParamDto} from '../dtos/user-param.dto';
+import {UserOrderDto} from '../dtos/user-order.dto';
+import {UserCreateDto} from '../dtos/user-create.dto';
+import {FileInterceptor} from '@nestjs/platform-express';
+import {BufferOutputDto} from '../../shared/dtos/buffer-output.dto';
 
 @ApiTags('users')
 @Controller('users')
@@ -93,11 +84,11 @@ export class UserController {
   @Roles(ROLE.ADMIN, ROLE.MANAGER, ROLE.ACCOUNTANT)
   async getUsers(
     @ReqContext() ctx: RequestContext,
-    @Query() query: PaginationParamsDto,
     @Query() filterQuery: UserParamDto,
+    @Query() query: PaginationParamsDto,
     @Query() orderQuery: UserOrderDto,
   ): Promise<BaseApiResponse<UserOutputDto[]>> {
-    this.logger.log(ctx, `${this.getUsers.name} was called`);
+    this.logger.log(ctx, `${this.getUsers.name} was called`); 
 
     const { users, count } = await this.userService.getUsers(
       ctx,
@@ -140,9 +131,7 @@ export class UserController {
   }
 
   @Post('/create')
-  @ApiOperation({
-    summary: 'Create user API',
-  })
+  @ApiOperation({ summary: 'Create user API' })
   @UseInterceptors(FileInterceptor('avatar'))
   @ApiResponse({
     status: HttpStatus.CREATED,
@@ -165,9 +154,7 @@ export class UserController {
   // TODO: ADD RoleGuard
   // NOTE : This can be made a admin only endpoint. For normal users they can use PATCH /me
   @Put('/update/:id')
-  @ApiOperation({
-    summary: 'Update user API',
-  })
+  @ApiOperation({ summary: 'Update user API' })
   @UseInterceptors(FileInterceptor('avatar'))
   @ApiResponse({
     status: HttpStatus.OK,
@@ -196,11 +183,9 @@ export class UserController {
     return { data: user, meta: {} };
   }
 
-  @UseInterceptors(ClassSerializerInterceptor)
   @Get('/read/:id/avatar')
-  @ApiOperation({
-    summary: 'Get user by id API',
-  })
+  @UseInterceptors(ClassSerializerInterceptor)
+  @ApiOperation({ summary: 'Get user avatar by id API' })
   @ApiResponse({
     status: HttpStatus.OK,
     type: SwaggerBaseApiResponse(BufferOutputDto),

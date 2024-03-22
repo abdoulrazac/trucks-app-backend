@@ -1,9 +1,8 @@
-import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
+import {Column, Entity, ManyToOne, OneToMany} from 'typeorm';
 
-import { Category } from '../../category/entities/category.entity';
-import { Vehicle } from '../../vehicle/entities/vehicle.entity';
-import { File } from '../../file/entities/file.entity';
-import { AbstractEntity } from '../../shared/entities/abstract.entity';
+import {File} from '../../file/entities/file.entity';
+import {AbstractEntity} from '../../shared/entities/abstract.entity';
+import {Vehicle} from '../../vehicle/entities/vehicle.entity';
 
 @Entity('expenses')
 export class Expense extends AbstractEntity {

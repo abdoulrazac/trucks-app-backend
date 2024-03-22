@@ -6,7 +6,9 @@ import {
   HttpStatus, Param, Post, Put,
   Query,
   UseGuards,
-  UseInterceptors
+  Response,
+  UseInterceptors,
+  UploadedFile
 } from "@nestjs/common";
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 
@@ -22,6 +24,12 @@ import { CompanyCreateDto } from "../dtos/company-create.dto";
 import { CompanyParamDto } from "../dtos/company-param.dto";
 import { CompanyOrderDto } from "../dtos/company-order.dto";
 import { CompanyUpdateDto } from "../dtos/company-update.dto";
+import { BufferOutputDto } from '../../shared/dtos/buffer-output.dto';
+
+import { ROLE } from '../../shared/constants';
+import { Roles } from '../../auth/decorators/role.decorator'; 
+import { RolesGuard } from '../../auth/guards/roles.guard';
+import { FileInterceptor } from "@nestjs/platform-express";
 
 @ApiTags('Companies')
 @Controller('companies')
@@ -44,13 +52,16 @@ export class CompanyController {
     type: SwaggerBaseApiResponse(CompanyOutputDto),
   })
   @UseInterceptors(ClassSerializerInterceptor)
+  @UseInterceptors(FileInterceptor('avatar'))
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   async createCompany(
     @ReqContext() ctx: RequestContext,
     @Body() input: CompanyCreateDto,
+    @UploadedFile() fileUploaded: Express.Multer.File,
   ): Promise<BaseApiResponse<CompanyOutputDto>> {
-    const company = await this.companyService.createCompany(ctx, input);
+    this.logger.log(ctx, `${this.createCompany.name} was called`);
+    const company = await this.companyService.createCompany(ctx, input, fileUploaded);
     return { data: company, meta: {} };
   }
 
@@ -88,17 +99,20 @@ export class CompanyController {
     type: SwaggerBaseApiResponse(CompanyOutputDto),
   })
   @UseInterceptors(ClassSerializerInterceptor)
+  @UseInterceptors(FileInterceptor('avatar'))
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   async updateCompany(
     @ReqContext() ctx: RequestContext,
     @Param('id') companyId: number,
     @Body() input: CompanyUpdateDto,
+    @UploadedFile() fileUploaded: Express.Multer.File,
   ): Promise<BaseApiResponse<CompanyOutputDto>> {
     const company = await this.companyService.updateCompany(
       ctx,
       companyId,
       input,
+      fileUploaded
     );
     return { data: company, meta: {} };
   }
@@ -149,5 +163,33 @@ export class CompanyController {
     );
 
     return { data: companies, meta: { count } };
+  }
+
+
+  @UseInterceptors(ClassSerializerInterceptor)
+  @Get('/read/:id/avatar')
+  @ApiOperation({
+    summary: 'Get company avatar by id API',
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    type: SwaggerBaseApiResponse(BufferOutputDto),
+  })
+  @ApiResponse({
+    status: HttpStatus.NOT_FOUND,
+    type: BaseApiErrorResponse,
+  })
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(ROLE.ADMIN, ROLE.MANAGER, ROLE.ACCOUNTANT)
+  async getAvatar(
+    @ReqContext() ctx: RequestContext,
+    @Param('id') id: number,
+    @Response() res ,
+  ) {
+    this.logger.log(ctx, `${this.getAvatar.name} was called`);
+
+    const filePath = await this.companyService.downloadAvatarByUserId(ctx, id);
+    return res.sendFile(filePath);
   }
 }

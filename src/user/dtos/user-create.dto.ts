@@ -1,6 +1,5 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import {ApiProperty, ApiPropertyOptional} from '@nestjs/swagger';
 import {
-  IsArray,
   IsBoolean,
   IsEmail,
   IsEnum,
@@ -13,8 +12,9 @@ import {
   MaxLength,
 } from 'class-validator';
 
-import { ROLE, ACCOUNT_STATUS  } from '../../shared/constants';
-import { Transform } from 'class-transformer';
+import {ACCOUNT_STATUS, ROLE} from '../../shared/constants';
+import {Transform} from 'class-transformer';
+import {transformToBoolean} from 'src/shared/helpers';
 
 export class UserCreateDto {
   @ApiPropertyOptional()
@@ -56,15 +56,11 @@ export class UserCreateDto {
   status: ACCOUNT_STATUS;
 
   @ApiProperty()
+  @IsNotEmpty()
   @Transform(
-    ({ value }) => {
-      if (value === 'true' || value === '1' || value === true) return true;
-      if (value === 'false' || value === '0' || value === false) return false;
-      return null;
-    },
+    ({ value }) => transformToBoolean(value),
     { toClassOnly: true },
   )
-  @IsNotEmpty()
   @IsBoolean()
   isAccountDisabled: boolean;
 }

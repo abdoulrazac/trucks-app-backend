@@ -1,18 +1,15 @@
-import {
-  Column,
-  CreateDateColumn,
-  Entity, ManyToOne, OneToMany,
-  PrimaryGeneratedColumn,
-  UpdateDateColumn
-} from "typeorm";
+import {Column, Entity, ManyToOne, OneToMany} from "typeorm";
 
-import { Vehicle } from "../../vehicle/entities/vehicle.entity";
-import { User } from "../../user/entities/user.entity";
-import { Travel } from "../../travel/entities/travel.entity";
-import { AbstractEntity } from "../../shared/entities/abstract.entity";
+import {Vehicle} from "../../vehicle/entities/vehicle.entity";
+import {User} from "../../user/entities/user.entity";
+import {Travel} from "../../travel/entities/travel.entity";
+import {AbstractEntity} from "../../shared/entities/abstract.entity";
 
 @Entity('trucks')
 export class Truck extends AbstractEntity {
+
+  @Column()
+  description : string ;
 
   @Column({"default" : false})
   isClosed : boolean ;
@@ -29,6 +26,6 @@ export class Truck extends AbstractEntity {
   @ManyToOne(() => Vehicle, (vehicle) => vehicle.semiTrailers, { eager : true, cascade : ["insert", "update"]})
   semiTrailer : Vehicle ;
 
-  @OneToMany(() => Travel , (travel) => travel.truck)
+  @OneToMany(() => Travel , (travel) => travel.truck, { cascade : ["insert", "update"]})
   travels : Travel[] ;
 }

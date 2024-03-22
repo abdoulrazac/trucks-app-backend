@@ -1,4 +1,5 @@
 import {Column, Entity, ManyToOne, OneToMany} from 'typeorm';
+
 import {AbstractEntity} from '../../shared/entities/abstract.entity';
 
 @Entity('categories')

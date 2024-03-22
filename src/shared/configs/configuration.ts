@@ -1,4 +1,3 @@
-let MAIL_HOST;
 export default (): any => ({
   env: process.env.APP_ENV,
   port: process.env.APP_PORT,

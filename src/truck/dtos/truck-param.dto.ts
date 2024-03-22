@@ -1,26 +1,31 @@
-import { ApiPropertyOptional } from '@nestjs/swagger';
-import { Transform } from 'class-transformer';
-import {
-  IsBoolean,
-  IsDateString,
-  IsNotEmpty,
-  IsNumber,
-  IsOptional,
-  IsString,
-  Min,
-} from 'class-validator';
+import {ApiPropertyOptional} from '@nestjs/swagger';
+import {Transform} from 'class-transformer';
+import {IsBoolean, IsDateString, IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString, Min,} from 'class-validator';
+import {transformToBoolean} from '../../shared/helpers';
+import {VEHICLE_STATUS} from "../../shared/constants";
 
 export class TruckParamDto {
+
   @ApiPropertyOptional()
   @IsOptional()
+  @IsNotEmpty()
+  @IsString()
+  description: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @Transform(
+    ({ value }) => transformToBoolean(value),
+    { toClassOnly: true },
+  )
   @IsBoolean()
   isClosed: boolean;
 
   @ApiPropertyOptional()
   @IsOptional()
   @IsNotEmpty()
-  @IsString()
-  status: string;
+  @IsEnum(VEHICLE_STATUS)
+  status: VEHICLE_STATUS;
 
   @ApiPropertyOptional()
   @IsOptional()

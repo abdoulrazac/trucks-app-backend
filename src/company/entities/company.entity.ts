@@ -22,14 +22,21 @@ export class Company extends AbstractEntity {
   @Column()
   longname: string;
 
-  @Column()
-  address: string;
+  @Unique('email', ['email'])
+  @Column({ length: 200 })
+  email: string;
 
   @Column()
   numTel: string;
 
   @Column()
+  address: string;
+
+  @Column()
   numPostal: string;
+
+  @Column()
+  city: string;
 
   @Unique('numRccm', ['numRccm'])
   @Column()
@@ -45,12 +52,8 @@ export class Company extends AbstractEntity {
   @Column()
   taxDivision: string;
 
-  @Column()
+  @Column({nullable: true})
   avatar: string;
-
-  @Unique('email', ['email'])
-  @Column({ length: 200 })
-  email: string;
 
   @OneToMany(() => Travel, (travel) => travel.company)
   travels: Travel[];

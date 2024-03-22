@@ -1,5 +1,6 @@
 import {Injectable, NotFoundException} from '@nestjs/common';
-import {DataSource, Repository} from "typeorm";
+import {DataSource, Repository, Between} from "typeorm";
+import * as moment from "moment";
 
 import {File} from "../entities/file.entity";
 
@@ -40,5 +41,26 @@ export class FileRepository extends Repository<File>{
       throw new NotFoundException();
     }
     return file;
+  }
+
+  async getFutureExpiredFiles(): Promise<File[]> {
+    const currentDate = moment().utc(); 
+    return await this.find({
+      relations : {
+        author : true,
+        expense : true,
+        vehicle : true,
+        company : true,
+        travel : true,
+        invoice : true
+      },
+      where: [
+        {notification : true, expireAt : Between(currentDate.toDate(), currentDate.add(1, 'days').toDate())},
+        {notification : true, expireAt : Between(currentDate.add(3, 'days').toDate(), currentDate.add(4, 'days').toDate())},
+        {notification : true, expireAt : Between(currentDate.add(7, 'days').toDate(), currentDate.add(8, 'days').toDate())},
+        {notification : true, expireAt : Between(currentDate.add(14, 'days').toDate(), currentDate.add(15, 'days').toDate())},
+        {notification : true, expireAt : Between(currentDate.add(30, 'days').toDate(), currentDate.add(31, 'days').toDate())},
+      ]
+    });
   }
 }

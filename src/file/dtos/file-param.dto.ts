@@ -1,5 +1,6 @@
-import { ApiPropertyOptional } from '@nestjs/swagger';
+import {ApiProperty, ApiPropertyOptional} from '@nestjs/swagger';
 import {
+  IsBoolean,
   IsDateString,
   IsNotEmpty,
   IsNumber,
@@ -7,7 +8,8 @@ import {
   IsString,
   Min,
 } from 'class-validator';
-import { Transform } from 'class-transformer';
+import {Expose, Transform} from 'class-transformer';
+import { transformToBoolean } from 'src/shared/helpers';
 
 export class FileParamDto {
   @ApiPropertyOptional()
@@ -20,9 +22,30 @@ export class FileParamDto {
   @IsString()
   description: string;
 
+  @ApiProperty()
+  @IsOptional()
+  @Transform(
+    ({ value }) => transformToBoolean(value),
+    { toClassOnly: true },
+  )
+  @IsBoolean()
+  notification: boolean;
+
   @ApiPropertyOptional()
   @IsOptional()
   category: string[];
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsDateString()
+  @Transform(({ value }) => new Date(value), { toClassOnly: true })
+  deliverAt: Date;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsDateString()
+  @Transform(({ value }) => new Date(value), { toClassOnly: true })
+  expireAt: Date;
 
   @ApiPropertyOptional()
   @IsOptional()
@@ -73,13 +96,14 @@ export class FileParamDto {
 
   @ApiPropertyOptional()
   @IsOptional()
-  @IsNotEmpty()
   @IsDateString()
+  @IsDateString()
+  @Transform(({ value }) => new Date(value), { toClassOnly: true })
   createdAt: string;
 
   @ApiPropertyOptional()
   @IsOptional()
-  @IsNotEmpty()
   @IsDateString()
+  @Transform(({ value }) => new Date(value), { toClassOnly: true })
   updatedAt: string;
 }
