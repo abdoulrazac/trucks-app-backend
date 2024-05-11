@@ -1,25 +1,27 @@
-import { Injectable, UnauthorizedException} from '@nestjs/common';
-import { plainToInstance } from "class-transformer";
+import { forwardRef,Inject, Injectable, UnauthorizedException } from '@nestjs/common';
+import { plainToInstance } from 'class-transformer';
+import { FileService } from "src/file/services/file.service";
 
-import { Action } from "../../shared/acl/action.constant";
-import { Actor } from "../../shared/acl/actor.constant";
-import { orderClean, whereClauseClean } from "../../shared/helpers";
-import { AppLogger } from "../../shared/logger/logger.service";
-import { RequestContext } from "../../shared/request-context/request-context.dto";
-import { VehicleCreateDto } from "../dtos/vehicle-create.dto";
-import { VehicleOrderDto } from "../dtos/vehicle-order.dto";
-import { VehicleOutputDto } from "../dtos/vehicle-output.dto";
-import { VehicleParamDto } from "../dtos/vehicle-param.dto";
-import { VehicleUpdateDto } from "../dtos/vehicle-update.dto";
-import { Vehicle } from "../entities/vehicle.entity";
-import { VehicleRepository } from "../repositories/vehicle.repository";
-import { VehicleAclService } from "./vehicle-acl.service";
+import { Action } from '../../shared/acl/action.constant';
+import { Actor } from '../../shared/acl/actor.constant';
+import { orderClean, whereClauseClean } from '../../shared/helpers';
+import { AppLogger } from '../../shared/logger/logger.service';
+import { RequestContext } from '../../shared/request-context/request-context.dto';
+import { VehicleCreateDto } from '../dtos/vehicle-create.dto';
+import { VehicleOrderDto } from '../dtos/vehicle-order.dto';
+import { VehicleOutputDto } from '../dtos/vehicle-output.dto';
+import { VehicleParamDto } from '../dtos/vehicle-param.dto';
+import { VehicleStatsOutputDto } from '../dtos/vehicle-stats-output.dto';
+import { VehicleUpdateDto } from '../dtos/vehicle-update.dto';
+import { Vehicle } from '../entities/vehicle.entity';
+import { VehicleRepository } from '../repositories/vehicle.repository';
+import { VehicleAclService } from './vehicle-acl.service';
 
 @Injectable()
 export class VehicleService {
   constructor(
-    private repository : VehicleRepository,
-    private aclService : VehicleAclService,
+    private repository: VehicleRepository,
+    private aclService: VehicleAclService,
     private readonly logger: AppLogger,
   ) {
     this.logger.setContext(VehicleService.name);
@@ -27,12 +29,12 @@ export class VehicleService {
 
   async getVehicles(
     ctx: RequestContext,
-    filters : VehicleParamDto,
+    filters: VehicleParamDto,
     order: VehicleOrderDto,
     limit: number,
     offset: number,
   ): Promise<{ vehicles: VehicleOutputDto[]; count: number }> {
-    this.logger.log(ctx, `${this.getVehicles.name} was called`); 
+    this.logger.log(ctx, `${this.getVehicles.name} was called`);
 
     const actor: Actor = ctx.user;
 
@@ -44,7 +46,7 @@ export class VehicleService {
     this.logger.log(ctx, `calling ${VehicleRepository.name}.findAndCount`);
     const [vehicles, count] = await this.repository.findAndCount({
       where: whereClauseClean(filters),
-      order : orderClean(order),
+      order: orderClean(order),
       take: limit,
       skip: offset,
     });

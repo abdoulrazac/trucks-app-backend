@@ -1,13 +1,14 @@
 import { Module } from '@nestjs/common';
+import { TypeOrmModule } from "@nestjs/typeorm";
+
+import { JwtAuthStrategy } from "../auth/strategies/jwt-auth.strategy";
+import { SharedModule } from "../shared/shared.module";
+import { UserModule } from "../user/user.module";
+import { CategoryController } from './controllers/category.controller';
+import { Category } from "./entities/category.entity";
+import {CategoryRepository} from "./repositories/category.repository";
 import { CategoryService } from './services/category.service';
 import { CategoryAclService } from './services/category-acl.service';
-import { CategoryController } from './controllers/category.controller';
-import { JwtAuthStrategy } from "../auth/strategies/jwt-auth.strategy";
-import {CategoryRepository} from "./repositories/category.repository";
-import { SharedModule } from "../shared/shared.module";
-import { TypeOrmModule } from "@nestjs/typeorm";
-import { Category } from "./entities/category.entity";
-import { UserModule } from "../user/user.module";
 
 @Module({
   imports: [

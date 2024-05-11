@@ -4,7 +4,7 @@ import { IsEnum, IsOptional, IsString } from 'class-validator';
 export enum OrderColumn {
   label = 'label',
   description = 'description',
-  category = 'category',
+  categories = 'categories',
   extension = 'extension',
   size = 'size',
   author = 'author',
@@ -12,6 +12,9 @@ export enum OrderColumn {
   expense = 'expense',
   vehicle = 'vehicle',
   travel = 'vehicle',
+  invoice = 'invoice',
+  contract = 'contract',
+  breakdown = 'breakdown',
   createdAt = 'createdAt',
   updatedAt = 'updatedAt',
 }

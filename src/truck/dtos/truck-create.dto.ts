@@ -1,6 +1,7 @@
 import {ApiProperty} from '@nestjs/swagger';
 import {Transform} from "class-transformer";
 import {IsEnum, IsNotEmpty, IsNumber, Min} from "class-validator";
+
 import {VEHICLE_STATUS} from "../../shared/constants";
 
 

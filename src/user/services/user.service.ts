@@ -1,44 +1,50 @@
 import {Injectable, NotAcceptableException, NotFoundException, UnauthorizedException,} from '@nestjs/common';
+import {ConfigService} from '@nestjs/config';
 import {compare, hash} from 'bcrypt';
 import {plainToInstance} from 'class-transformer';
 import {nanoid} from 'nanoid';
+import * as path from 'path';
 
+import {RegisterInput} from '../../auth/dtos/auth-register-input.dto';
+import {MailSenderService} from "../../mail-sender/services/mail-sender.service";
+import {Action} from '../../shared/acl/action.constant';
+import {Actor} from '../../shared/acl/actor.constant';
+import {DOCS_TYPES_AVATAR} from '../../shared/constants';
+import {createUploadFile, getFilePath, orderClean, whereClauseClean,} from '../../shared/helpers';
 import {AppLogger} from '../../shared/logger/logger.service';
 import {RequestContext} from '../../shared/request-context/request-context.dto';
 import {UserCreateDto} from '../dtos/user-create.dto';
+import {UserOrderDto} from '../dtos/user-order.dto';
 import {UserOutputDto} from '../dtos/user-output.dto';
+import {UserParamDto} from '../dtos/user-param.dto';
 import {UserUpdateDto} from '../dtos/user-update-input.dto';
+import {EmailVerification} from "../entities/email-verification.entity";
+import { PasswordReset } from '../entities/password-reset.entity';
 import {User} from '../entities/user.entity';
 import {UserRepository} from '../repositories/user.repository';
-import {createUploadFile, getFilePath, orderClean, whereClauseClean,} from '../../shared/helpers';
-import {UserParamDto} from '../dtos/user-param.dto';
-import {UserOrderDto} from '../dtos/user-order.dto';
-import {RegisterInput} from '../../auth/dtos/auth-register-input.dto';
-import {Action} from '../../shared/acl/action.constant';
+import { PasswordResetRepository } from './../repositories/password-reset.repository';
 import {UserAclService} from './user-acl.service';
-import {Actor} from '../../shared/acl/actor.constant';
-import * as path from 'path';
-import {DOCS_TYPES_AVATAR} from '../../shared/constants';
-import {ConfigService} from '@nestjs/config';
-import {EmailVerification} from "../entities/email-verification.entity";
-import {MailSenderService} from "../../mail-sender/services/mail-sender.service";
 
 @Injectable()
 export class UserService {
-  basePathAvatar: string;
-  maxSize: number;
-  bas;
+  BASE_PATH_AVATAR: string;
+  MAX_SIZE: number; 
+  RESET_PASSWORD_DURATION: number;
+
   constructor(
     private configService: ConfigService,
     private repository: UserRepository, 
+    private passwordResetRepository: PasswordResetRepository,
     private aclService: UserAclService,
     private readonly logger: AppLogger,
     private mailSenderService: MailSenderService
   ) {
     this.logger.setContext(UserService.name);
-    this.basePathAvatar = this.configService.get<string>('file.uploadDestinationAvatar');
-    this.maxSize = this.configService.get<number>('file.maxSize');
+    this.BASE_PATH_AVATAR = this.configService.get<string>('file.uploadDestinationAvatar');
+    this.MAX_SIZE = this.configService.get<number>('file.maxSize');
+    this.RESET_PASSWORD_DURATION = this.configService.get<number>('setting.passwordResetDuration');    
   }
+
   async createUser(
     ctx: RequestContext,
     input: UserCreateDto | RegisterInput,
@@ -109,9 +115,9 @@ export class UserService {
       const fileExtension = path.extname(fileUploaded.originalname);
       fileName = `${user.id?user.id:0}-${new Date().getTime()}${fileExtension}`;
 
-      if (Number(fileSize) > this.maxSize) {
+      if (Number(fileSize) > this.MAX_SIZE) {
         errorMessages.push(
-          `File max size is ${this.maxSize.toString().slice(0, 1)}M`,
+          `File max size is ${this.MAX_SIZE.toString().slice(0, 1)}M`,
         );
       }
 
@@ -128,7 +134,7 @@ export class UserService {
     if (fileUploaded) {
       this.logger.log(ctx, `calling ${createUploadFile.name}.save`);
       user.avatar = await createUploadFile(
-        this.basePathAvatar,
+        this.BASE_PATH_AVATAR,
         fileName,
         fileUploaded.buffer,
       );
@@ -136,12 +142,14 @@ export class UserService {
 
     this.logger.log(ctx, `calling ${UserRepository.name}.saveUser`);
     const savedUser = await this.repository.save(user);
-    await this.mailSenderService.sendVerifyEmailMail(
-      ctx,
-      savedUser.name,
-      savedUser.email,
-      savedUser.emailVerifications[0].token
-    );
+    
+    // ============= Send email verification mail =============
+    // await this.mailSenderService.sendVerifyEmailMail(
+    //   ctx,
+    //   savedUser.name,
+    //   savedUser.email,
+    //   savedUser.emailVerifications[0].token
+    // );
 
     return plainToInstance(UserOutputDto, savedUser, {
       excludeExtraneousValues: true,
@@ -269,11 +277,12 @@ export class UserService {
     if (!isAllowed) {
       throw new UnauthorizedException();
     }
+    console.log(actor);
 
     const errorMessages: string[] = [];
     const canUpdateAll = this.aclService
       .forActor(actor)
-      .canDoAction(Action.Update);
+      .canDoAction(Action.Update, user);
 
     // Check allowed fields
     if (!canUpdateAll) {
@@ -351,9 +360,9 @@ export class UserService {
       const fileExtension = path.extname(fileUploaded.originalname);
       fileName = `${user.id}-${new Date().getTime()}${fileExtension}`;
 
-      if (Number(fileSize) > this.maxSize) {
+      if (Number(fileSize) > this.MAX_SIZE) {
         errorMessages.push(
-          `File max size is ${this.maxSize.toString().slice(0, 1)}M`,
+          `File max size is ${this.MAX_SIZE.toString().slice(0, 1)}M`,
         );
       }
 
@@ -380,7 +389,7 @@ export class UserService {
     if (fileUploaded) {
       this.logger.log(ctx, `calling ${createUploadFile.name}.save`);
       updatedUser.avatar = await createUploadFile(
-        this.basePathAvatar,
+        this.BASE_PATH_AVATAR,
         fileName,
         fileUploaded.buffer,
       );
@@ -416,4 +425,56 @@ export class UserService {
     }
     return filePath
   }
-}
+
+  //Add reset password item to user
+  async resetPasswordRequest(ctx: RequestContext, user: UserOutputDto): Promise<PasswordReset> {
+    this.logger.log(ctx, `${this.resetPasswordRequest.name} was called`);
+
+    const passwordReset = plainToInstance(PasswordReset, {
+      token: nanoid(64), 
+      validUntil: new Date(Date.now() + this.RESET_PASSWORD_DURATION),
+      user: user,
+    });
+
+    this.logger.log(ctx, `calling ${PasswordResetRepository.name}.save`);
+
+    const tokens = await this.passwordResetRepository.find({ where: { user : {id : user.id} }});
+    await this.passwordResetRepository.remove(tokens);
+
+    const token = await this.passwordResetRepository.save(passwordReset);
+
+    return token;
+  }
+
+  //Reset password
+  async resetPassword(ctx: RequestContext, username: string, token: string, password: string): Promise<UserOutputDto> {
+    this.logger.log(ctx, `${this.resetPassword.name} was called`);
+
+    this.logger.log(ctx, `calling ${PasswordResetRepository.name}.getByToken`)
+    const tokenRow = await this.passwordResetRepository.findOne({ where: { token: token }, relations: ['user']});
+
+    // Check if token is valid and not expired and belongs to the user
+    if (!tokenRow || tokenRow.user.username !== username) {
+      throw new UnauthorizedException('Invalid token');
+    }
+    
+    if (((+tokenRow.createdAt.getTime()) + (+this.RESET_PASSWORD_DURATION))  < +(new Date()).getTime()) {
+      throw new UnauthorizedException('Token expired');
+    }
+
+    // Reset password
+    const user= await this.repository.findOne({ where: { username: username }});
+    user.password = await hash(password, 10);
+
+    this.logger.log(ctx, `calling ${UserRepository.name}.save`);
+    await this.repository.save(user);
+
+    // Remove token
+    this.logger.log(ctx, `calling ${PasswordResetRepository.name}.remove`);
+    await this.passwordResetRepository.remove(tokenRow);
+
+    return plainToInstance(UserOutputDto, user, {
+      excludeExtraneousValues: true,
+    });
+  }
+} 

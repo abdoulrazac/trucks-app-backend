@@ -2,7 +2,7 @@ import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { DataSource } from 'typeorm';
 
-import { ROLE, ACCOUNT_STATUS } from '../../shared/constants';
+import { ACCOUNT_STATUS,ROLE } from '../../shared/constants';
 import { User } from '../entities/user.entity';
 import { UserRepository } from './user.repository';
 

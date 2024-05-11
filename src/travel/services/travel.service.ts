@@ -1,10 +1,12 @@
 import {Injectable, NotAcceptableException, UnauthorizedException,} from '@nestjs/common';
 import {plainToInstance} from 'class-transformer';
+import {DataSource} from "typeorm";
 
 import {Company} from '../../company/entities/company.entity';
 import {CompanyService} from '../../company/services/company.service';
 import {Action} from '../../shared/acl/action.constant';
 import {Actor} from '../../shared/acl/actor.constant';
+import {TRAVEL_STATUS, VEHICLE_STATUS} from "../../shared/constants";
 import {orderClean, whereClauseClean} from '../../shared/helpers';
 import {AppLogger} from '../../shared/logger/logger.service';
 import {RequestContext} from '../../shared/request-context/request-context.dto';
@@ -12,14 +14,12 @@ import {Truck} from '../../truck/entities/truck.entity';
 import {TruckService} from '../../truck/services/truck.service';
 import {TravelCreateDto} from '../dtos/travel-create.dto';
 import {TravelOrderDto} from '../dtos/travel-order.dto';
+import {TravelOutputDto} from '../dtos/travel-output.dto';
 import {TravelParamDto} from '../dtos/travel-param.dto';
+import {TravelUpdateDto} from '../dtos/travel-update.dto';
 import {Travel} from '../entities/travel.entity';
 import {TravelRepository} from '../repositories/travel.repository';
 import {TravelAclService} from './travel-acl.service';
-import {TravelOutputDto} from '../dtos/travel-output.dto';
-import {TravelUpdateDto} from '../dtos/travel-update.dto';
-import {TRAVEL_STATUS, VEHICLE_STATUS} from "../../shared/constants";
-import {DataSource} from "typeorm";
 
 @Injectable()
 export class TravelService {
@@ -98,6 +98,16 @@ export class TravelService {
       }
     } catch {
       errorMessages.push(`Cannot check refTravel !`);
+    }
+
+    // refUnloadind controls
+    try {
+      const travelByRef = await this.repository.findOne({ where : { refUnloading : input.refUnloading } }); 
+      if(travelByRef) {
+        errorMessages.push(`Travel with ref '${input.refUnloading}' already exists`);
+      }
+    } catch {
+      errorMessages.push(`Cannot check refUnloading !`);
     }
 
     // Company controls
@@ -201,6 +211,18 @@ export class TravelService {
       }
     }
 
+    // refUnloadind controls
+    if(input.refUnloading && input.refUnloading != travel.refUnloading) {
+      try {
+        const travelByRef = await this.repository.findOne({ where : { refUnloading : input.refUnloading } }); 
+        if(travelByRef) {
+          errorMessages.push(`Travel with ref '${input.refUnloading}' already exists`);
+        }
+      } catch {
+        errorMessages.push(`Cannot check refUnloading !`);
+      }
+    }
+
     // Company controls
     if(input.companyId && input.companyId != travel.company.id) {
       try {
@@ -298,5 +320,28 @@ export class TravelService {
         'Cannot delete a parent : a forein key constraint',
       );
     }
+  }
+
+  async getTravelCheckpointsById(
+    ctx: RequestContext,
+    id: number,
+  ): Promise<TravelOutputDto> {
+    this.logger.log(ctx, `${this.getTravelCheckpointsById.name} was called`);
+
+    const actor: Actor = ctx.user;
+
+    this.logger.log(ctx, `calling ${TravelRepository.name}.getById`);
+    const travel = await this.repository.getById(id);
+
+    const isAllowed = this.aclService
+      .forActor(actor)
+      .canDoAction(Action.Read, travel);
+    if (!isAllowed) {
+      throw new UnauthorizedException();
+    }
+
+    return plainToInstance(TravelOutputDto, travel, {
+      excludeExtraneousValues: true,
+    });
   }
 }

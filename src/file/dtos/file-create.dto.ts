@@ -1,14 +1,13 @@
 import {ApiProperty} from '@nestjs/swagger';
-import {IsBoolean, IsDate, IsDateString, IsNotEmpty, IsNumber, IsOptional, IsString, Min, MinLength,} from 'class-validator';
 import {Transform} from 'class-transformer';
-import {Column} from "typeorm";
-import { transformToBoolean } from 'src/shared/helpers';
+import {IsBoolean, IsDate, IsNotEmpty, IsNumber, IsOptional, IsString, Min, MinLength,} from 'class-validator';
+import { transformToBoolean } from 'src/shared/helpers'; 
 
 export class FileCreateDto {
   @ApiProperty()
   @IsNotEmpty()
   @IsString()
-  @MinLength(5)
+  @MinLength(1)
   label: string;
 
   @ApiProperty()
@@ -28,7 +27,7 @@ export class FileCreateDto {
 
   @ApiProperty()
   @IsNotEmpty()
-  category: string[];
+  categories: string[];
 
 
   @ApiProperty()
@@ -90,4 +89,20 @@ export class FileCreateDto {
   @Min(0)
   @Transform(({ value }) => parseInt(value, 10), { toClassOnly: true })
   invoiceId: number;
+
+  @ApiProperty()
+  @IsOptional()
+  @IsNotEmpty()
+  @IsNumber()
+  @Min(0)
+  @Transform(({ value }) => parseInt(value, 10), { toClassOnly: true })
+  breakdownId: number;
+
+  @ApiProperty()
+  @IsOptional()
+  @IsNotEmpty()
+  @IsNumber()
+  @Min(0)
+  @Transform(({ value }) => parseInt(value, 10), { toClassOnly: true })
+  contractId: number;
 }

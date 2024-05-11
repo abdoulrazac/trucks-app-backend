@@ -87,9 +87,13 @@ export class CategoryService {
     }
 
     this.logger.log(ctx, `calling ${CategoryRepository.name}.save`);
-    const savedCategory = await this.repository.save(category);
+    const savedCategory = await this.repository.save(category); 
 
-    return plainToInstance(CategoryOutputDto, savedCategory, {
+    this.logger.log(ctx, `calling ${CategoryRepository.name}.getById`);
+    const categoryOutput = await this.repository.getById(savedCategory.id);
+
+
+    return plainToInstance(CategoryOutputDto, categoryOutput, {
       excludeExtraneousValues: true,
     });
   }

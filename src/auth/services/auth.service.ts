@@ -3,21 +3,22 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { plainToInstance } from 'class-transformer';
 
+import { ROLE } from '../../shared/constants';
 import { AppLogger } from '../../shared/logger/logger.service';
 import { RequestContext } from '../../shared/request-context/request-context.dto';
 import { UserOutputDto } from '../../user/dtos/user-output.dto';
 import { UserService } from '../../user/services/user.service';
-import { ROLE } from '../../shared/constants';
 import { RegisterInput } from '../dtos/auth-register-input.dto';
 import { RegisterOutput } from '../dtos/auth-register-output.dto';
+import {
+  ResetPasswordDto,
+  ResetPasswordOutputDto,
+  ResetPasswordRequestDto,
+} from '../dtos/auth-reset-password.dto';
 import {
   AuthTokenOutput,
   UserAccessTokenClaims,
 } from '../dtos/auth-token-output.dto';
-import {
-  ResetPasswordOutputDto,
-  ResetPasswordRequestDto,
-} from '../dtos/auth-reset-password.dto';
 
 @Injectable()
 export class AuthService {
@@ -82,54 +83,33 @@ export class AuthService {
   ): Promise<ResetPasswordOutputDto> {
     this.logger.log(ctx, `${this.resetPasswordRequest.name} was called`);
 
+    try {
     const user = await this.userService.findByUsername(ctx, input.username);
+    const token = await this.userService.resetPasswordRequest(ctx, user);
+    } catch (error) {}
+
+    // Send email with token
+
 
     return plainToInstance(ResetPasswordOutputDto, {
-      username: user.username,
-      message: 'Reset password mail is send to username email',
+      username: input.username,
+      message: 'Reset password mail is send to username email if it exists.',
     });
   }
 
-  async sendResetPasswordMail(email: string): Promise<void> {
-    // const user = await this.prisma.user.findUnique({
-    //   where: { email: email.toLowerCase() },
-    //   select: {
-    //     id: true,
-    //     firstName: true,
-    //     email: true,
-    //   },
-    // });
+  async resetPasswordWithToken(
+    ctx: RequestContext,
+    input : ResetPasswordDto,
+    token: string,
+  ): Promise<ResetPasswordOutputDto> {
+    this.logger.log(ctx, `${this.resetPasswordWithToken.name} was called`);
 
-    // if (user === null) {
-    //   throw new NotFoundException();
-    // }
+    const user = await this.userService.resetPassword(ctx, input.username, token, input.password)
 
-    // const deletePrevPasswordResetIfExist = this.prisma.passwordReset.deleteMany(
-    //   {
-    //     where: { userId: user.id },
-    //   },
-    // );
-
-    // const token = nanoid();
-
-    // const createPasswordReset = this.prisma.passwordReset.create({
-    //   data: {
-    //     userId: user.id,
-    //     token,
-    //   },
-    //   select: null,
-    // });
-
-    // await this.prisma.$transaction([
-    //   deletePrevPasswordResetIfExist,
-    //   createPasswordReset,
-    // ]);
-
-    // await this.mailSenderService.sendResetPasswordMail(
-    //   user.firstName,
-    //   user.email,
-    //   token,
-    // );
+    return plainToInstance(ResetPasswordOutputDto, {
+      username: user.username,
+      message: 'Password reset successfully',
+    });
   }
 
 
@@ -153,9 +133,17 @@ export class AuthService {
 
     const subject = { sub: user.id };
     const payload = {
-      username: user.username,
       sub: user.id,
+      username: user.username,
       roles: user.roles,
+      name: user.name,
+      status: user.status, 
+      numTel: user.numTel,
+      email: user.email,
+      avatar: user.avatar,
+      isAccountDisabled: user.isAccountDisabled,
+      refDriver: user.refDriver,
+      dateDriver: user.dateDriver,
     };
 
     const authToken = {

@@ -9,6 +9,7 @@ import {
   UseInterceptors
 } from "@nestjs/common";
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
+import { SkipThrottle } from "@nestjs/throttler";
 
 import { JwtAuthGuard } from "../../auth/guards/jwt-auth.guard";
 import { BaseApiErrorResponse, BaseApiResponse, SwaggerBaseApiResponse } from "../../shared/dtos/base-api-response.dto";
@@ -16,13 +17,14 @@ import { PaginationParamsDto } from "../../shared/dtos/pagination-params.dto";
 import { AppLogger } from "../../shared/logger/logger.service";
 import { ReqContext } from "../../shared/request-context/req-context.decorator";
 import { RequestContext } from "../../shared/request-context/request-context.dto";
-import { TruckOutputDto } from "../dtos/truck-output.dto";
-import { TruckService } from "../services/truck.service";
 import { TruckCreateDto } from "../dtos/truck-create.dto";
-import { TruckParamDto } from "../dtos/truck-param.dto";
 import { TruckOrderDto } from "../dtos/truck-order.dto";
+import { TruckOutputDto } from "../dtos/truck-output.dto";
+import { TruckParamDto } from "../dtos/truck-param.dto";
 import { TruckUpdateDto } from "../dtos/truck-update.dto";
+import { TruckService } from "../services/truck.service";
 
+@SkipThrottle()
 @ApiTags('Trucks')
 @Controller('trucks')
 export class TruckController {

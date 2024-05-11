@@ -13,26 +13,28 @@ import {
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
+import {FileInterceptor} from '@nestjs/platform-express';
 import {ApiBearerAuth, ApiOperation, ApiResponse, ApiTags,} from '@nestjs/swagger';
+import { SkipThrottle } from '@nestjs/throttler';
 
-import {ROLE} from '../../shared/constants';
 import {Roles} from '../../auth/decorators/role.decorator';
 import {JwtAuthGuard} from '../../auth/guards/jwt-auth.guard';
 import {RolesGuard} from '../../auth/guards/roles.guard';
+import {ROLE} from '../../shared/constants';
 import {BaseApiErrorResponse, BaseApiResponse, SwaggerBaseApiResponse,} from '../../shared/dtos/base-api-response.dto';
+import {BufferOutputDto} from '../../shared/dtos/buffer-output.dto';
 import {PaginationParamsDto} from '../../shared/dtos/pagination-params.dto';
 import {AppLogger} from '../../shared/logger/logger.service';
 import {ReqContext} from '../../shared/request-context/req-context.decorator';
 import {RequestContext} from '../../shared/request-context/request-context.dto';
+import {UserCreateDto} from '../dtos/user-create.dto';
+import {UserOrderDto} from '../dtos/user-order.dto';
 import {UserOutputDto} from '../dtos/user-output.dto';
+import {UserParamDto} from '../dtos/user-param.dto';
 import {UserUpdateDto} from '../dtos/user-update-input.dto';
 import {UserService} from '../services/user.service';
-import {UserParamDto} from '../dtos/user-param.dto';
-import {UserOrderDto} from '../dtos/user-order.dto';
-import {UserCreateDto} from '../dtos/user-create.dto';
-import {FileInterceptor} from '@nestjs/platform-express';
-import {BufferOutputDto} from '../../shared/dtos/buffer-output.dto';
 
+@SkipThrottle()
 @ApiTags('users')
 @Controller('users')
 export class UserController {

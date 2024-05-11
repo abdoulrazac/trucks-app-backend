@@ -42,6 +42,11 @@ export class CompanyParamDto {
   @ApiPropertyOptional()
   @IsOptional()
   @IsString()
+  country : string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
   city : string;
 
   @ApiPropertyOptional()
@@ -71,13 +76,11 @@ export class CompanyParamDto {
 
   @ApiPropertyOptional()
   @IsOptional()
-  @IsNotEmpty()
   @IsDateString()
   createdAt: string;
 
   @ApiPropertyOptional()
   @IsOptional()
-  @IsNotEmpty()
   @IsDateString()
   updatedAt: string;
 }

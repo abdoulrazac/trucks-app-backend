@@ -1,12 +1,12 @@
 import {
   Column, 
   Entity, 
-  ManyToOne, 
-  AfterLoad
-} from 'typeorm';
+  ManyToOne,
+  OneToMany} from 'typeorm';
 
-import {User} from "../../user/entities/user.entity";
+import {File} from "../../file/entities/file.entity";
 import { AbstractEntity } from "../../shared/entities/abstract.entity";
+import {User} from "../../user/entities/user.entity";
 
 @Entity('contracts')
 export class Contract extends AbstractEntity {
@@ -26,7 +26,7 @@ export class Contract extends AbstractEntity {
   @Column()
   startDate : Date ;
 
-  @Column()
+  @Column({nullable : true})
   endDate : Date ;
 
   @Column({'default' : false})
@@ -37,4 +37,7 @@ export class Contract extends AbstractEntity {
 
   @ManyToOne(() => User, (user) => user.contracts, { eager: true })
   author: User ;
+
+  @OneToMany(() => File, (file) => file.contract)
+  files: File[];
 }

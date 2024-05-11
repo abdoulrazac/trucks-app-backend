@@ -9,6 +9,7 @@ import {
   UseInterceptors
 } from "@nestjs/common";
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
+import { SkipThrottle } from "@nestjs/throttler";
 
 import { JwtAuthGuard } from "../../auth/guards/jwt-auth.guard";
 import { BaseApiErrorResponse, BaseApiResponse, SwaggerBaseApiResponse } from "../../shared/dtos/base-api-response.dto";
@@ -16,13 +17,14 @@ import { PaginationParamsDto } from "../../shared/dtos/pagination-params.dto";
 import { AppLogger } from "../../shared/logger/logger.service";
 import { ReqContext } from "../../shared/request-context/req-context.decorator";
 import { RequestContext } from "../../shared/request-context/request-context.dto";
-import { ExpenseOutputDto } from "../dtos/expense-output.dto";
-import { ExpenseService } from "../services/expense.service";
 import { ExpenseCreateDto } from "../dtos/expense-create.dto";
-import { ExpenseParamDto } from "../dtos/expense-param.dto";
 import { ExpenseOrderDto } from "../dtos/expense-order.dto";
+import { ExpenseOutputDto } from "../dtos/expense-output.dto";
+import { ExpenseParamDto } from "../dtos/expense-param.dto";
 import { ExpenseUpdateDto } from "../dtos/expense-update.dto";
+import { ExpenseService } from "../services/expense.service";
 
+@SkipThrottle()
 @ApiTags('Expenses')
 @Controller('expenses')
 export class ExpenseController {

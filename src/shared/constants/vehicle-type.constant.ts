@@ -1,4 +1,6 @@
 export enum VEHICLE_TYPE { 
   TRACTOR = 'TRACTOR',
   SEMI_TRAILER = 'TRAILER', 
+  CAR = 'CAR',
+  BUS = 'BUS',
 }

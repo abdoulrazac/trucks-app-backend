@@ -1,6 +1,7 @@
 import {ApiPropertyOptional} from '@nestjs/swagger';
 import {Transform} from 'class-transformer';
 import {IsDateString, IsEnum, IsNumber, IsOptional, IsString, Min,} from 'class-validator';
+
 import {TRAVEL_STATUS} from "../../shared/constants";
 
 export class TravelParamDto {
@@ -8,6 +9,11 @@ export class TravelParamDto {
   @IsOptional()
   @IsString()
   refTravel: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  refUnloading: string;
 
   @ApiPropertyOptional()
   @IsOptional()
@@ -33,6 +39,16 @@ export class TravelParamDto {
   @IsOptional()
   @IsDateString()
   arrivalDate: Date;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  departureCountry: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  arrivalCountry: string;
 
   @ApiPropertyOptional()
   @IsOptional()

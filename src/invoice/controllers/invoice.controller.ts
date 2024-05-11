@@ -9,6 +9,7 @@ import {
   UseInterceptors
 } from "@nestjs/common";
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
+import { SkipThrottle } from "@nestjs/throttler";
 
 import { JwtAuthGuard } from "../../auth/guards/jwt-auth.guard";
 import { BaseApiErrorResponse, BaseApiResponse, SwaggerBaseApiResponse } from "../../shared/dtos/base-api-response.dto";
@@ -23,6 +24,7 @@ import { InvoiceParamDto } from "../dtos/invoice-param.dto";
 import { InvoiceUpdateDto } from "../dtos/invoice-update.dto";
 import { InvoiceService } from "../services/invoice.service";
 
+@SkipThrottle()
 @ApiTags('Invoices')
 @Controller('invoices')
 export class InvoiceController {

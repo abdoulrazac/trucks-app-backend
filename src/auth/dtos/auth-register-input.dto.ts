@@ -1,9 +1,9 @@
 import {ApiProperty} from '@nestjs/swagger';
-
-import {IsBoolean, IsEmail, IsNotEmpty, IsString, Length, MaxLength,} from 'class-validator';
 import {Transform} from 'class-transformer';
-import {transformToBoolean} from '../../shared/helpers';
+import {IsBoolean, IsEmail, IsNotEmpty, IsString, Length, MaxLength,} from 'class-validator';
+
 import {ROLE} from '../../shared/constants';
+import {transformToBoolean} from '../../shared/helpers';
 
 export class RegisterInput {
   @ApiProperty()

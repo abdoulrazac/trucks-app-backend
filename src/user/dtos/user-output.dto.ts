@@ -30,6 +30,14 @@ export class UserOutputDto {
 
   @Expose()
   @ApiProperty()
+  refDriver: string;
+
+  @Expose()
+  @ApiProperty()
+  dateDriver: Date;
+
+  @Expose()
+  @ApiProperty()
   email: string;
 
   @Expose()

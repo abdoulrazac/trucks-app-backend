@@ -1,9 +1,12 @@
 import {Module} from '@nestjs/common';
+import { APP_GUARD } from '@nestjs/core';
 import {ScheduleModule} from '@nestjs/schedule';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 
 import {AppController} from './app.controller';
 import {AppService} from './app.service';
 import {AuthModule} from "./auth/auth.module";
+import { BreakdownModule } from './breakdown/breakdown.module';
 import {CategoryModule} from './category/category.module';
 import {CompanyModule} from './company/company.module';
 import {ContractModule} from './contract/contract.module';
@@ -19,6 +22,10 @@ import {VehicleModule} from './vehicle/vehicle.module';
 
 @Module({
   imports: [
+    ThrottlerModule.forRoot([{
+      ttl: 300,
+      limit: 2,
+    }]),
     ScheduleModule.forRoot(),
     SharedModule,
     AuthModule,
@@ -28,13 +35,20 @@ import {VehicleModule} from './vehicle/vehicle.module';
     VehicleModule,
     ExpenseModule,
     ContractModule,
+    BreakdownModule,
     TruckModule,
     TravelModule,
     InvoiceModule,
     FileModule,
-    MailSenderModule
+    MailSenderModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard
+    }
+  ],
 })
 export class AppModule {}

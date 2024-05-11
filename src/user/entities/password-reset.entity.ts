@@ -1,13 +1,11 @@
 import {
-  Entity,
-  PrimaryColumn,
-  Column,
-  ManyToOne,
-  Unique,
-  UpdateDateColumn,
   CreateDateColumn,
-  BeforeInsert, BeforeUpdate
+  Entity,
+  ManyToOne,
+  PrimaryColumn,
+  UpdateDateColumn
 } from 'typeorm';
+
 import { User } from './user.entity';
 
 @Entity('password_reset')
@@ -15,18 +13,10 @@ export class PasswordReset {
 
     @PrimaryColumn()
     token: string;
-  
-    @Column()
-    newEmail: string;
     
     @ManyToOne(() => User, (user) => user.emailChanges)
-    user: User;
+    user: User; 
 
-    @Column()
-    validUntil: Date;
-
-    @BeforeInsert()
-    async setValidUntil() {
-      this.validUntil = new Date(new Date().getTime() + 1000 * 60 * 15);
-    }
+    @CreateDateColumn({ name: 'createdAt', nullable: true })
+    createdAt: Date;
 }

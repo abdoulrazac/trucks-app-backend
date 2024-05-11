@@ -9,6 +9,7 @@ import {
   UseInterceptors
 } from "@nestjs/common";
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
+import { SkipThrottle } from "@nestjs/throttler";
 
 import { JwtAuthGuard } from "../../auth/guards/jwt-auth.guard";
 import { BaseApiErrorResponse, BaseApiResponse, SwaggerBaseApiResponse } from "../../shared/dtos/base-api-response.dto";
@@ -16,13 +17,14 @@ import { PaginationParamsDto } from "../../shared/dtos/pagination-params.dto";
 import { AppLogger } from "../../shared/logger/logger.service";
 import { ReqContext } from "../../shared/request-context/req-context.decorator";
 import { RequestContext } from "../../shared/request-context/request-context.dto";
-import { ContractOutputDto } from "../dtos/contract-output.dto";
-import { ContractService } from "../services/contract.service";
 import { ContractCreateDto } from "../dtos/contract-create.dto";
-import { ContractParamDto } from "../dtos/contract-param.dto";
 import { ContractOrderDto } from "../dtos/contract-order.dto";
+import { ContractOutputDto } from "../dtos/contract-output.dto";
+import { ContractParamDto } from "../dtos/contract-param.dto";
 import { ContractUpdateDto } from "../dtos/contract-update.dto";
+import { ContractService } from "../services/contract.service";
 
+@SkipThrottle()
 @ApiTags('Contracts')
 @Controller('contracts')
 export class ContractController {

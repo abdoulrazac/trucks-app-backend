@@ -1,4 +1,5 @@
-import {Entity, PrimaryColumn, Column, ManyToOne, CreateDateColumn, BeforeInsert, BeforeUpdate} from 'typeorm';
+import {BeforeInsert, Column, Entity, ManyToOne, PrimaryColumn} from 'typeorm';
+
 import { User } from './user.entity';
 
 @Entity('email_verification')

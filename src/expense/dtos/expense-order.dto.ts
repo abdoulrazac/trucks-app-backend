@@ -16,7 +16,6 @@ export enum OrderColumn {
   updatedAt = 'updatedAt',
 }
 
-
 export class ExpenseOrderDto {
 
   @ApiPropertyOptional()

@@ -21,6 +21,30 @@ export class UserAccessTokenClaims {
   username: string;
 
   @Expose()
+  name: string;
+
+  @Expose()
+  email: string;
+
+  @Expose()
+  numTel: string;
+
+  @Expose()
+  status: string;
+
+  @Expose()
+  avatar: string;
+
+  @Expose()
+  refDriver: string;
+
+  @Expose()
+  dateDriver: Date;
+
+  @Expose()
+  isAccountDisabled: boolean;
+
+  @Expose()
   roles: ROLE[];
 }
 

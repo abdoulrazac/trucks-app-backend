@@ -1,11 +1,14 @@
-import {AfterLoad, Column, Entity, ManyToOne} from 'typeorm';
-import {Expense} from '../../expense/entities/expense.entity';
-import {User} from '../../user/entities/user.entity';
+import {Column, Entity, ManyToOne} from 'typeorm';
+
+import { Breakdown } from '../../breakdown/entities/breakdown.entity';
 import {Company} from '../../company/entities/company.entity';
-import {Vehicle} from '../../vehicle/entities/vehicle.entity';
+import { Contract } from '../../contract/entities/contract.entity';
+import {Expense} from '../../expense/entities/expense.entity';
 import {Invoice} from '../../invoice/entities/invoice.entity';
 import {AbstractEntity} from '../../shared/entities/abstract.entity';
 import {Travel} from '../../travel/entities/travel.entity';
+import {User} from '../../user/entities/user.entity';
+import {Vehicle} from '../../vehicle/entities/vehicle.entity';
 
 @Entity('files')
 export class File extends AbstractEntity {
@@ -19,7 +22,7 @@ export class File extends AbstractEntity {
   notification : boolean 
 
   @Column('simple-array')
-  category: string[];
+  categories: string[];
 
   @Column()
   extension: string;
@@ -53,4 +56,10 @@ export class File extends AbstractEntity {
 
   @ManyToOne(() => Invoice, (invoice) => invoice.files)
   invoice: Invoice;
+
+  @ManyToOne(() => Contract, (contract) => contract.files)
+  contract: Contract;
+
+  @ManyToOne(() => Breakdown, (breakdown) => breakdown.files)
+  breakdown: Breakdown;
 }

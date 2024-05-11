@@ -27,6 +27,14 @@ export class JwtAuthStrategy extends PassportStrategy(
       id: payload.sub,
       username: payload.username,
       roles: payload.roles,
+      name: payload.name,
+      status: payload.status,
+      email: payload.email,
+      numTel: payload.numTel,
+      avatar: payload.avatar,
+      isAccountDisabled: payload.isAccountDisabled,
+      refDriver: payload.refDriver,
+      dateDriver: payload.dateDriver,
     };
   }
 }

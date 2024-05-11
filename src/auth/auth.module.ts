@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
+import { ThrottlerModule } from '@nestjs/throttler';
 
 import { SharedModule } from '../shared/shared.module';
 import { UserModule } from '../user/user.module';
@@ -30,6 +31,11 @@ import { LocalStrategy } from './strategies/local.strategy';
     UserModule
   ],
   controllers: [AuthController],
-  providers: [AuthService, LocalStrategy, JwtAuthStrategy, JwtRefreshStrategy],
+  providers: [
+    AuthService, 
+    LocalStrategy, 
+    JwtAuthStrategy, 
+    JwtRefreshStrategy
+  ],
 })
 export class AuthModule {}

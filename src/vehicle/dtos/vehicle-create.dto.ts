@@ -1,10 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { Transform } from "class-transformer";
 import {
   IsEnum,
   IsNotEmpty, IsNumber, IsOptional,
   IsString, Max, Min
 } from "class-validator";
-import { Transform } from "class-transformer";
 import { VEHICLE_TYPE } from 'src/shared/constants';
 
 

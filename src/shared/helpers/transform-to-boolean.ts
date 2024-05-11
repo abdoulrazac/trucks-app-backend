@@ -1,4 +1,4 @@
-export const transformToBoolean = (input) => { 
+export const transformToBoolean = (input) => {
     const value = `${input}`.trim().toLowerCase();
     if(value == 'null' || value == 'undefined') return null;
     if (value == 'true' || value == '1') return true;

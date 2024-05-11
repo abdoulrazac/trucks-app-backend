@@ -1,6 +1,10 @@
 export default (): any => ({
   env: process.env.APP_ENV,
   port: process.env.APP_PORT,
+  setting : {
+    mailVerificationDuration : process.env.SETTING_MAIL_VERIFICATION_DURATION,
+    passwordResetDuration : process.env.SETTING_PASSWORD_RESET_DURATION,
+  },
   project: {
     name: process.env.PROJECT_NAME,
     version: process.env.PROJECT_VERSION,

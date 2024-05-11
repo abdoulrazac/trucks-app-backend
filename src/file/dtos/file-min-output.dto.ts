@@ -12,7 +12,7 @@ export class FileMinOutputDto {
 
   @Expose()
   @ApiProperty()
-  category: string[];
+  categories: string[];
 
   @Expose()
   @ApiProperty()

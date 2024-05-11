@@ -1,8 +1,9 @@
-import { Column, Entity, ManyToOne, OneToMany, AfterLoad, Unique } from 'typeorm';
+import { AfterLoad, Column, Entity, ManyToOne, OneToMany, Unique } from 'typeorm';
+
 import { Contract } from '../../contract/entities/contract.entity';
-import { Truck } from '../../truck/entities/truck.entity';
 import { File } from '../../file/entities/file.entity';
 import { AbstractEntity } from '../../shared/entities/abstract.entity';
+import { Truck } from '../../truck/entities/truck.entity';
 import { EmailChange } from './email-change.entity';
 import { EmailVerification } from './email-verification.entity';
 import { PasswordReset } from './password-reset.entity';
@@ -37,6 +38,12 @@ export class User extends AbstractEntity {
 
   @Column()
   numTel: string;
+
+  @Column({ nullable: true })
+  refDriver: string;
+
+  @Column({ nullable: true })
+  dateDriver: Date;
 
   @Column({ nullable: true })
   avatar: string;

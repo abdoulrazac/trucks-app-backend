@@ -9,13 +9,14 @@ import {
   Post,
   Put,
   Query,
+  Response,
   UploadedFile,
   UseGuards,
   UseInterceptors,
-  Response,
 } from '@nestjs/common';
 import {FileInterceptor} from '@nestjs/platform-express';
 import {ApiBearerAuth, ApiOperation, ApiResponse, ApiTags,} from '@nestjs/swagger';
+import { SkipThrottle } from '@nestjs/throttler';
 
 import {JwtAuthGuard} from '../../auth/guards/jwt-auth.guard';
 import {BaseApiErrorResponse, BaseApiResponse, SwaggerBaseApiResponse,} from '../../shared/dtos/base-api-response.dto';
@@ -29,8 +30,8 @@ import {FileOutputDto} from '../dtos/file-output.dto';
 import {FileParamDto} from '../dtos/file-param.dto';
 import {FileUpdateDto} from '../dtos/file-update.dto';
 import {FileService} from '../services/file.service';
-import {BufferOutputDto} from '../../shared/dtos/buffer-output.dto';
 
+@SkipThrottle()
 @ApiTags('Files')
 @Controller('files')
 export class FileController {
@@ -58,6 +59,7 @@ export class FileController {
     @Body() input: FileCreateDto,
     @UploadedFile() fileUploaded: Express.Multer.File,
   ): Promise<BaseApiResponse<FileOutputDto>> {
+
     const file = await this.fileService.createFile(ctx, input, fileUploaded);
     return { data: file, meta: {} };
   }
@@ -129,6 +131,7 @@ export class FileController {
     @Body() input: FileUpdateDto,
     @UploadedFile() fileUploaded: Express.Multer.File,
   ): Promise<BaseApiResponse<FileOutputDto>> {
+
     const file = await this.fileService.updateFile(
       ctx,
       fileId,

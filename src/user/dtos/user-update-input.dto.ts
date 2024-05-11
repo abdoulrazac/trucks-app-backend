@@ -1,8 +1,10 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { Transform } from 'class-transformer'
 import {
   ArrayNotEmpty, 
   IsArray,
   IsBoolean,
+  IsDateString,
   IsEmail,
   IsEnum,
   IsNotEmpty,
@@ -12,8 +14,8 @@ import {
   Matches,
   MaxLength,
 } from 'class-validator';
-import { Transform } from 'class-transformer'
-import { ROLE, ACCOUNT_STATUS } from '../../shared/constants';
+
+import { ACCOUNT_STATUS,ROLE } from '../../shared/constants';
 import { transformToBoolean } from '../../shared/helpers'
 
 export class UserUpdateDto {
@@ -49,9 +51,13 @@ export class UserUpdateDto {
 
   @ApiProperty()
   @IsOptional()
-  @IsArray()
-  @ArrayNotEmpty()
-  @IsEnum(ROLE, { each: true })
+  @Transform(({ value }) => {
+    if (typeof value === 'string') {
+      return value.split(',');
+    }
+    return value;
+  })
+  @IsNotEmpty()
   roles: ROLE[];
 
   @ApiProperty({ example: ACCOUNT_STATUS.WORK })
@@ -71,6 +77,19 @@ export class UserUpdateDto {
   @IsEmail()
   @MaxLength(100)
   email: string;
+
+  @ApiProperty()
+  @IsOptional()
+  @IsNotEmpty()
+  @IsString()
+  @Length(4, 100)
+  refDriver: string;
+
+  @ApiProperty()
+  @IsOptional()
+  @IsNotEmpty()
+  @IsDateString()
+  dateDriver: Date; 
 
   @ApiProperty()
   @IsOptional()

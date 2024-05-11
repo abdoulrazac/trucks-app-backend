@@ -1,11 +1,11 @@
-import {Injectable, NotFoundException} from '@nestjs/common';
-import {DataSource, Repository} from "typeorm";
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { DataSource, Repository } from 'typeorm';
 
-import {Vehicle} from "../entities/vehicle.entity";
+import { File } from '../../file/entities/file.entity';
+import { Vehicle } from '../entities/vehicle.entity';
 
 @Injectable()
-export class VehicleRepository extends Repository<Vehicle>{
-
+export class VehicleRepository extends Repository<Vehicle> {
   constructor(private dataSource: DataSource) {
     super(Vehicle, dataSource.createEntityManager());
   }

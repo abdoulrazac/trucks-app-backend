@@ -1,11 +1,16 @@
 import {Injectable, NotAcceptableException, UnauthorizedException,} from '@nestjs/common';
 import {plainToInstance} from 'class-transformer';
+import {VEHICLE_TYPE} from 'src/shared/constants';
 
 import {Action} from '../../shared/acl/action.constant';
 import {Actor} from '../../shared/acl/actor.constant';
 import {orderClean, whereClauseClean} from '../../shared/helpers';
 import {AppLogger} from '../../shared/logger/logger.service';
 import {RequestContext} from '../../shared/request-context/request-context.dto';
+import {User} from '../../user/entities/user.entity';
+import {UserService} from '../../user/services/user.service';
+import {Vehicle} from '../../vehicle/entities/vehicle.entity';
+import {VehicleService} from '../../vehicle/services/vehicle.service';
 import {TruckCreateDto} from '../dtos/truck-create.dto';
 import {TruckOrderDto} from '../dtos/truck-order.dto';
 import {TruckOutputDto} from '../dtos/truck-output.dto';
@@ -14,11 +19,6 @@ import {TruckUpdateDto} from '../dtos/truck-update.dto';
 import {Truck} from '../entities/truck.entity';
 import {TruckRepository} from '../repositories/truck.repository';
 import {TruckAclService} from './truck-acl.service';
-import {VehicleService} from '../../vehicle/services/vehicle.service';
-import {Vehicle} from '../../vehicle/entities/vehicle.entity';
-import {UserService} from '../../user/services/user.service';
-import {User} from '../../user/entities/user.entity';
-import {VEHICLE_TYPE} from 'src/shared/constants';
 
 @Injectable()
 export class TruckService {

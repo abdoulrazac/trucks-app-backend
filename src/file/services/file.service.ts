@@ -5,37 +5,49 @@ import {
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { Cron, CronExpression } from '@nestjs/schedule';
-import {plainToInstance} from 'class-transformer';
+import { plainToInstance } from 'class-transformer';
+import * as path from 'path';
+import { join } from 'path';
 import { v4 as uuidv4 } from 'uuid';
 
-import {Action} from '../../shared/acl/action.constant';
-import {Actor} from '../../shared/acl/actor.constant';
-import {createUploadFile, getFilePath, orderClean, moveToTrash, whereClauseClean,} from '../../shared/helpers';
-import {AppLogger} from '../../shared/logger/logger.service';
-import {RequestContext} from '../../shared/request-context/request-context.dto';
-import {FileCreateDto} from '../dtos/file-create.dto';
-import {FileOrderDto} from '../dtos/file-order.dto';
-import {FileOutputDto} from '../dtos/file-output.dto';
-import {FileParamDto} from '../dtos/file-param.dto';
-import {FileUpdateDto} from '../dtos/file-update.dto';
-import {File} from '../entities/file.entity';
-import {FileRepository} from '../repositories/file.repository';
-import {FileAclService} from './file-acl.service';
-import {UserService} from '../../user/services/user.service';
-import {VehicleService} from '../../vehicle/services/vehicle.service';
-import {ExpenseService} from '../../expense/services/expense.service';
-import {CompanyService} from '../../company/services/company.service';
-import * as path from 'path';
-import {join} from 'path';
-import {ConfigService} from '@nestjs/config';
-import {DOCS_TYPES} from '../../shared/constants';
-import {Company} from '../../company/entities/company.entity';
-import {Vehicle} from '../../vehicle/entities/vehicle.entity';
-import {User} from '../../user/entities/user.entity';
-import {Expense} from '../../expense/entities/expense.entity';
-import {InvoiceService} from '../../invoice/services/invoice.service';
-import {Invoice} from '../../invoice/entities/invoice.entity';
+import { Breakdown } from '../../breakdown/entities/breakdown.entity';
+import { BreakdownService } from '../../breakdown/services/breakdown.service';
+import { Company } from '../../company/entities/company.entity';
+import { CompanyService } from '../../company/services/company.service';
+import { Contract } from '../../contract/entities/contract.entity';
+import { ContractService } from '../../contract/services/contract.service';
+import { Expense } from '../../expense/entities/expense.entity';
+import { ExpenseService } from '../../expense/services/expense.service';
+import { Invoice } from '../../invoice/entities/invoice.entity';
+import { InvoiceService } from '../../invoice/services/invoice.service';
+import { Action } from '../../shared/acl/action.constant';
+import { Actor } from '../../shared/acl/actor.constant';
+import { DOCS_TYPES } from '../../shared/constants';
+import {
+  createUploadFile,
+  getFilePath,
+  moveToTrash,
+  orderClean,
+  whereClauseClean,
+} from '../../shared/helpers';
+import { AppLogger } from '../../shared/logger/logger.service';
+import { RequestContext } from '../../shared/request-context/request-context.dto';
+import { Travel } from '../../travel/entities/travel.entity';
+import { TravelService } from "../../travel/services/travel.service";
+import { User } from '../../user/entities/user.entity';
+import { UserService } from '../../user/services/user.service';
+import { Vehicle } from '../../vehicle/entities/vehicle.entity';
+import { VehicleService } from '../../vehicle/services/vehicle.service';
+import { FileCreateDto } from '../dtos/file-create.dto';
+import { FileOrderDto } from '../dtos/file-order.dto';
+import { FileOutputDto } from '../dtos/file-output.dto';
+import { FileParamDto } from '../dtos/file-param.dto';
+import { FileUpdateDto } from '../dtos/file-update.dto';
+import { File } from '../entities/file.entity';
+import { FileRepository } from '../repositories/file.repository';
+import { FileAclService } from './file-acl.service';
 
 @Injectable()
 export class FileService {
@@ -46,10 +58,13 @@ export class FileService {
     private repository: FileRepository,
     private aclService: FileAclService,
     private userService: UserService,
-    private vehicleService: VehicleService,
     private expenseService: ExpenseService,
     private companyService: CompanyService,
     private invoiceService: InvoiceService,
+    private contractService: ContractService,
+    private travelService: TravelService,
+    private breakdownService: BreakdownService,
+    private vehicleService: VehicleService,
     private readonly logger: AppLogger,
   ) {
     this.logger.setContext(FileService.name);
@@ -57,15 +72,18 @@ export class FileService {
     this.maxSize = this.configService.get<number>('file.maxSize');
   }
 
-  @Cron(CronExpression.EVERY_DAY_AT_2AM, { //'* * * * *'
+  @Cron(CronExpression.EVERY_DAY_AT_2AM, {
+    //'* * * * *'
     name: 'triggerNotifications',
     timeZone: 'UTC',
   })
   async triggerNotifications() {
-    this.logger.internalLog(`Cron: ${this.triggerNotifications.name} was called`);
-    const files = await this.repository.getFutureExpiredFiles()
+    this.logger.internalLog(
+      `Cron: ${this.triggerNotifications.name} was called`,
+    );
+    const files = await this.repository.getFutureExpiredFiles();
     console.log('triggerNotifications was called');
-    console.log(files)
+    console.log(files);
   }
 
   async getFiles(
@@ -90,6 +108,15 @@ export class FileService {
       order: orderClean(order),
       take: limit,
       skip: offset,
+      relations: [
+        'author',
+        'company',
+        'vehicle',
+        'expense',
+        'invoice',
+        'contract',
+        'breakdown',
+      ],
     });
 
     const filesOutput = plainToInstance(FileOutputDto, files, {
@@ -172,13 +199,52 @@ export class FileService {
         );
         file.invoice = plainToInstance(Invoice, invoice);
       } catch {
-        errorMessages.push(`Expense with ID '${input.invoiceId}'  Not Found`);
+        errorMessages.push(`Invoice with ID '${input.invoiceId}'  Not Found`);
+      }
+    }
+    if (input.contractId) {
+      try {
+        const contract = await this.contractService.getContractById(
+          ctx,
+          input.contractId,
+        );
+        file.contract = plainToInstance(Contract, contract);
+      } catch {
+        errorMessages.push(`Contract with ID '${input.contractId}'  Not Found`);
+      }
+    }
+    
+    if (input.travelId) {
+      try {
+        const travel = await this.travelService.getTravelById(
+          ctx,
+          input.travelId,
+        );
+        file.travel = plainToInstance(Travel, travel);
+      } catch {
+        errorMessages.push(`Travel with ID '${input.travelId}'  Not Found`);
+      }
+    }
+
+    if (input.breakdownId) {
+      try {
+        const breakdown = await this.breakdownService.getBreakdownById(
+          ctx,
+          input.breakdownId,
+        );
+        file.breakdown = plainToInstance(Breakdown, breakdown);
+      } catch {
+        errorMessages.push(
+          `Breakdown with ID '${input.breakdownId}'  Not Found`,
+        );
       }
     }
 
     if (fileUploaded) {
       file.size = fileUploaded.size;
-      file.extension = path.extname(fileUploaded.originalname).toLocaleLowerCase();
+      file.extension = path
+        .extname(fileUploaded.originalname)
+        .toLocaleLowerCase();
 
       if (Number(file.size) > this.maxSize) {
         errorMessages.push(
@@ -189,7 +255,6 @@ export class FileService {
       if (!DOCS_TYPES.includes(file.extension)) {
         errorMessages.push(`Only [${DOCS_TYPES}] are allowed !`);
       }
-
     } else {
       errorMessages.push(`File is required !`);
     }
@@ -229,10 +294,7 @@ export class FileService {
     });
   }
 
-  async downloadFileById(
-    ctx: RequestContext,
-    id: number,
-  ): Promise<string> {
+  async downloadFileById(ctx: RequestContext, id: number): Promise<string> {
     this.logger.log(ctx, `${this.downloadFileById.name} was called`);
 
     const actor: Actor = ctx.user;
@@ -247,11 +309,11 @@ export class FileService {
       throw new UnauthorizedException();
     }
 
-    const filePath =  await getFilePath(file.link)
-    if (!file.link || !filePath ){
+    const filePath = await getFilePath(file.link);
+    if (!file.link || !filePath) {
       throw new NotFoundException('File Not Found');
     }
-    return filePath
+    return filePath;
   }
 
   async updateFile(
@@ -329,7 +391,43 @@ export class FileService {
         );
         file.invoice = plainToInstance(Invoice, invoice);
       } catch {
-        errorMessages.push(`Expense with ID '${input.invoiceId}'  Not Found`);
+        errorMessages.push(`Invoice with ID '${input.invoiceId}'  Not Found`);
+      }
+    }
+    if (input.contractId && input.contractId != file.contract.id) {
+      try {
+        const contract = await this.contractService.getContractById(
+          ctx,
+          input.contractId,
+        );
+        file.contract = plainToInstance(Contract, contract);
+      } catch {
+        errorMessages.push(`Contract with ID '${input.contractId}'  Not Found`);
+      }
+    }
+    if (input.travelId && input.travelId != file.travel.id) {
+      try {
+        const travel = await this.travelService.getTravelById(
+          ctx,
+          input.travelId,
+        );
+        file.travel = plainToInstance(Travel, travel);
+      } catch {
+        errorMessages.push(`Travel with ID '${input.travelId}'  Not Found`);
+      }
+    }
+
+    if (input.breakdownId && input.breakdownId != file.breakdown.id) {
+      try {
+        const breakdown = await this.breakdownService.getBreakdownById(
+          ctx,
+          input.breakdownId,
+        );
+        file.breakdown = plainToInstance(Breakdown, breakdown);
+      } catch {
+        errorMessages.push(
+          `Breakdown with ID '${input.breakdownId}'  Not Found`,
+        );
       }
     }
 
@@ -353,7 +451,7 @@ export class FileService {
 
     this.logger.log(ctx, `calling ${FileRepository.name}.save`);
     if (fileUploaded) {
-      await moveToTrash(this.basePath,  file.link);
+      await moveToTrash(this.basePath, file.link);
       const fileName = this.generateFileName(ctx.user, file);
       file.link = await createUploadFile(
         basePathWithYear,
@@ -400,17 +498,19 @@ export class FileService {
     }
   }
 
-  generateFileName(actor : Actor, file : File): string {
+  generateFileName(actor: Actor, file: File): string {
     let fileName = '';
-    fileName += 'u' + (actor.id?actor.id:0).toString()
-    fileName += '-a' + (file.author?.id?file.author.id:0).toString()
-    fileName += '-c' + (file.company?.id?file.company.id:0).toString()
-    fileName += '-v' + (file.vehicle?.id?file.vehicle.id:0).toString()
-    fileName += '-e' + (file.expense?.id?file.expense.id:0).toString()
-    fileName += '-i' + (file.invoice?.id?file.invoice.id:0).toString()
-    fileName += '-t' + (file.travel?.id?file.travel.id:0).toString()
-    fileName += '_' + uuidv4() +  file.extension
+    fileName += 'u' + (actor.id ? actor.id : 0).toString();
+    fileName += '-a' + (file.author?.id ? file.author.id : 0).toString();
+    fileName += '-c' + (file.company?.id ? file.company.id : 0).toString();
+    fileName += '-v' + (file.vehicle?.id ? file.vehicle.id : 0).toString();
+    fileName += '-e' + (file.expense?.id ? file.expense.id : 0).toString();
+    fileName += '-i' + (file.invoice?.id ? file.invoice.id : 0).toString();
+    fileName += '-t' + (file.travel?.id ? file.travel.id : 0).toString();
+    fileName += '-ct' + (file.contract?.id ? file.contract.id : 0).toString();
+    fileName += '_' + uuidv4() + file.extension;
 
     return fileName;
   }
+
 }

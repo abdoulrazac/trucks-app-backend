@@ -1,4 +1,5 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
+import { Transform } from 'class-transformer';
 import {
   IsBoolean,
   IsDateString, 
@@ -6,21 +7,18 @@ import {
   IsOptional,
   IsString,
 } from 'class-validator';
-import { Transform } from 'class-transformer';
-import { transformToBoolean } from '../../shared/helpers';
 
 import { ROLE } from '../../shared/constants';
+import { transformToBoolean } from '../../shared/helpers';
 
 export class UserParamDto {
   @ApiPropertyOptional()
   @IsOptional()
-  @IsNotEmpty()
   @IsString()
   name: string;
 
   @ApiPropertyOptional()
   @IsOptional()
-  @IsNotEmpty()
   @IsString()
   username: string;
 
@@ -31,25 +29,32 @@ export class UserParamDto {
 
   @ApiPropertyOptional()
   @IsOptional()
-  @IsNotEmpty()
   @IsString()
   status: string;
 
   @ApiPropertyOptional()
   @IsOptional()
-  @IsNotEmpty()
   @IsString()
   numTel: string;
 
   @ApiPropertyOptional()
   @IsOptional()
-  @IsNotEmpty()
   @IsString()
   email: string;
 
   @ApiPropertyOptional()
   @IsOptional()
-  @IsNotEmpty()
+  @IsString()
+  refDriver: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  @IsDateString()
+  dateDriver: Date;
+
+  @ApiPropertyOptional()
+  @IsOptional()
   @Transform(
     ({ value }) => transformToBoolean(value),
     { toClassOnly: true },
@@ -59,7 +64,6 @@ export class UserParamDto {
 
   @ApiPropertyOptional()
   @IsOptional()
-  @IsNotEmpty()
   @Transform(
     ({ value }) => transformToBoolean(value),
     { toClassOnly: true },
@@ -69,13 +73,11 @@ export class UserParamDto {
 
   @ApiPropertyOptional()
   @IsOptional()
-  @IsNotEmpty()
   @IsDateString()
   createdAt: string;
 
   @ApiPropertyOptional()
   @IsOptional()
-  @IsNotEmpty()
   @IsDateString()
   updatedAt: string;
 }

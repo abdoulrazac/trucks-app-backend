@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform } from "class-transformer";
 import { IsBoolean, IsDateString, IsNotEmpty, IsNumber, IsOptional, IsString, Min } from "class-validator";
+
 import { transformToBoolean } from '../../shared/helpers';
 
 export class ContractUpdateDto {
@@ -8,13 +9,13 @@ export class ContractUpdateDto {
   @IsOptional()
   @IsNotEmpty()
   @IsString()
-  @Transform(({ value }) => parseInt(value, 10), { toClassOnly: true })
   type: string;
 
   @ApiProperty()
   @IsOptional()
   @IsNotEmpty()
   @IsNumber()
+  @Min(0)
   @Transform(({ value }) => parseInt(value, 10), { toClassOnly: true })
   primePercent: number;
 
@@ -22,7 +23,7 @@ export class ContractUpdateDto {
   @IsOptional()
   @IsNotEmpty()
   @IsNumber()
-  @Min(1)
+  @Min(0)
   @Transform(({ value }) => parseInt(value, 10), { toClassOnly: true })
   primeTravelLimit: number;
 
@@ -30,6 +31,7 @@ export class ContractUpdateDto {
   @IsOptional()
   @IsNotEmpty()
   @IsNumber()
+  @Min(0)
   @Transform(({ value }) => parseInt(value, 10), { toClassOnly: true })
   amount: number;
 

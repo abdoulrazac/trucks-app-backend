@@ -20,7 +20,6 @@ export class CompanyCreateDto {
   longname: string;
 
   @ApiProperty()
-  @IsOptional()
   @IsEmail()
   @IsString()
   email: string;
@@ -36,13 +35,16 @@ export class CompanyCreateDto {
   address: string;
 
   @ApiProperty()
-  @IsOptional()
   @IsNotEmpty()
   @IsString()
   numPostal: string;
 
   @ApiProperty()
-  @IsOptional()
+  @IsNotEmpty()
+  @IsString()
+  country: string;
+
+  @ApiProperty()
   @IsNotEmpty()
   @IsString()
   city: string;
@@ -58,13 +60,11 @@ export class CompanyCreateDto {
   numIfu: string;
 
   @ApiProperty()
-  @IsOptional()
   @IsNotEmpty()
   @IsString()
   taxSystem: string;
 
   @ApiProperty()
-  @IsOptional()
   @IsNotEmpty()
   @IsString()
   taxDivision: string;

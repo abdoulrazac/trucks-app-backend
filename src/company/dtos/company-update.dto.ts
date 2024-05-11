@@ -40,6 +40,12 @@ export class CompanyUpdateDto {
   numPostal: string;
 
   @ApiProperty()
+  @IsOptional()  
+  @IsNotEmpty()
+  @IsString()
+  country: string;
+
+  @ApiProperty()
   @IsOptional() 
   @IsNotEmpty()
   @IsString()

@@ -17,7 +17,7 @@ async function bootstrap() {
 
   const userService = app.get(UserService);
 
-  const defaultAdmin: UserCreateDto = {
+  const defaultAdmin : UserCreateDto = {
     name: 'Default Admin User',
     username: 'default-admin',
     numTel: 'default-admin',
@@ -26,9 +26,12 @@ async function bootstrap() {
     roles: [ROLE.ADMIN],
     isAccountDisabled: false,
     email: 'default-admin@3t-business.com',
+    refDriver : '', 
+    dateDriver : new Date(),
   };
 
   const ctx = new RequestContext();
+  // ctx.user.roles = [ROLE.ADMIN];
 
   // Create the default admin user if it doesn't already exist.
   const user = await userService.findByUsername(ctx, defaultAdmin.username);

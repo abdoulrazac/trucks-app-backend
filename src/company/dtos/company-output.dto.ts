@@ -34,6 +34,10 @@ export class CompanyOutputDto {
 
   @Expose()
   @ApiProperty()
+  country: string;
+
+  @Expose()
+  @ApiProperty()
   city: string;
 
   @Expose()

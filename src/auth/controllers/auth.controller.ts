@@ -3,8 +3,9 @@ import {
   ClassSerializerInterceptor,
   Controller,
   HttpCode,
-  HttpStatus,
+  HttpStatus, 
   Post,
+  Query,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
@@ -23,6 +24,7 @@ import { RefreshTokenInput } from '../dtos/auth-refresh-token-input.dto';
 import { RegisterInput } from '../dtos/auth-register-input.dto';
 import { RegisterOutput } from '../dtos/auth-register-output.dto';
 import {
+  ResetPasswordDto,
   ResetPasswordOutputDto,
   ResetPasswordRequestDto,
 } from '../dtos/auth-reset-password.dto';
@@ -82,9 +84,9 @@ export class AuthController {
     return { data: registeredUser, meta: {} };
   }
 
-  @Post('reset-password')
+  @Post('reset-password-request')
   @ApiOperation({
-    summary: 'Reset user password API',
+    summary: 'Reset user password request API',
   })
   @ApiResponse({
     status: HttpStatus.OK,
@@ -100,6 +102,29 @@ export class AuthController {
     );
     return { data: registeredUser, meta: {} };
   }
+
+  @Post('reset-password')
+  @ApiOperation({
+    summary: 'Reset user password API',
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    type: SwaggerBaseApiResponse(ResetPasswordOutputDto),
+  })
+  async resetPasswordWithToken(
+    @ReqContext() ctx: RequestContext,
+    @Body() input: ResetPasswordDto,
+    @Query('token') token: string,
+  ): Promise<BaseApiResponse<ResetPasswordOutputDto>> {
+    const userUpdated = await this.authService.resetPasswordWithToken(
+      ctx,
+      input,
+      token,
+    );
+    return { data: userUpdated, meta: {} };
+  }
+
+
 
   @Post('refresh-token')
   @ApiOperation({

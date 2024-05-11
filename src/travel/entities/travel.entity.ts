@@ -1,10 +1,12 @@
 import {Column, Entity, ManyToOne, OneToMany, Unique,} from 'typeorm';
 
 import {Company} from '../../company/entities/company.entity';
-import {Invoice} from '../../invoice/entities/invoice.entity';
-import {Truck} from '../../truck/entities/truck.entity';
-import {AbstractEntity} from '../../shared/entities/abstract.entity';
 import {File} from '../../file/entities/file.entity';
+import {Invoice} from '../../invoice/entities/invoice.entity';
+import { Route } from "../../route/entities/route.entity";
+import {AbstractEntity} from '../../shared/entities/abstract.entity';
+import {Truck} from '../../truck/entities/truck.entity';
+import { TravelCheckPoint } from "./../../travel-check-point/entities/travel-check-point.entity";
 
 @Entity('travels')
 export class Travel extends AbstractEntity {
@@ -12,14 +14,18 @@ export class Travel extends AbstractEntity {
   @Column({ length: 100 })
   refTravel: string;
 
-  @Column({nullable: true})
-  signatureDate: Date;
-
   @Column({ length: 100 })
   product: string;
 
   @Column({nullable: true})
+  signatureDate: Date;
+
+  @Column({nullable: true})
   status: string;
+
+  @Unique('refUnloading', ['refUnloading'])
+  @Column({ length: 100, nullable: true})
+  refUnloading: string;
 
   @Column({nullable: true})
   departureDate: Date;
@@ -27,10 +33,19 @@ export class Travel extends AbstractEntity {
   @Column({nullable: true})
   arrivalDate: Date;
 
-  @Column()
+  @Column({nullable: true})
+  description : string ;
+
+  @Column({nullable: true})
+  departureCountry: string;
+
+  @Column({nullable: true})
   departureCity: string;
 
-  @Column()
+  @Column({nullable: true})
+  arrivalCountry: string;
+
+  @Column({nullable: true})
   arrivalCity: string;
 
   @Column({nullable: true})
@@ -53,4 +68,10 @@ export class Travel extends AbstractEntity {
 
   @OneToMany(() => File, (file) => file.travel)
   files: File[];
+
+  @ManyToOne(() => Route, (route) => route.travels, { eager: false, cascade : ['insert', 'update'] })
+  route: Route;
+
+  @OneToMany(() => TravelCheckPoint, (travelCheckPoint) => travelCheckPoint.travel, { onDelete: 'CASCADE'})
+  travelCheckPoints: TravelCheckPoint[];
 }

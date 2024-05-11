@@ -12,37 +12,31 @@ import {
 export class InvoiceParamDto {
   @ApiPropertyOptional()
   @IsOptional()
-  @IsNotEmpty()
   @IsString()
   numInvoice: string;
 
   @ApiPropertyOptional()
   @IsOptional()
-  @IsNotEmpty()
   @IsNumber()
   unitPriceExtern: number;
 
   @ApiPropertyOptional()
   @IsOptional()
-  @IsNotEmpty()
   @IsNumber()
   unitPriceIntern: number;
 
   @ApiPropertyOptional()
   @IsOptional()
-  @IsNotEmpty()
   @IsString()
   valueTva: number;
 
   @ApiPropertyOptional()
   @IsOptional()
-  @IsNotEmpty()
   @IsString()
   valueRetain: number;
 
   @ApiPropertyOptional()
   @IsOptional()
-  @IsNotEmpty()
   @IsString()
   status: string;
 

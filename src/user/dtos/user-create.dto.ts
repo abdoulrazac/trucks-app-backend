@@ -1,6 +1,9 @@
 import {ApiProperty, ApiPropertyOptional} from '@nestjs/swagger';
+import {Transform} from 'class-transformer';
 import {
   IsBoolean,
+  IsBooleanString,
+  IsDateString,
   IsEmail,
   IsEnum,
   IsNotEmpty,
@@ -11,22 +14,22 @@ import {
   Matches,
   MaxLength,
 } from 'class-validator';
+import {transformToBoolean} from 'src/shared/helpers';
 
 import {ACCOUNT_STATUS, ROLE} from '../../shared/constants';
-import {Transform} from 'class-transformer';
-import {transformToBoolean} from 'src/shared/helpers';
 
 export class UserCreateDto {
   @ApiPropertyOptional()
   @IsOptional()
   @IsNotEmpty()
   @IsString()
+  @Length(4, 100)
   name: string;
 
   @ApiProperty()
   @IsNotEmpty()
   @Length(6, 100)
-  @Matches('^[a-zA-Z0-9_\\-\\.]{4,20}[a-zA-Z0-9]$')
+  @Matches('^[a-zA-Z0-9][a-zA-Z0-9_\\-\\.]{2,28}[a-zA-Z0-9]$')
   username: string;
 
   @ApiProperty()
@@ -45,6 +48,17 @@ export class UserCreateDto {
   @IsEmail()
   @MaxLength(100)
   email: string;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsString()
+  @Length(4, 100)
+  refDriver: string;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsDateString()
+  dateDriver: Date; 
 
   @ApiProperty({ example: [ROLE.CONDUCTOR, ROLE.ACCOUNTANT, ROLE.MANAGER] })
   @IsNotEmpty()

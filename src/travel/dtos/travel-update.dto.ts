@@ -1,6 +1,7 @@
 import {ApiProperty} from '@nestjs/swagger';
 import {Transform} from "class-transformer";
-import {IsDate, IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString, Min} from "class-validator";
+import {IsDate, IsDateString, IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString, Min} from "class-validator";
+
 import {TRAVEL_STATUS} from "../../shared/constants";
 
 export class TravelUpdateDto {
@@ -13,8 +14,14 @@ export class TravelUpdateDto {
   @ApiProperty()
   @IsOptional()
   @IsNotEmpty()
+  @IsString()
+  refUnloading: string;
+
+  @ApiProperty()
+  @IsOptional()
+  @IsNotEmpty()
   @Transform(({ value }) => new Date(value), { toClassOnly: true })
-  @IsDate()
+  @IsDateString()
   signatureDate: Date;
 
   @ApiProperty()
@@ -33,15 +40,27 @@ export class TravelUpdateDto {
   @IsOptional()
   @IsNotEmpty()
   @Transform(({ value }) => new Date(value), { toClassOnly: true })
-  @IsDate()
+  @IsDateString()
   departureDate: Date;
 
   @ApiProperty()
   @IsOptional()
   @IsNotEmpty()
   @Transform(({ value }) => new Date(value), { toClassOnly: true })
-  @IsDate()
+  @IsDateString()
   arrivalDate: Date;
+
+  @ApiProperty()
+  @IsOptional()
+  @IsNotEmpty()
+  @IsString()
+  departureCountry: string;
+
+  @ApiProperty()
+  @IsOptional()
+  @IsNotEmpty()
+  @IsString()
+  arrivalCountry: string;
 
   @ApiProperty()
   @IsOptional()
@@ -78,6 +97,12 @@ export class TravelUpdateDto {
   @Min(0)
   @Transform(({ value }) => parseInt(value, 10), { toClassOnly: true })
   arrivalWeight: number ;
+  
+
+  @ApiProperty()
+  @IsOptional()
+  @IsString()
+  description: string;
 
   @ApiProperty()
   @IsOptional()

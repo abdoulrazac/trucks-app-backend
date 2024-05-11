@@ -9,6 +9,7 @@ import {
   UseInterceptors
 } from "@nestjs/common";
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
+import { SkipThrottle } from "@nestjs/throttler";
 
 import { JwtAuthGuard } from "../../auth/guards/jwt-auth.guard";
 import { BaseApiErrorResponse, BaseApiResponse, SwaggerBaseApiResponse } from "../../shared/dtos/base-api-response.dto";
@@ -16,13 +17,15 @@ import { PaginationParamsDto } from "../../shared/dtos/pagination-params.dto";
 import { AppLogger } from "../../shared/logger/logger.service";
 import { ReqContext } from "../../shared/request-context/req-context.decorator";
 import { RequestContext } from "../../shared/request-context/request-context.dto";
-import { VehicleOutputDto } from "../dtos/vehicle-output.dto";
-import { VehicleService } from "../services/vehicle.service";
 import { VehicleCreateDto } from "../dtos/vehicle-create.dto";
-import { VehicleParamDto } from "../dtos/vehicle-param.dto";
 import { VehicleOrderDto } from "../dtos/vehicle-order.dto";
+import { VehicleOutputDto } from "../dtos/vehicle-output.dto";
+import { VehicleParamDto } from "../dtos/vehicle-param.dto";
+import { VehicleStatsOutputDto } from "../dtos/vehicle-stats-output.dto";
 import { VehicleUpdateDto } from "../dtos/vehicle-update.dto";
+import { VehicleService } from "../services/vehicle.service";
 
+@SkipThrottle({})
 @ApiTags('Vehicles')
 @Controller('vehicles')
 export class VehicleController {
@@ -150,4 +153,5 @@ export class VehicleController {
 
     return { data: vehicles, meta: { count } };
   }
+
 }

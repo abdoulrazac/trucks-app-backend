@@ -20,6 +20,10 @@ export class UserMinOutputDto {
 
   @Expose()
   @ApiProperty()
+  refDriver: string;
+
+  @Expose()
+  @ApiProperty()
   email: string;
 
   @Expose()

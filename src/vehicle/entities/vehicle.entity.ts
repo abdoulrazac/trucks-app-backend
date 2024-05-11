@@ -1,12 +1,14 @@
-import {Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, Unique, UpdateDateColumn} from 'typeorm';
+import {Column, Entity, OneToMany, PrimaryGeneratedColumn, Unique } from 'typeorm';
 
+import { Breakdown } from '../../breakdown/entities/breakdown.entity';
 import {Expense} from "../../expense/entities/expense.entity";
+import {File} from "../../file/entities/file.entity";
+import { AbstractEntity } from '../../shared/entities/abstract.entity';
 import {Travel} from "../../travel/entities/travel.entity";
 import {Truck} from "../../truck/entities/truck.entity";
-import {File} from "../../file/entities/file.entity";
 
 @Entity('vehicles')
-export class Vehicle {
+export class Vehicle extends AbstractEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -33,14 +35,8 @@ export class Vehicle {
   axleNumber : number;
 
   @Column( { "default": false})
-  isAssigned: boolean;
-
-  @CreateDateColumn({ name: 'createdAt', nullable: true })
-  createdAt: Date;
-
-  @UpdateDateColumn({ name: 'updatedAt', nullable: true })
-  updatedAt: Date;
-
+  isAssigned: boolean; 
+  
   @OneToMany(() => Truck, (truck) => truck.tractor)
   tractors: Travel[];
 
@@ -52,4 +48,7 @@ export class Vehicle {
 
   @OneToMany(() => File, (file) => file.vehicle)
   files : File[];
+
+  @OneToMany(() => Breakdown, (breakdown) => breakdown.vehicle)
+  breakdowns : Breakdown[];
 }

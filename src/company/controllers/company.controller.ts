@@ -5,32 +5,32 @@ import {
   Get,
   HttpStatus, Param, Post, Put,
   Query,
-  UseGuards,
   Response,
-  UseInterceptors,
-  UploadedFile
-} from "@nestjs/common";
+  UploadedFile,
+  UseGuards,
+  UseInterceptors} from "@nestjs/common";
+import { FileInterceptor } from "@nestjs/platform-express";
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
+import { SkipThrottle } from "@nestjs/throttler";
 
+import { Roles } from '../../auth/decorators/role.decorator'; 
 import { JwtAuthGuard } from "../../auth/guards/jwt-auth.guard";
+import { RolesGuard } from '../../auth/guards/roles.guard';
+import { ROLE } from '../../shared/constants';
 import { BaseApiErrorResponse, BaseApiResponse, SwaggerBaseApiResponse } from "../../shared/dtos/base-api-response.dto";
+import { BufferOutputDto } from '../../shared/dtos/buffer-output.dto';
 import { PaginationParamsDto } from "../../shared/dtos/pagination-params.dto";
 import { AppLogger } from "../../shared/logger/logger.service";
 import { ReqContext } from "../../shared/request-context/req-context.decorator";
 import { RequestContext } from "../../shared/request-context/request-context.dto";
-import { CompanyOutputDto } from "../dtos/company-output.dto";
-import { CompanyService } from "../services/company.service";
 import { CompanyCreateDto } from "../dtos/company-create.dto";
-import { CompanyParamDto } from "../dtos/company-param.dto";
 import { CompanyOrderDto } from "../dtos/company-order.dto";
+import { CompanyOutputDto } from "../dtos/company-output.dto";
+import { CompanyParamDto } from "../dtos/company-param.dto";
 import { CompanyUpdateDto } from "../dtos/company-update.dto";
-import { BufferOutputDto } from '../../shared/dtos/buffer-output.dto';
+import { CompanyService } from "../services/company.service";
 
-import { ROLE } from '../../shared/constants';
-import { Roles } from '../../auth/decorators/role.decorator'; 
-import { RolesGuard } from '../../auth/guards/roles.guard';
-import { FileInterceptor } from "@nestjs/platform-express";
-
+@SkipThrottle()
 @ApiTags('Companies')
 @Controller('companies')
 export class CompanyController {

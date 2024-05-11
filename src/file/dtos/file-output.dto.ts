@@ -1,12 +1,14 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {Expose, Transform, Type} from 'class-transformer';
-import { UserMinOutputDto } from '../../user/dtos/user-min-output.dto';
+import { ContractMinOutputDto } from 'src/contract/dtos/contract-min-output.dto';
+
+import { BreakdownMinOutputDto } from '../../breakdown/dtos/breakdown-min-output.dto';
 import { CompanyMinOutputDto } from '../../company/dtos/company-min-output.dto';
-import { VehicleMinOutputDto } from '../../vehicle/dtos/vehicle-min-output.dto';
 import { ExpenseMinOutputDto } from '../../expense/dtos/expense-min-output.dto';
 import { InvoiceMinOutputDto } from '../../invoice/dtos/invoice-min-output.dto';
 import { TravelMinOutputDto } from '../../travel/dtos/travel-min-output.dto';
-import {IsDateString, IsOptional} from "class-validator";
+import { UserMinOutputDto } from '../../user/dtos/user-min-output.dto';
+import { VehicleMinOutputDto } from '../../vehicle/dtos/vehicle-min-output.dto';
 
 export class FileOutputDto {
   @Expose()
@@ -27,7 +29,7 @@ export class FileOutputDto {
 
   @Expose()
   @ApiProperty()
-  category: string[];
+  categories: string[];
 
 
   @Expose()
@@ -77,6 +79,18 @@ export class FileOutputDto {
   @ApiProperty()
   @Type(() => InvoiceMinOutputDto)
   invoice: InvoiceMinOutputDto;
+
+  @Expose()
+  @ApiProperty()
+  @Type(() => ContractMinOutputDto)
+  contract : ContractMinOutputDto;
+
+  @Expose()
+  @ApiProperty()
+  @Type(() => BreakdownMinOutputDto)
+  breakdown : BreakdownMinOutputDto;
+
+
 
   @Expose()
   @ApiProperty()

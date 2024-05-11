@@ -9,6 +9,7 @@ import {
   UseInterceptors
 } from "@nestjs/common";
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
+import { SkipThrottle } from "@nestjs/throttler";
 
 import { JwtAuthGuard } from "../../auth/guards/jwt-auth.guard";
 import { BaseApiErrorResponse, BaseApiResponse, SwaggerBaseApiResponse } from "../../shared/dtos/base-api-response.dto";
@@ -16,13 +17,14 @@ import { PaginationParamsDto } from "../../shared/dtos/pagination-params.dto";
 import { AppLogger } from "../../shared/logger/logger.service";
 import { ReqContext } from "../../shared/request-context/req-context.decorator";
 import { RequestContext } from "../../shared/request-context/request-context.dto";
-import { TravelOutputDto } from "../dtos/travel-output.dto";
-import { TravelService } from "../services/travel.service";
 import { TravelCreateDto } from "../dtos/travel-create.dto";
-import { TravelParamDto } from "../dtos/travel-param.dto";
 import { TravelOrderDto } from "../dtos/travel-order.dto";
+import { TravelOutputDto } from "../dtos/travel-output.dto";
+import { TravelParamDto } from "../dtos/travel-param.dto";
 import { TravelUpdateDto } from "../dtos/travel-update.dto";
+import { TravelService } from "../services/travel.service";
 
+@SkipThrottle()
 @ApiTags('Travels')
 @Controller('travels')
 export class TravelController {

@@ -12,6 +12,7 @@ export enum OrderColumn {
   numTel = 'numTel',
   address = 'address',
   numPostal = 'numPostal',
+  country = 'country',
   city = 'city',
   numRccm = 'numRccm',
   numIfu = 'numIfu',

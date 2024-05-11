@@ -1,8 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { Transform } from 'class-transformer';
 import {
   IsBoolean,
   IsDate,
-  IsDateString,
   IsNotEmpty,
   IsNumber,
   IsOptional,
@@ -10,14 +10,13 @@ import {
   Min,
   MinLength,
 } from 'class-validator';
-import { Transform } from 'class-transformer';
 import { transformToBoolean } from 'src/shared/helpers';
 
 export class FileUpdateDto {
   @ApiProperty()
   @IsOptional()
   @IsString()
-  @MinLength(5)
+  @MinLength(1)
   label: string;
 
   @ApiProperty()
@@ -39,7 +38,7 @@ export class FileUpdateDto {
   @ApiProperty()
   @IsOptional()
   @IsNotEmpty()
-  category: string[];
+  categories: string[];
 
   @ApiProperty()
   @IsOptional()
@@ -102,4 +101,20 @@ export class FileUpdateDto {
   @Min(0)
   @Transform(({ value }) => parseInt(value, 10), { toClassOnly: true })
   invoiceId: number;
+
+  @ApiProperty()
+  @IsOptional()
+  @IsNotEmpty()
+  @IsNumber()
+  @Min(0)
+  @Transform(({ value }) => parseInt(value, 10), { toClassOnly: true })
+  contractId: number;
+
+  @ApiProperty()
+  @IsOptional()
+  @IsNotEmpty()
+  @IsNumber()
+  @Min(0)
+  @Transform(({ value }) => parseInt(value, 10), { toClassOnly: true })
+  breakdownId: number;
 }

@@ -8,6 +8,8 @@ export enum OrderColumn {
   status = 'status',
   numTel = 'numTel',
   email = 'email',
+  refDriver = 'refDriver',
+  dateDriver = 'dateDriver',
   isAccountDisabled = 'isAccountDisabled',
   createdAt = 'createdAt',
   updatedAt = 'updatedAt',

@@ -1,20 +1,19 @@
 import {ApiProperty, ApiPropertyOptional} from '@nestjs/swagger';
+import {Transform} from 'class-transformer';
 import {
   IsBoolean,
   IsDateString,
-  IsNotEmpty,
   IsNumber,
   IsOptional,
   IsString,
   Min,
 } from 'class-validator';
-import {Expose, Transform} from 'class-transformer';
 import { transformToBoolean } from 'src/shared/helpers';
 
 export class FileParamDto {
   @ApiPropertyOptional()
   @IsOptional()
-  @IsString()
+  @IsString() 
   label: string;
 
   @ApiPropertyOptional()
@@ -33,7 +32,7 @@ export class FileParamDto {
 
   @ApiPropertyOptional()
   @IsOptional()
-  category: string[];
+  categories: string[];
 
   @ApiPropertyOptional()
   @IsOptional()
@@ -93,6 +92,20 @@ export class FileParamDto {
   @Min(0)
   @Transform(({ value }) => parseInt(value, 10), { toClassOnly: true })
   invoiceId: number;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsNumber()
+  @Min(0)
+  @Transform(({ value }) => parseInt(value, 10), { toClassOnly: true })
+  contractId: number;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsNumber()
+  @Min(0)
+  @Transform(({ value }) => parseInt(value, 10), { toClassOnly: true })
+  breakdownId: number;
 
   @ApiPropertyOptional()
   @IsOptional()

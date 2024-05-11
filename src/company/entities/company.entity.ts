@@ -1,17 +1,14 @@
 import {
   Column,
-  CreateDateColumn,
   Entity,
   OneToMany,
-  PrimaryGeneratedColumn,
   Unique,
-  UpdateDateColumn,
 } from 'typeorm';
 
-import {Invoice} from "../../invoice/entities/invoice.entity";
-import {Travel} from "../../travel/entities/travel.entity";
 import { File } from "../../file/entities/file.entity";
+import {Invoice} from "../../invoice/entities/invoice.entity";
 import { AbstractEntity } from "../../shared/entities/abstract.entity";
+import {Travel} from "../../travel/entities/travel.entity";
 
 @Entity('companies')
 export class Company extends AbstractEntity {
@@ -34,6 +31,9 @@ export class Company extends AbstractEntity {
 
   @Column()
   numPostal: string;
+
+  @Column()
+  country: string;
 
   @Column()
   city: string;
