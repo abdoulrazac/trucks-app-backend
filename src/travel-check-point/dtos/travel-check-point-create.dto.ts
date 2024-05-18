@@ -7,7 +7,7 @@ export class TravelCheckPointCreateDto {
   @ApiProperty()
   @IsNotEmpty()
   @IsString()
-  @MinLength(5)
+  @MinLength(3)
   description: string;
 
   @ApiProperty()
@@ -18,8 +18,7 @@ export class TravelCheckPointCreateDto {
   travelId: number;
 
 
-  @IsOptional()
-  @ApiPropertyOptional()
+  @ApiProperty()
   @IsNotEmpty()
   @IsNumber()
   @Min(0)

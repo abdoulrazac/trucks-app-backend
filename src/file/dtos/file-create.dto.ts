@@ -64,7 +64,7 @@ export class FileCreateDto {
   @IsNumber()
   @Min(0)
   @Transform(({ value }) => parseInt(value, 10), { toClassOnly: true })
-  expenseId: number;
+  financeId: number;
 
   @ApiProperty()
   @IsOptional()

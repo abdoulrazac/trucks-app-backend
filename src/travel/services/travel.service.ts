@@ -1,25 +1,33 @@
-import {Injectable, NotAcceptableException, UnauthorizedException,} from '@nestjs/common';
-import {plainToInstance} from 'class-transformer';
-import {DataSource} from "typeorm";
+import {
+  Injectable,
+  NotAcceptableException,
+  UnauthorizedException,
+} from '@nestjs/common';
+import { plainToInstance } from 'class-transformer';
+import { DataSource } from 'typeorm';
 
-import {Company} from '../../company/entities/company.entity';
-import {CompanyService} from '../../company/services/company.service';
-import {Action} from '../../shared/acl/action.constant';
-import {Actor} from '../../shared/acl/actor.constant';
-import {TRAVEL_STATUS, VEHICLE_STATUS} from "../../shared/constants";
-import {orderClean, whereClauseClean} from '../../shared/helpers';
-import {AppLogger} from '../../shared/logger/logger.service';
-import {RequestContext} from '../../shared/request-context/request-context.dto';
-import {Truck} from '../../truck/entities/truck.entity';
-import {TruckService} from '../../truck/services/truck.service';
-import {TravelCreateDto} from '../dtos/travel-create.dto';
-import {TravelOrderDto} from '../dtos/travel-order.dto';
-import {TravelOutputDto} from '../dtos/travel-output.dto';
-import {TravelParamDto} from '../dtos/travel-param.dto';
-import {TravelUpdateDto} from '../dtos/travel-update.dto';
-import {Travel} from '../entities/travel.entity';
-import {TravelRepository} from '../repositories/travel.repository';
-import {TravelAclService} from './travel-acl.service';
+import { Company } from '../../company/entities/company.entity';
+import { CompanyService } from '../../company/services/company.service';
+import { Invoice } from '../../invoice/entities/invoice.entity';
+import { RouteService } from '../../route/services/route.service';
+import { Action } from '../../shared/acl/action.constant';
+import { Actor } from '../../shared/acl/actor.constant';
+import { TRAVEL_STATUS, VEHICLE_STATUS } from '../../shared/constants';
+import { orderClean, whereClauseClean } from '../../shared/helpers';
+import { AppLogger } from '../../shared/logger/logger.service';
+import { RequestContext } from '../../shared/request-context/request-context.dto';
+import { Truck } from '../../truck/entities/truck.entity';
+import { TruckService } from '../../truck/services/truck.service';
+import { TravelCreateDto } from '../dtos/travel-create.dto';
+import { TravelOrderDto } from '../dtos/travel-order.dto';
+import { TravelOutputDto } from '../dtos/travel-output.dto';
+import { TravelParamDto } from '../dtos/travel-param.dto';
+import { TravelUpdateDto } from '../dtos/travel-update.dto';
+import { Travel } from '../entities/travel.entity';
+import { TravelRepository } from '../repositories/travel.repository';
+import { InvoiceService } from './../../invoice/services/invoice.service';
+import { Route } from './../../route/entities/route.entity';
+import { TravelAclService } from './travel-acl.service';
 
 @Injectable()
 export class TravelService {
@@ -29,6 +37,8 @@ export class TravelService {
     private aclService: TravelAclService,
     private truckService: TruckService,
     private companyService: CompanyService,
+    private invoiceService: InvoiceService,
+    private routeService: RouteService,
     private readonly logger: AppLogger,
   ) {
     this.logger.setContext(TravelService.name);
@@ -51,13 +61,21 @@ export class TravelService {
     }
 
     this.logger.log(ctx, `calling ${TravelRepository.name}.findAndCount`);
+    let whereCleaned = whereClauseClean(filters)
+    if(filters.conductorId){
+      const filtersWithoutConductor = {...filters}
+      delete filtersWithoutConductor.conductorId
+      whereCleaned = {...whereClauseClean(filtersWithoutConductor), truck : {conductor : {id : filters.conductorId}}}
+    }
+
     const [travels, count] = await this.repository.findAndCount({
-      where: whereClauseClean(filters),
+      where: whereCleaned,
       order: orderClean(order),
       relations: {
         company: true,
         truck: true,
         invoice: true,
+        route: true,
       },
       take: limit,
       skip: offset,
@@ -92,9 +110,13 @@ export class TravelService {
 
     // refTravel controls
     try {
-      const travelByRef = await this.repository.findOne({ where : { refTravel : input.refTravel } }); 
-      if(travelByRef) {
-        errorMessages.push(`Travel with ref '${input.refTravel}' already exists`);
+      const travelByRef = await this.repository.findOne({
+        where: { refTravel: input.refTravel },
+      });
+      if (travelByRef) {
+        errorMessages.push(
+          `Travel with ref '${input.refTravel}' already exists`,
+        );
       }
     } catch {
       errorMessages.push(`Cannot check refTravel !`);
@@ -102,9 +124,13 @@ export class TravelService {
 
     // refUnloadind controls
     try {
-      const travelByRef = await this.repository.findOne({ where : { refUnloading : input.refUnloading } }); 
-      if(travelByRef) {
-        errorMessages.push(`Travel with ref '${input.refUnloading}' already exists`);
+      const travelByRef = await this.repository.findOne({
+        where: { refUnloading: input.refUnloading },
+      });
+      if (travelByRef) {
+        errorMessages.push(
+          `Travel with ref '${input.refUnloading}' already exists`,
+        );
       }
     } catch {
       errorMessages.push(`Cannot check refUnloading !`);
@@ -121,19 +147,29 @@ export class TravelService {
       errorMessages.push(`Company with ID '${input.companyId}'  Not Found`);
     }
 
+    // Route controls
+    try {
+      const route = await this.routeService.getRouteById(ctx, input.routeId);
+      travel.route = plainToInstance(Route, route);
+    } catch {
+      errorMessages.push(`Route with ID '${input.routeId}'  Not Found`);
+    }
+
     // Truck controls
     try {
       const truck = await this.truckService.getTruckById(ctx, input.truckId);
       if (truck.isClosed) {
         errorMessages.push(`Truck with ID '${input.truckId}' is closed`);
       }
-      if (truck.status == VEHICLE_STATUS.WORK){
-        errorMessages.push(`Truck with ID '${input.truckId}' is already in a travel`);
+      if (truck.status == VEHICLE_STATUS.WORK) {
+        errorMessages.push(
+          `Truck with ID '${input.truckId}' is already in a travel`,
+        );
       }
-      if (truck.status == VEHICLE_STATUS.PANNE){
+      if (truck.status == VEHICLE_STATUS.PANNE) {
         errorMessages.push(`Truck with ID '${input.truckId}' is in panne`);
       }
-      if (truck.status == VEHICLE_STATUS.GARAGE){
+      if (truck.status == VEHICLE_STATUS.GARAGE) {
         errorMessages.push(`Truck with ID '${input.truckId}' is in garage`);
       }
 
@@ -195,16 +231,19 @@ export class TravelService {
       throw new UnauthorizedException();
     }
 
-   
     // Errors array
     const errorMessages: string[] = [];
 
     // refTravel controls
-    if(input.refTravel && input.refTravel != travel.refTravel) {
+    if (input.refTravel && input.refTravel != travel.refTravel) {
       try {
-        const travelByRef = await this.repository.findOne({ where : { refTravel : input.refTravel } }); 
-        if(travelByRef) {
-          errorMessages.push(`Travel with ref '${input.refTravel}' already exists`);
+        const travelByRef = await this.repository.findOne({
+          where: { refTravel: input.refTravel },
+        });
+        if (travelByRef) {
+          errorMessages.push(
+            `Travel with ref '${input.refTravel}' already exists`,
+          );
         }
       } catch {
         errorMessages.push(`Cannot check refTravel !`);
@@ -212,11 +251,15 @@ export class TravelService {
     }
 
     // refUnloadind controls
-    if(input.refUnloading && input.refUnloading != travel.refUnloading) {
+    if (input.refUnloading && input.refUnloading != travel.refUnloading) {
       try {
-        const travelByRef = await this.repository.findOne({ where : { refUnloading : input.refUnloading } }); 
-        if(travelByRef) {
-          errorMessages.push(`Travel with ref '${input.refUnloading}' already exists`);
+        const travelByRef = await this.repository.findOne({
+          where: { refUnloading: input.refUnloading },
+        });
+        if (travelByRef) {
+          errorMessages.push(
+            `Travel with ref '${input.refUnloading}' already exists`,
+          );
         }
       } catch {
         errorMessages.push(`Cannot check refUnloading !`);
@@ -224,7 +267,7 @@ export class TravelService {
     }
 
     // Company controls
-    if(input.companyId && input.companyId != travel.company.id) {
+    if (input.companyId && input.companyId != travel.company.id) {
       try {
         const company = await this.companyService.getCompanyById(
           ctx,
@@ -236,20 +279,51 @@ export class TravelService {
       }
     }
 
-    // Truck controls
-    if(input.truckId && input.truckId != travel.truck.id) { 
+    // Invoice controls
+    if (input.invoiceId && (!travel.invoice || input.invoiceId != travel.invoice.id)) {
       try {
-        const truck = await this.truckService.getRawTruckById(ctx, input.truckId);
+        const invoice = await this.invoiceService.getRawInvoiceById(
+          ctx,
+          input.invoiceId,
+        );
+        travel.invoice = plainToInstance(Invoice, invoice);
+      } catch {
+        errorMessages.push(`Invoice with ID '${input.invoiceId}'  Not Found`);
+      }
+    }
+
+    // Route controls
+    if (
+      (input.routeId && !travel.route) ||
+      (input.routeId && input.routeId != travel.route.id)
+    ) {
+      try {
+        const route = await this.routeService.getRouteById(ctx, input.routeId);
+        travel.route = plainToInstance(Route, route);
+      } catch {
+        errorMessages.push(`Route with ID '${input.routeId}'  Not Found`);
+      }
+    }
+
+    // Truck controls
+    if (input.truckId && input.truckId != travel.truck.id) {
+      try {
+        const truck = await this.truckService.getRawTruckById(
+          ctx,
+          input.truckId,
+        );
         if (truck.isClosed) {
           errorMessages.push(`Truck with ID '${input.truckId}' is closed`);
         }
-        if (truck.status == VEHICLE_STATUS.WORK){
-          errorMessages.push(`Truck with ID '${input.truckId}' is already in a travel`);
+        if (truck.status == VEHICLE_STATUS.WORK) {
+          errorMessages.push(
+            `Truck with ID '${input.truckId}' is already in a travel`,
+          );
         }
-        if (truck.status == VEHICLE_STATUS.PANNE){
+        if (truck.status == VEHICLE_STATUS.PANNE) {
           errorMessages.push(`Truck with ID '${input.truckId}' is in panne`);
         }
-        if (truck.status == VEHICLE_STATUS.GARAGE){
+        if (truck.status == VEHICLE_STATUS.GARAGE) {
           errorMessages.push(`Truck with ID '${input.truckId}' is in garage`);
         }
 
@@ -266,22 +340,31 @@ export class TravelService {
 
     // Status controls
     if (input.status && input.status != travel.status) {
-      if(input.status == TRAVEL_STATUS.CREATED || input.status == TRAVEL_STATUS.CLOSED || input.status == TRAVEL_STATUS.CANCELLED) {
-          updatedTravel.truck.status = VEHICLE_STATUS.AVAILABLE;
+      if (
+        input.status == TRAVEL_STATUS.CREATED ||
+        input.status == TRAVEL_STATUS.CLOSED ||
+        input.status == TRAVEL_STATUS.CANCELLED
+      ) {
+        updatedTravel.truck.status = VEHICLE_STATUS.AVAILABLE;
       } else {
-          updatedTravel.truck.status = VEHICLE_STATUS.WORK;
+        updatedTravel.truck.status = VEHICLE_STATUS.WORK;
       }
     }
 
     this.logger.log(ctx, `calling ${TravelRepository.name}.save`);
     const savedTravel = await this.repository.save(updatedTravel);
 
-    return plainToInstance(TravelOutputDto, savedTravel, {
+    const travelOutput = await this.repository.getById(savedTravel.id);
+
+    return plainToInstance(TravelOutputDto, travelOutput, {
       excludeExtraneousValues: true,
     });
   }
 
-  async removeInvoiceByTravelId(ctx: RequestContext, id: number): Promise<void> {
+  async removeInvoiceByTravelId(
+    ctx: RequestContext,
+    id: number,
+  ): Promise<void> {
     this.logger.log(ctx, `${this.removeInvoiceByTravelId.name} was called`);
 
     this.logger.log(ctx, `calling ${TravelRepository.name}.getById`);
@@ -295,7 +378,10 @@ export class TravelService {
 
     this.logger.log(ctx, `calling ${TravelRepository.name}.getById`);
     const travel = await this.repository.getById(id);
-    const travelOnly = plainToInstance(Travel,  { id : travel.id, refTravel : travel.refTravel})
+    const travelOnly = plainToInstance(Travel, {
+      id: travel.id,
+      refTravel: travel.refTravel,
+    });
 
     const actor: Actor = ctx.user;
 
@@ -312,7 +398,9 @@ export class TravelService {
       const queryRunner = this.dataSource.createQueryRunner();
       await queryRunner.connect();
       await queryRunner.startTransaction();
-      await queryRunner.manager.update(Truck, travel.truck.id, { status: VEHICLE_STATUS.AVAILABLE });
+      await queryRunner.manager.update(Truck, travel.truck.id, {
+        status: VEHICLE_STATUS.AVAILABLE,
+      });
       await queryRunner.manager.remove(travelOnly);
       await queryRunner.commitTransaction();
     } catch (err) {
@@ -322,26 +410,22 @@ export class TravelService {
     }
   }
 
-  async getTravelCheckpointsById(
-    ctx: RequestContext,
-    id: number,
-  ): Promise<TravelOutputDto> {
-    this.logger.log(ctx, `${this.getTravelCheckpointsById.name} was called`);
-
-    const actor: Actor = ctx.user;
+  async unlinkTravelInvoice(ctx: RequestContext, id: number): Promise<void> {
+    this.logger.log(ctx, `${this.unlinkTravelInvoice.name} was called`);
 
     this.logger.log(ctx, `calling ${TravelRepository.name}.getById`);
     const travel = await this.repository.getById(id);
 
+    const actor: Actor = ctx.user;
+
     const isAllowed = this.aclService
       .forActor(actor)
-      .canDoAction(Action.Read, travel);
+      .canDoAction(Action.Update, travel);
     if (!isAllowed) {
       throw new UnauthorizedException();
     }
 
-    return plainToInstance(TravelOutputDto, travel, {
-      excludeExtraneousValues: true,
-    });
+    travel.invoice = null;
+    await this.repository.save(travel);
   }
 }

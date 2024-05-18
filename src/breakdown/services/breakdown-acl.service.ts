@@ -11,9 +11,10 @@ export class BreakdownAclService extends BaseAclService<Breakdown> {
     super();
     // Admin can do all action
     this.canDo(ROLE.ADMIN, [Action.Manage]);
+    this.canDo(ROLE.MANAGER, [Action.Manage]);
+    this.canDo(ROLE.ACCOUNTANT, [Action.List, Action.Read]);
+
     //user can read himself or any other user
     this.canDo(ROLE.CONDUCTOR, [Action.Read, Action.List, Action.Create]);
-
-    // user can only update himself
   }
 }

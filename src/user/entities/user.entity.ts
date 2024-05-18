@@ -1,7 +1,8 @@
-import { AfterLoad, Column, Entity, ManyToOne, OneToMany, Unique } from 'typeorm';
+import { Column, Entity, OneToMany, Unique } from 'typeorm';
 
 import { Contract } from '../../contract/entities/contract.entity';
 import { File } from '../../file/entities/file.entity';
+import { Finance } from "../../finance/entities/finance.entity";
 import { AbstractEntity } from '../../shared/entities/abstract.entity';
 import { Truck } from '../../truck/entities/truck.entity';
 import { EmailChange } from './email-change.entity';
@@ -68,6 +69,9 @@ export class User extends AbstractEntity {
 
   @OneToMany(() => File, (file) => file.author)
   files: File[];
+
+  @OneToMany(() => Finance, (finance) => finance.user)
+  finances: Finance[];
 }
 
 

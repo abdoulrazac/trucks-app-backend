@@ -156,4 +156,28 @@ export class VehicleService {
     this.logger.log(ctx, `calling ${VehicleRepository.name}.remove`);
     await this.repository.remove(vehicle);
   }
+
+  
+  async getStatisticsById(
+    ctx: RequestContext,
+    id: number,
+  ): Promise<VehicleStatsOutputDto> {
+    this.logger.log(ctx, `${this.getStatisticsById.name} was called`);
+
+    const actor: Actor = ctx.user;
+
+    this.logger.log(ctx, `calling ${VehicleRepository.name}.getById`);
+    const vehicle = await this.repository.getById(id);
+
+    const isAllowed = this.aclService
+      .forActor(actor)
+      .canDoAction(Action.Read, vehicle);
+    if (!isAllowed) {
+      throw new UnauthorizedException();
+    }
+
+    this.logger.log(ctx, `calling ${VehicleRepository.name}.getStatisticsById`);
+    const stats = await this.repository.getStatisticsById(id);
+    return plainToInstance(VehicleStatsOutputDto, stats, {excludeExtraneousValues: true});
+  }
 }

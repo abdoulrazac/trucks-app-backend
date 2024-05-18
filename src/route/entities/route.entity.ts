@@ -7,7 +7,7 @@ import { Travel } from '../../travel/entities/travel.entity';
 @Entity('routes')
 export class Route extends AbstractEntity {
 
-  @Column({length : 20, default : ''})
+  @Column({length : 100, default : ''})
   code : string;
 
   @Column({ length: 200 })

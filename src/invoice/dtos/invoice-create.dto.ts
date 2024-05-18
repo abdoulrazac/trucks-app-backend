@@ -2,19 +2,29 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Transform, Type } from 'class-transformer';
 import {
   IsArray,
+  IsDateString,
+  IsEnum,
   IsNotEmpty,
   IsNumber,
   IsOptional,
   IsString,
   Min,
 } from 'class-validator';
-import { TravelMinOutputDto } from 'src/travel/dtos/travel-min-output.dto';
+
+import { TravelMinOutputDto } from '../../travel/dtos/travel-min-output.dto';
+import { INVOICE_STATUS } from "./../../shared/constants/status.constant";
 
 export class InvoiceCreateDto {
+  
   @ApiProperty()
   @IsNotEmpty()
+  @IsDateString()
+  invoiceDate: Date; 
+
+  @ApiProperty()
+  @IsOptional()
   @IsString()
-  numInvoice: string;
+  description: string;
 
   @ApiProperty()
   @IsOptional()
@@ -26,25 +36,24 @@ export class InvoiceCreateDto {
   @IsOptional()
   @IsNotEmpty()
   @IsNumber()
-  unitPriceIntern: number;
+  unitPriceIntern: number; 
 
   @ApiProperty()
   @IsOptional()
   @IsNotEmpty()
-  @IsString()
+  @IsNumber()
   valueTva: number;
 
   @ApiProperty()
   @IsOptional()
   @IsNotEmpty()
-  @IsString()
+  @IsNumber()
   valueRetain: number;
 
   @ApiProperty()
-  @IsOptional()
   @IsNotEmpty()
-  @IsString()
-  status: string;
+  @IsEnum(INVOICE_STATUS)
+  status: INVOICE_STATUS;
 
   @ApiProperty()
   @IsOptional()

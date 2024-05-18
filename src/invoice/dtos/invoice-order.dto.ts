@@ -6,6 +6,8 @@ import {
 } from 'class-validator';
 
 export enum OrderColumn {
+  description = 'description',
+  invoiceDate = 'invoiceDate',
   isClosed = 'isClosed',
   status = 'status',
   numInvoice = 'numInvoice',

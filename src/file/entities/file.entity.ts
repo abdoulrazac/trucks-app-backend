@@ -3,7 +3,7 @@ import {Column, Entity, ManyToOne} from 'typeorm';
 import { Breakdown } from '../../breakdown/entities/breakdown.entity';
 import {Company} from '../../company/entities/company.entity';
 import { Contract } from '../../contract/entities/contract.entity';
-import {Expense} from '../../expense/entities/expense.entity';
+import {Finance} from '../../finance/entities/finance.entity';
 import {Invoice} from '../../invoice/entities/invoice.entity';
 import {AbstractEntity} from '../../shared/entities/abstract.entity';
 import {Travel} from '../../travel/entities/travel.entity';
@@ -45,13 +45,13 @@ export class File extends AbstractEntity {
   @ManyToOne(() => Company, (company) => company.files)
   company: Company;
 
-  @ManyToOne(() => Expense, (expense) => expense.files)
-  expense: Expense;
+  @ManyToOne(() => Finance, (finance) => finance.files)
+  finance: Finance;
 
   @ManyToOne(() => Vehicle, (vehicle) => vehicle.files)
   vehicle: Vehicle;
 
-  @ManyToOne(() => Travel, (travel) => travel.files)
+  @ManyToOne(() => Travel, (travel) => travel.files) 
   travel: Travel;
 
   @ManyToOne(() => Invoice, (invoice) => invoice.files)

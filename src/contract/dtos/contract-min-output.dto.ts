@@ -6,6 +6,10 @@ export class ContractMinOutputDto {
   @Expose()
   @ApiProperty()
   id: number;
+  
+  @Expose()
+  @ApiProperty()
+  refContract: string;
 
   @Expose()
   @ApiProperty()

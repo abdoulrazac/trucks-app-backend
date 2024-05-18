@@ -1,12 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose, Type } from 'class-transformer';
-import {
-  IsArray,
-  IsNotEmpty,
-  IsNumber,
-  IsOptional,
-  IsString,
-} from 'class-validator';
 
 import { CompanyMinOutputDto } from '../../company/dtos/company-min-output.dto';
 import { TravelOutputDto } from '../../travel/dtos/travel-output.dto';
@@ -16,46 +9,40 @@ export class InvoiceOutputDto {
   @ApiProperty()
   id: number;
 
+  @Expose()
   @ApiProperty()
-  @IsOptional()
-  @IsNotEmpty()
-  @IsString()
+  invoiceDate: Date;
+
+  @Expose()
+  @ApiProperty()
+  description: string;
+
+  @Expose()
+  @ApiProperty()
   numInvoice: string;
 
+  @Expose()
   @ApiProperty()
-  @IsOptional()
-  @IsNotEmpty()
-  @IsNumber()
   unitPriceExtern: number;
 
+  @Expose()
   @ApiProperty()
-  @IsOptional()
-  @IsNotEmpty()
-  @IsNumber()
   unitPriceIntern: number;
 
+  @Expose()
   @ApiProperty()
-  @IsOptional()
-  @IsNotEmpty()
-  @IsString()
   valueTva: number;
 
+  @Expose()
   @ApiProperty()
-  @IsOptional()
-  @IsNotEmpty()
-  @IsString()
   valueRetain: number;
 
+  @Expose()
   @ApiProperty()
-  @IsOptional()
-  @IsNotEmpty()
-  @IsString()
   status: string;
 
+  @Expose()
   @ApiProperty()
-  @IsOptional()
-  @IsArray()
-  @Type(() => TravelOutputDto)
   travels: TravelOutputDto[];
 
   @Expose()
@@ -67,7 +54,7 @@ export class InvoiceOutputDto {
   updatedAt: Date;
 
   @Expose()
-  @Type(() => CompanyMinOutputDto)
   @ApiProperty()
+  @Type(() => CompanyMinOutputDto)
   company: CompanyMinOutputDto;
 }

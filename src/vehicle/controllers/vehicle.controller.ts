@@ -154,4 +154,30 @@ export class VehicleController {
     return { data: vehicles, meta: { count } };
   }
 
+  
+
+  @Get('/read/:id/statistics')
+  @ApiOperation({
+    summary: 'Get vehicle statistics by id API',
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    type: SwaggerBaseApiResponse(VehicleStatsOutputDto),
+  })
+  @ApiResponse({
+    status: HttpStatus.NOT_FOUND,
+    type: BaseApiErrorResponse,
+  })
+  @UseInterceptors(ClassSerializerInterceptor)
+  @UseGuards(JwtAuthGuard)
+  async getVehicleStatistics(
+    @ReqContext() ctx: RequestContext,
+    @Param('id') id: number,
+  ): Promise<BaseApiResponse<VehicleStatsOutputDto>> {
+    this.logger.log(ctx, `${this.getVehicle.name} was called`);
+
+    const stats = await this.vehicleService.getStatisticsById(ctx, id);
+    return { data: stats, meta: {} };
+  }
+
 }

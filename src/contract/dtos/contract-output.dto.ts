@@ -11,6 +11,10 @@ export class ContractOutputDto {
 
   @Expose()
   @ApiProperty()
+  refContract: string;
+
+  @Expose()
+  @ApiProperty()
   type: string;
 
   @Expose()

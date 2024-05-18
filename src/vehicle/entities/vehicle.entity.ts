@@ -1,8 +1,8 @@
 import {Column, Entity, OneToMany, PrimaryGeneratedColumn, Unique } from 'typeorm';
 
 import { Breakdown } from '../../breakdown/entities/breakdown.entity';
-import {Expense} from "../../expense/entities/expense.entity";
 import {File} from "../../file/entities/file.entity";
+import {Finance} from "../../finance/entities/finance.entity";
 import { AbstractEntity } from '../../shared/entities/abstract.entity';
 import {Travel} from "../../travel/entities/travel.entity";
 import {Truck} from "../../truck/entities/truck.entity";
@@ -43,8 +43,8 @@ export class Vehicle extends AbstractEntity {
   @OneToMany(() => Truck, (truck) => truck.semiTrailer)
   semiTrailers: Travel[];
 
-  @OneToMany(() => Expense, (expense) => expense.vehicle)
-  expenses : Expense[];
+  @OneToMany(() => Finance, (finance) => finance.vehicle)
+  finances : Finance[];
 
   @OneToMany(() => File, (file) => file.vehicle)
   files : File[];

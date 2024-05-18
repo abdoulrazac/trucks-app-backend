@@ -4,7 +4,7 @@ import { ContractMinOutputDto } from 'src/contract/dtos/contract-min-output.dto'
 
 import { BreakdownMinOutputDto } from '../../breakdown/dtos/breakdown-min-output.dto';
 import { CompanyMinOutputDto } from '../../company/dtos/company-min-output.dto';
-import { ExpenseMinOutputDto } from '../../expense/dtos/expense-min-output.dto';
+import { FinanceMinOutputDto } from '../../finance/dtos/finance-min-output.dto';
 import { InvoiceMinOutputDto } from '../../invoice/dtos/invoice-min-output.dto';
 import { TravelMinOutputDto } from '../../travel/dtos/travel-min-output.dto';
 import { UserMinOutputDto } from '../../user/dtos/user-min-output.dto';
@@ -62,8 +62,8 @@ export class FileOutputDto {
 
   @Expose()
   @ApiProperty()
-  @Type(() => ExpenseMinOutputDto)
-  expense: CompanyMinOutputDto;
+  @Type(() => FinanceMinOutputDto)
+  Finance: CompanyMinOutputDto;
 
   @Expose()
   @ApiProperty()

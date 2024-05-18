@@ -11,16 +11,19 @@ import {User} from "../../user/entities/user.entity";
 @Entity('contracts')
 export class Contract extends AbstractEntity {
 
+  @Column({unique: true, nullable: true})
+  refContract: string;
+
   @Column()
   type: string;
 
-  @Column()
+  @Column({type: 'float'})
   primePercent: number ;
 
   @Column()
   primeTravelLimit : number ;
 
-  @Column()
+  @Column({type: 'float'})
   amount: number;
 
   @Column()

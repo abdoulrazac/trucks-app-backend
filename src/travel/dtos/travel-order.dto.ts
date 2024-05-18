@@ -15,6 +15,7 @@ export enum OrderColumn {
   arrivalCity = 'arrivalCity',
   departureWeight = 'departureWeight',
   arrivalWeight = 'arrivalWeight',
+  routeId = 'routeId',
   createdAt = 'createdAt',
   updatedAt = 'updatedAt',
 }

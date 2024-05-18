@@ -4,6 +4,12 @@ import {IsNotEmpty, IsNumber, IsOptional, IsString, Min, MinLength} from "class-
 
 
 export class CheckPointCreateDto {
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsNumber()
+  @Min(0)
+  @Transform(({ value }) => parseInt(value, 10), { toClassOnly: true })
+  rank: number;
 
   @ApiProperty()
   @IsNotEmpty()
@@ -12,21 +18,11 @@ export class CheckPointCreateDto {
   label: string;
 
   @ApiProperty()
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
-  @MinLength(5)
   description: string;
 
   @ApiProperty()
-  @IsNotEmpty()
-  @IsNumber()
-  @Min(0)
-  @Transform(({ value }) => parseInt(value, 10), { toClassOnly: true })
-  rank: number;
-
-
-  @IsOptional()
-  @ApiPropertyOptional()
   @IsNotEmpty()
   @IsNumber()
   @Min(0)

@@ -7,10 +7,16 @@ export class InvoiceMinOutputDto {
   @ApiProperty()
   id: number;
 
+  @Expose()
   @ApiProperty()
-  @IsOptional()
-  @IsNotEmpty()
-  @IsString()
+  invoiceDate: Date;
+
+  @Expose()
+  @ApiProperty()
+  description: string;
+
+  @Expose()
+  @ApiProperty()
   numInvoice: string;
 
   @ApiProperty()

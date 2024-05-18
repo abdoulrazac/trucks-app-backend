@@ -10,6 +10,9 @@ import {
 } from "@nestjs/common";
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { SkipThrottle } from "@nestjs/throttler";
+import { Roles } from "src/auth/decorators/role.decorator";
+import { RolesGuard } from "src/auth/guards/roles.guard";
+import { ROLE } from "src/shared/constants";
 
 import { JwtAuthGuard } from "../../auth/guards/jwt-auth.guard";
 import { BaseApiErrorResponse, BaseApiResponse, SwaggerBaseApiResponse } from "../../shared/dtos/base-api-response.dto";
@@ -21,6 +24,7 @@ import { InvoiceCreateDto } from "../dtos/invoice-create.dto";
 import { InvoiceOrderDto } from "../dtos/invoice-order.dto";
 import { InvoiceOutputDto } from "../dtos/invoice-output.dto";
 import { InvoiceParamDto } from "../dtos/invoice-param.dto";
+import { InvoiceStatsOutputDto } from "../dtos/invoice-stats-output.dto";
 import { InvoiceUpdateDto } from "../dtos/invoice-update.dto";
 import { InvoiceService } from "../services/invoice.service";
 
@@ -105,23 +109,23 @@ export class InvoiceController {
     return { data: invoice, meta: {} };
   }
 
-  @Delete('/delete/:id')
-  @ApiOperation({
-    summary: 'Delete invoice by id API',
-  })
-  @ApiResponse({
-    status: HttpStatus.NO_CONTENT,
-  })
-  @UseInterceptors(ClassSerializerInterceptor)
-  @UseGuards(JwtAuthGuard)
-  async deleteInvoice(
-    @ReqContext() ctx: RequestContext,
-    @Param('id') id: number,
-  ): Promise<void> {
-    this.logger.log(ctx, `${this.deleteInvoice.name} was called`);
+  // @Delete('/delete/:id')
+  // @ApiOperation({
+  //   summary: 'Delete invoice by id API',
+  // })
+  // @ApiResponse({
+  //   status: HttpStatus.NO_CONTENT,
+  // })
+  // @UseInterceptors(ClassSerializerInterceptor)
+  // @UseGuards(JwtAuthGuard)
+  // async deleteInvoice(
+  //   @ReqContext() ctx: RequestContext,
+  //   @Param('id') id: number,
+  // ): Promise<void> {
+  //   this.logger.log(ctx, `${this.deleteInvoice.name} was called`);
 
-    return this.invoiceService.deleteInvoice(ctx, id);
-  }
+  //   return this.invoiceService.deleteInvoice(ctx, id);
+  // }
 
   @Get('/list')
   @ApiOperation({
@@ -150,6 +154,34 @@ export class InvoiceController {
       paginationQuery.offset,
     );
 
+    console.log(invoices);
+
     return { data: invoices, meta: { count } };
+  }
+
+  
+
+  @Get('/statistics')
+  @ApiOperation({
+    summary: 'Get invoice statistics API',
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    type: SwaggerBaseApiResponse(InvoiceOutputDto),
+  })
+  @ApiResponse({
+    status: HttpStatus.NOT_FOUND,
+    type: BaseApiErrorResponse,
+  })
+  @UseInterceptors(ClassSerializerInterceptor)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(ROLE.ADMIN, ROLE.ACCOUNTANT, ROLE.MANAGER)
+  async getStatistics(
+    @ReqContext() ctx: RequestContext
+  ): Promise<BaseApiResponse<InvoiceStatsOutputDto>> {
+    this.logger.log(ctx, `${this.getStatistics.name} was called`);
+
+    const stats = await this.invoiceService.getStatistics(ctx);
+    return { data: stats, meta: {} };
   }
 }

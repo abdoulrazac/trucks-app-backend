@@ -18,8 +18,8 @@ import { Company } from '../../company/entities/company.entity';
 import { CompanyService } from '../../company/services/company.service';
 import { Contract } from '../../contract/entities/contract.entity';
 import { ContractService } from '../../contract/services/contract.service';
-import { Expense } from '../../expense/entities/expense.entity';
-import { ExpenseService } from '../../expense/services/expense.service';
+import { Finance } from '../../finance/entities/finance.entity';
+import { FinanceService } from '../../finance/services/finance.service';
 import { Invoice } from '../../invoice/entities/invoice.entity';
 import { InvoiceService } from '../../invoice/services/invoice.service';
 import { Action } from '../../shared/acl/action.constant';
@@ -58,7 +58,7 @@ export class FileService {
     private repository: FileRepository,
     private aclService: FileAclService,
     private userService: UserService,
-    private expenseService: ExpenseService,
+    private financeService: FinanceService,
     private companyService: CompanyService,
     private invoiceService: InvoiceService,
     private contractService: ContractService,
@@ -98,7 +98,7 @@ export class FileService {
     const actor: Actor = ctx.user;
 
     const isAllowed = this.aclService.forActor(actor).canDoAction(Action.List);
-    if (!isAllowed) {
+    if (!isAllowed && actor.id !== filters.authorId) {
       throw new UnauthorizedException();
     }
 
@@ -112,7 +112,7 @@ export class FileService {
         'author',
         'company',
         'vehicle',
-        'expense',
+        'finance',
         'invoice',
         'contract',
         'breakdown',
@@ -180,17 +180,19 @@ export class FileService {
         errorMessages.push(`Vehicle with ID '${input.vehicleId}'  Not Found`);
       }
     }
-    if (input.expenseId) {
+
+    if (input.financeId) {
       try {
-        const expense = await this.expenseService.getExpenseById(
+        const finance = await this.financeService.getFinanceById(
           ctx,
-          input.expenseId,
+          input.financeId,
         );
-        file.expense = plainToInstance(Expense, expense);
+        file.finance = plainToInstance(Finance, finance);
       } catch {
-        errorMessages.push(`Expense with ID '${input.expenseId}'  Not Found`);
+        errorMessages.push(`Finance with ID '${input.authorId}'  Not Found`);
       }
     }
+
     if (input.invoiceId) {
       try {
         const invoice = await this.invoiceService.getInvoiceById(
@@ -240,6 +242,7 @@ export class FileService {
       }
     }
 
+    
     if (fileUploaded) {
       file.size = fileUploaded.size;
       file.extension = path
@@ -372,15 +375,15 @@ export class FileService {
         errorMessages.push(`Vehicle with ID '${input.vehicleId}'  Not Found`);
       }
     }
-    if (input.expenseId && input.expenseId != file.expense.id) {
+    if (input.financeId && input.financeId != file.finance.id) {
       try {
-        const expense = await this.expenseService.getExpenseById(
+        const finance = await this.financeService.getFinanceById(
           ctx,
-          input.expenseId,
+          input.financeId,
         );
-        file.expense = plainToInstance(Expense, expense);
+        file.finance = plainToInstance(Finance, finance);
       } catch {
-        errorMessages.push(`Expense with ID '${input.authorId}'  Not Found`);
+        errorMessages.push(`Finance with ID '${input.authorId}'  Not Found`);
       }
     }
     if (input.invoiceId && input.invoiceId != file.invoice.id) {
@@ -504,7 +507,7 @@ export class FileService {
     fileName += '-a' + (file.author?.id ? file.author.id : 0).toString();
     fileName += '-c' + (file.company?.id ? file.company.id : 0).toString();
     fileName += '-v' + (file.vehicle?.id ? file.vehicle.id : 0).toString();
-    fileName += '-e' + (file.expense?.id ? file.expense.id : 0).toString();
+    fileName += '-e' + (file.finance?.id ? file.finance.id : 0).toString();
     fileName += '-i' + (file.invoice?.id ? file.invoice.id : 0).toString();
     fileName += '-t' + (file.travel?.id ? file.travel.id : 0).toString();
     fileName += '-ct' + (file.contract?.id ? file.contract.id : 0).toString();

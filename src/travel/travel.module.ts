@@ -6,6 +6,8 @@ import { CompanyModule } from '../company/company.module';
 import { SharedModule } from '../shared/shared.module';
 import { TruckModule } from '../truck/truck.module';
 import { UserModule } from '../user/user.module';
+import { InvoiceModule } from "./../invoice/invoice.module";
+import { RouteModule } from "./../route/route.module";
 import { TravelController } from './controllers/travel.controller';
 import { Travel } from './entities/travel.entity';
 import { TravelRepository } from './repositories/travel.repository';
@@ -19,6 +21,8 @@ import { TravelAclService } from './services/travel-acl.service';
     UserModule,
     TruckModule,
     CompanyModule, 
+    InvoiceModule,
+    RouteModule
   ],
   providers: [
     TravelService,

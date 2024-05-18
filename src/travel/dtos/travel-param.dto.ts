@@ -1,6 +1,6 @@
 import {ApiPropertyOptional} from '@nestjs/swagger';
 import {Transform} from 'class-transformer';
-import {IsDateString, IsEnum, IsNumber, IsOptional, IsString, Min,} from 'class-validator';
+import {IsBooleanString, IsDateString, IsEnum, IsNumber, IsOptional, IsString, Min,} from 'class-validator';
 
 import {TRAVEL_STATUS} from "../../shared/constants";
 
@@ -104,4 +104,23 @@ export class TravelParamDto {
   @Min(0)
   @Transform(({ value }) => parseInt(value, 10), { toClassOnly: true })
   invoiceId: number;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsNumber()
+  @Min(0)
+  @Transform(({ value }) => parseInt(value, 10), { toClassOnly: true })
+  routeId: number;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsBooleanString()
+  invoiceIdIsNull: boolean;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsNumber()
+  @Min(0)
+  @Transform(({ value }) => parseInt(value, 10), { toClassOnly: true })
+  conductorId: number;
 }

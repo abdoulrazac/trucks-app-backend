@@ -10,6 +10,17 @@ import {
 } from 'class-validator';
 
 export class InvoiceParamDto {
+  
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsDateString()
+  invoiceDate: Date;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  description: string;
+
   @ApiPropertyOptional()
   @IsOptional()
   @IsString()
@@ -27,12 +38,12 @@ export class InvoiceParamDto {
 
   @ApiPropertyOptional()
   @IsOptional()
-  @IsString()
+  @IsNumber()
   valueTva: number;
 
   @ApiPropertyOptional()
   @IsOptional()
-  @IsString()
+  @IsNumber()
   valueRetain: number;
 
   @ApiPropertyOptional()

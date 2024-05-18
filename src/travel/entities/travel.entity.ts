@@ -48,13 +48,13 @@ export class Travel extends AbstractEntity {
   @Column({nullable: true})
   arrivalCity: string;
 
-  @Column({nullable: true})
+  @Column({nullable: true, type: 'float'})
   truckWeight: number;
 
-  @Column({nullable: true})
+  @Column({nullable: true, type: 'float'})
   departureWeight: number;
 
-  @Column({nullable: true})
+  @Column({nullable: true, type: 'float'})
   arrivalWeight: number;
 
   @ManyToOne(() => Company, (company) => company.travels, { eager: true})

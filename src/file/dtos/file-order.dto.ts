@@ -9,7 +9,7 @@ export enum OrderColumn {
   size = 'size',
   author = 'author',
   company = 'company',
-  expense = 'expense',
+  Finance = 'Finance',
   vehicle = 'vehicle',
   travel = 'vehicle',
   invoice = 'invoice',

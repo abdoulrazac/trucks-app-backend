@@ -1,10 +1,7 @@
-import { TravelCheckPoint } from "./../../check-point/entities/check-point.entity copy";
-
 import {Injectable, NotFoundException} from '@nestjs/common';
 import {DataSource, Repository} from "typeorm";
 
 import {Travel} from "../entities/travel.entity";
-import { CheckPoint } from "../../check-point/entities/check-point.entity";
 
 @Injectable()
 export class TravelRepository extends Repository<Travel>{
@@ -20,7 +17,7 @@ export class TravelRepository extends Repository<Travel>{
         company : true,
         truck : true,
         invoice : true,
-        checkPoints : true,
+        route : true,
       },
     });
     if (!travel) {

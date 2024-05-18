@@ -1,6 +1,5 @@
 import {ApiPropertyOptional} from '@nestjs/swagger';
-import {Transform} from "class-transformer";
-import {IsDateString, IsNotEmpty, IsNumber, IsOptional, IsString, Min,} from 'class-validator';
+import {IsDateString, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class RouteParamDto {
   @ApiPropertyOptional()
@@ -20,13 +19,11 @@ export class RouteParamDto {
 
   @ApiPropertyOptional()
   @IsOptional()
-  @IsNotEmpty()
   @IsDateString()
   createdAt: string;
 
   @ApiPropertyOptional()
   @IsOptional()
-  @IsNotEmpty()
   @IsDateString()
   updatedAt: string;
 }

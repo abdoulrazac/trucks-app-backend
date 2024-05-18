@@ -22,7 +22,7 @@ export class ContractCreateDto {
   @IsNotEmpty()
   @IsNumber()
   @Min(0)
-  @Transform(({ value }) => parseInt(value, 10), { toClassOnly: true })
+  @Transform(({ value }) => parseFloat(value), { toClassOnly: true })
   primePercent: number;
 
   @ApiProperty()
@@ -36,7 +36,7 @@ export class ContractCreateDto {
   @IsNotEmpty()
   @IsNumber()
   @Min(0)
-  @Transform(({ value }) => parseInt(value, 10), { toClassOnly: true })
+  @Transform(({ value }) => parseFloat(value), { toClassOnly: true })
   amount: number;
 
   @ApiProperty()

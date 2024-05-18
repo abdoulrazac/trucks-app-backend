@@ -5,6 +5,7 @@ import {CompanyMinOutputDto} from "../../company/dtos/company-min-output.dto";
 import {InvoiceMinOutputDto} from "../../invoice/dtos/invoice-min-output.dto";
 import {TRAVEL_STATUS} from "../../shared/constants";
 import {TruckOutputDto} from "../../truck/dtos/truck-output.dto";
+import { RouteOutputDto } from "./../../route/dtos/route-output.dto";
 
 export class TravelOutputDto {
   @Expose()
@@ -14,6 +15,10 @@ export class TravelOutputDto {
   @Expose()
   @ApiProperty()
   refTravel: string;
+
+  @Expose()
+  @ApiProperty()
+  refUnloading: string;
 
   @Expose()
   @ApiProperty()
@@ -53,6 +58,10 @@ export class TravelOutputDto {
 
   @Expose()
   @ApiProperty()
+  truckWeight: number ;
+
+  @Expose()
+  @ApiProperty()
   departureWeight: number ;
 
   @Expose()
@@ -85,4 +94,9 @@ export class TravelOutputDto {
   @ApiProperty()
   @Type( () => TruckOutputDto)
   truck: TruckOutputDto ;
+
+  @Expose()
+  @ApiProperty()
+  @Type( () => RouteOutputDto)
+  route : RouteOutputDto
 }

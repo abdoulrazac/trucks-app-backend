@@ -50,12 +50,14 @@ export class UserCreateDto {
   email: string;
 
   @ApiProperty()
+  @IsOptional()
   @IsNotEmpty()
   @IsString()
   @Length(4, 100)
   refDriver: string;
 
   @ApiProperty()
+  @IsOptional()
   @IsNotEmpty()
   @IsDateString()
   dateDriver: Date; 

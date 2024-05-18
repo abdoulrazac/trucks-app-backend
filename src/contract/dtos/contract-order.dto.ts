@@ -9,6 +9,7 @@ export enum OrderColumn {
   type = 'type',
   primePercent = 'primePercent',
   primeTravelLimit = 'primeTravelLimit',
+  refContract = 'refContract',
   amount = 'amount',
   startDate = 'startDate',
   endDate = 'endDate',

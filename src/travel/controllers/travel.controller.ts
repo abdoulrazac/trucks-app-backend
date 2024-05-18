@@ -152,4 +152,22 @@ export class TravelController {
 
     return { data: travels, meta: { count } };
   }
+
+  @Put('/unlink-invoice/:id')
+  @ApiOperation({
+    summary: 'Unlink travel from invoice API',
+  })
+  @ApiResponse({
+    status: HttpStatus.NO_CONTENT,
+  })
+  @UseInterceptors(ClassSerializerInterceptor)
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  async unlinkInvoice(
+    @ReqContext() ctx: RequestContext,
+    @Param('id') travelId: number,
+  ): Promise<BaseApiResponse<void>> {
+    await this.travelService.unlinkTravelInvoice(ctx, travelId);
+    return { data: undefined, meta: {} };
+  }
 }

@@ -44,7 +44,7 @@ export class TruckService {
     const actor: Actor = ctx.user;
 
     const isAllowed = this.aclService.forActor(actor).canDoAction(Action.List);
-    if (!isAllowed) {
+    if (!isAllowed && actor.id !== filters.conductorId) {
       throw new UnauthorizedException();
     }
 

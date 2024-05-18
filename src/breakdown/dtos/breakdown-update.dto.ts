@@ -1,15 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform } from "class-transformer";
-import { IsBoolean, IsDateString, IsNotEmpty, IsNumber, IsOptional, IsString, Min } from "class-validator";
+import { IsDateString, IsNotEmpty, IsNumber, IsOptional, IsString, Min } from "class-validator";
 
-import { transformToBoolean } from '../../shared/helpers';
-
-export class BreakdownUpdateDto {
-  @ApiProperty()
-  @IsOptional()
-  @IsNotEmpty()
-  @IsString()
-  refBreakdown : string;
+export class BreakdownUpdateDto { 
 
   @ApiProperty()
   @IsOptional()

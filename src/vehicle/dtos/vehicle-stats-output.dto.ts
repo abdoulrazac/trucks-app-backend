@@ -15,13 +15,13 @@ export class VehicleStatsOutputDto {
 
   @Expose()
   @ApiProperty()
-  breakdownByType : {type : string, count : number}[];
+  breakdownByMonthAndType : {type : string, month : string, count : number}[];
 
   @Expose()
   @ApiProperty()
-  breakdownByMonth : {month : string, count : number}[];
+  fileCount: number; 
 
   @Expose()
   @ApiProperty()
-  fileNumber: number;
+  breakdownCount: number; 
 }

@@ -90,7 +90,6 @@ export class AuthService {
 
     // Send email with token
 
-
     return plainToInstance(ResetPasswordOutputDto, {
       username: input.username,
       message: 'Reset password mail is send to username email if it exists.',
@@ -111,7 +110,6 @@ export class AuthService {
       message: 'Password reset successfully',
     });
   }
-
 
 
   async refreshToken(ctx: RequestContext): Promise<AuthTokenOutput> {

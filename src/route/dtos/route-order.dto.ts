@@ -15,7 +15,6 @@ export enum OrderColumn {
 
 
 export class RouteOrderDto {
-
   @ApiPropertyOptional()
   @IsOptional()
   @IsString()

@@ -27,6 +27,7 @@ import { CompanyCreateDto } from "../dtos/company-create.dto";
 import { CompanyOrderDto } from "../dtos/company-order.dto";
 import { CompanyOutputDto } from "../dtos/company-output.dto";
 import { CompanyParamDto } from "../dtos/company-param.dto";
+import { CompanyStatsOutputDto } from "../dtos/company-stats-output.dto";
 import { CompanyUpdateDto } from "../dtos/company-update.dto";
 import { CompanyService } from "../services/company.service";
 
@@ -166,7 +167,6 @@ export class CompanyController {
   }
 
 
-  @UseInterceptors(ClassSerializerInterceptor)
   @Get('/read/:id/avatar')
   @ApiOperation({
     summary: 'Get company avatar by id API',
@@ -179,6 +179,7 @@ export class CompanyController {
     status: HttpStatus.NOT_FOUND,
     type: BaseApiErrorResponse,
   })
+  @UseInterceptors(ClassSerializerInterceptor)
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(ROLE.ADMIN, ROLE.MANAGER, ROLE.ACCOUNTANT)
@@ -191,5 +192,29 @@ export class CompanyController {
 
     const filePath = await this.companyService.downloadAvatarByUserId(ctx, id);
     return res.sendFile(filePath);
+  }
+
+  @Get('/read/:id/statistics')
+  @ApiOperation({
+    summary: 'Get company statistics API',
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    type: SwaggerBaseApiResponse(CompanyOutputDto),
+  })
+  @ApiResponse({
+    status: HttpStatus.NOT_FOUND,
+    type: BaseApiErrorResponse,
+  })
+  @UseInterceptors(ClassSerializerInterceptor)
+  @UseGuards(JwtAuthGuard)
+  async getStatistics(
+    @ReqContext() ctx: RequestContext,
+    @Param('id') id: number,
+  ): Promise<BaseApiResponse<CompanyStatsOutputDto>> {
+    this.logger.log(ctx, `${this.getStatistics.name} was called`);
+
+    const stats = await this.companyService.getStatisticsById(ctx, id);
+    return { data: stats, meta: {} };
   }
 }

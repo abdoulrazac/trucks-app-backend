@@ -9,6 +9,7 @@ import {
 import {File} from "../../file/entities/file.entity";
 import { AbstractEntity } from "../../shared/entities/abstract.entity";
 import { Vehicle } from '../../vehicle/entities/vehicle.entity';
+import { Finance } from "./../../finance/entities/finance.entity";
 
 @Entity('breakdowns')
 export class Breakdown extends AbstractEntity {
@@ -34,6 +35,9 @@ export class Breakdown extends AbstractEntity {
 
   @ManyToOne(() => Vehicle, (vehicle) => vehicle.breakdowns, { eager: true })
   vehicle: Vehicle ;
+
+  @OneToMany(() => Finance, (finance) => finance.breakdown)
+  finances: Finance[];
 
   @OneToMany(() => File, (file) => file.breakdown)
   files: File[];

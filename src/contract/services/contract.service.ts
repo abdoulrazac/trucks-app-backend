@@ -5,12 +5,16 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
+import { REFERENCE_TYPE } from 'src/shared/constants';
+import { nextReference } from 'src/shared/helpers/reference-generator';
 
 import { Action } from '../../shared/acl/action.constant';
 import { Actor } from '../../shared/acl/actor.constant';
 import { orderClean, whereClauseClean } from '../../shared/helpers';
 import { AppLogger } from '../../shared/logger/logger.service';
 import { RequestContext } from '../../shared/request-context/request-context.dto';
+import { User } from '../../user/entities/user.entity';
+import { UserService } from '../../user/services/user.service';
 import { ContractCreateDto } from '../dtos/contract-create.dto';
 import { ContractOrderDto } from '../dtos/contract-order.dto';
 import { ContractOutputDto } from '../dtos/contract-output.dto';
@@ -19,8 +23,6 @@ import { ContractUpdateDto } from '../dtos/contract-update.dto';
 import { Contract } from '../entities/contract.entity';
 import { ContractRepository } from '../repositories/contract.repository';
 import { ContractAclService } from './contract-acl.service';
-import { User } from '../../user/entities/user.entity';
-import { UserService } from '../../user/services/user.service';
 
 @Injectable()
 export class ContractService {
@@ -45,7 +47,7 @@ export class ContractService {
     const actor: Actor = ctx.user;
 
     const isAllowed = this.aclService.forActor(actor).canDoAction(Action.List);
-    if (!isAllowed) {
+    if (!isAllowed && actor.id !== filters.authorId) {
       throw new UnauthorizedException();
     }
 
@@ -92,6 +94,11 @@ export class ContractService {
         `Author with ID '${input.authorId}'  Not Found`,
       );
     }
+
+    
+    // Get last invoice number and Generate new refContract
+    const lastContract = await this.repository.find({order: {id: 'DESC'}, take: 1});
+    contract.refContract = nextReference(REFERENCE_TYPE.CONTRACT, lastContract[0]?.refContract)
 
     this.logger.log(ctx, `calling ${ContractRepository.name}.save`);
     const savedContract = await this.repository.save(contract);

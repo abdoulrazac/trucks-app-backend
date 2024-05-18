@@ -1,6 +1,5 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { TravelModule } from 'src/travel/travel.module';
 
 import { JwtAuthStrategy } from '../auth/strategies/jwt-auth.strategy';
 import { CompanyModule } from '../company/company.module';
@@ -18,7 +17,6 @@ import { InvoiceAclService } from './services/invoice-acl.service';
     TypeOrmModule.forFeature([Invoice]),
     UserModule,
     CompanyModule,
-    TravelModule,
   ],
   providers: [
     InvoiceService,

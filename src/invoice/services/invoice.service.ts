@@ -1,23 +1,30 @@
-import {BadRequestException, Injectable, NotAcceptableException, UnauthorizedException,} from '@nestjs/common';
-import {plainToInstance} from 'class-transformer';
-import {Travel} from 'src/travel/entities/travel.entity';
-import {TravelService} from 'src/travel/services/travel.service';
+import {
+  BadRequestException,
+  Injectable,
+  NotAcceptableException,
+  UnauthorizedException,
+} from '@nestjs/common';
+import { plainToInstance } from 'class-transformer';
+import { nextReference } from 'src/shared/helpers/reference-generator';
 
-import {Company} from '../../company/entities/company.entity';
-import {CompanyService} from '../../company/services/company.service';
-import {Action} from '../../shared/acl/action.constant';
-import {Actor} from '../../shared/acl/actor.constant';
-import {orderClean, whereClauseClean} from '../../shared/helpers';
-import {AppLogger} from '../../shared/logger/logger.service';
-import {RequestContext} from '../../shared/request-context/request-context.dto';
-import {InvoiceCreateDto} from '../dtos/invoice-create.dto';
-import {InvoiceOrderDto} from '../dtos/invoice-order.dto';
-import {InvoiceOutputDto} from '../dtos/invoice-output.dto';
-import {InvoiceParamDto} from '../dtos/invoice-param.dto';
-import {InvoiceUpdateDto} from '../dtos/invoice-update.dto';
-import {Invoice} from '../entities/invoice.entity';
-import {InvoiceRepository} from '../repositories/invoice.repository';
-import {InvoiceAclService} from './invoice-acl.service';
+import { Company } from '../../company/entities/company.entity';
+import { CompanyService } from '../../company/services/company.service';
+import { Action } from '../../shared/acl/action.constant';
+import { Actor } from '../../shared/acl/actor.constant';
+import { INVOICE_STATUS } from '../../shared/constants';
+import { orderClean, whereClauseClean } from '../../shared/helpers';
+import { AppLogger } from '../../shared/logger/logger.service';
+import { RequestContext } from '../../shared/request-context/request-context.dto';
+import { InvoiceCreateDto } from '../dtos/invoice-create.dto';
+import { InvoiceOrderDto } from '../dtos/invoice-order.dto';
+import { InvoiceOutputDto } from '../dtos/invoice-output.dto';
+import { InvoiceParamDto } from '../dtos/invoice-param.dto';
+import { InvoiceStatsOutputDto } from '../dtos/invoice-stats-output.dto';
+import { InvoiceUpdateDto } from '../dtos/invoice-update.dto';
+import { Invoice } from '../entities/invoice.entity';
+import { InvoiceRepository } from '../repositories/invoice.repository';
+import { REFERENCE_TYPE } from './../../shared/constants/common';
+import { InvoiceAclService } from './invoice-acl.service';
 
 @Injectable()
 export class InvoiceService {
@@ -25,7 +32,6 @@ export class InvoiceService {
     private repository: InvoiceRepository,
     private aclService: InvoiceAclService,
     private companyService: CompanyService,
-    private travelService: TravelService,
     private readonly logger: AppLogger,
   ) {
     this.logger.setContext(InvoiceService.name);
@@ -51,12 +57,10 @@ export class InvoiceService {
     const [invoices, count] = await this.repository.findAndCount({
       where: whereClauseClean(filters),
       order: orderClean(order),
-      relations: {
-        company: true,
-      },
+      relations: ["company"],
       take: limit,
       skip: offset,
-    });
+    }); 
 
     const invoicesOutput = plainToInstance(InvoiceOutputDto, invoices, {
       excludeExtraneousValues: true,
@@ -82,10 +86,10 @@ export class InvoiceService {
       throw new UnauthorizedException();
     }
 
-    const errorMessages = []
+    const errorMessages = [];
 
     // Conductor controls
-    if(input.companyId){
+    if (input.companyId) {
       try {
         const company = await this.companyService.getCompanyById(
           ctx,
@@ -97,28 +101,22 @@ export class InvoiceService {
       }
     }
 
-    const travels = []
-    if(input.travels){
-      for(const travel of input.travels){
-        try {
-          this.logger.log(ctx, `calling ${TravelService.name}.getTravelById`); 
-          let travelByID = await this.travelService.getTravelById(ctx, travel.id);
-          if(travel && travelByID.invoice.id == null){
-            travels.push(plainToInstance(Travel, travelByID));
-          } else {
-            errorMessages.push(`Travel with ID '${travel.id}'  Not Found`);
-          }
-        } catch {
-          errorMessages.push(`Cannot check if travel with ID '${travel.id}' exists`);
-        }
-      } 
-    }
-
-    if(errorMessages.length > 0){
+    if (errorMessages.length > 0) {
       throw new BadRequestException(errorMessages);
     }
 
-    invoice.travels = travels;
+    // Get last invoice number
+    const lastInvoice = await this.repository.find({
+      order: { id: 'DESC' },
+      take: 1,
+    });
+
+    // Generate new invoice number
+    invoice.numInvoice = nextReference(
+      REFERENCE_TYPE.INVOICE,
+      lastInvoice[0]?.numInvoice,
+    );
+
     this.logger.log(ctx, `calling ${InvoiceRepository.name}.save`);
     const savedInvoice = await this.repository.save(invoice);
 
@@ -149,6 +147,24 @@ export class InvoiceService {
       excludeExtraneousValues: true,
     });
   }
+
+  async getRawInvoiceById(ctx: RequestContext, id: number): Promise<Invoice> {
+    this.logger.log(ctx, `${this.getRawInvoiceById.name} was called`);
+
+    const actor: Actor = ctx.user;
+
+    this.logger.log(ctx, `calling ${InvoiceRepository.name}.getById`);
+    const invoice = await this.repository.findOne({ where: { id } });
+
+    const isAllowed = this.aclService
+      .forActor(actor)
+      .canDoAction(Action.Read, invoice);
+    if (!isAllowed) {
+      throw new UnauthorizedException();
+    }
+    return invoice;
+  }
+
   async updateInvoice(
     ctx: RequestContext,
     invoiceId: number,
@@ -168,12 +184,12 @@ export class InvoiceService {
       throw new UnauthorizedException();
     }
 
-    /*
-      Voir le cas des voyages si on modifie la facture
-    */
+    if (input.status && input.status === INVOICE_STATUS.CANCELLED) {
+      this.logger.log(ctx, `${this.cancelInvoice.name} was called`);
+      return this.cancelInvoice(ctx, invoiceId);
+    }
 
-    const errorMessages = []
-
+    const errorMessages = [];
     // Conductor controls
     if (input.companyId && input.companyId != invoice.company.id) {
       try {
@@ -187,32 +203,6 @@ export class InvoiceService {
       }
     }
 
-    const travels = []
-    const oldTravels = invoice.travels
-    const newTravels = input.travels
-    const travelsToDelete = oldTravels.filter((oldTravel) => !newTravels.some((newTravel) => newTravel.id == oldTravel.id))
-    const travelsToAdd = newTravels.filter((newTravel) => !oldTravels.some((oldTravel) => oldTravel.id == newTravel.id))
-
-    if(travelsToAdd.length > 0){
-      for(const travel of travelsToAdd){    
-        try {
-          this.logger.log(ctx, `calling ${TravelService.name}.getTravelById`); 
-          const travelByID = await this.travelService.getTravelById(ctx, travel.id);
-          if(travel && travelByID.invoice.id == null){
-            travels.push(plainToInstance(Travel, travelByID));
-          } else {
-            errorMessages.push(`Travel with ID '${travel.id}'  Not Found`);
-          }
-        } catch {
-          errorMessages.push(`Cannot check if travel with ID '${travel.id}' exists`);
-        }
-      } 
-    }
-
-    if(errorMessages.length > 0){
-      throw new BadRequestException(errorMessages);
-    }
-
     const updatedInvoice: Invoice = {
       ...invoice,
       ...plainToInstance(Invoice, input),
@@ -220,17 +210,6 @@ export class InvoiceService {
 
     this.logger.log(ctx, `calling ${InvoiceRepository.name}.save`);
     const savedInvoice = await this.repository.save(updatedInvoice);
-
-    if(travelsToDelete.length > 0){
-      for(const travel of travelsToDelete){
-        this.logger.log(ctx, `calling ${TravelService.name}.getTravelById`); 
-        const travelByID = await this.travelService.getTravelById(ctx, travel.id);
-        if(travel){
-          this.logger.log(ctx, `calling ${TravelService.name}.updateTravel`);
-          await this.travelService.removeInvoiceByTravelId(ctx, travelByID.id);
-        }
-      }
-    }
 
     return plainToInstance(InvoiceOutputDto, savedInvoice, {
       excludeExtraneousValues: true,
@@ -252,13 +231,87 @@ export class InvoiceService {
       throw new UnauthorizedException();
     }
 
-    this.logger.log(ctx, `calling ${InvoiceRepository.name}.remove`);
     try {
+      // cancel invoice
+      this.logger.log(ctx, `calling ${this.cancelInvoice.name}`);
+      await this.cancelInvoice(ctx, id);
+      this.logger.log(ctx, `calling ${InvoiceRepository.name}.remove`);
       await this.repository.remove(invoice);
     } catch (err) {
       throw new NotAcceptableException(
         'Cannot delete a parent : a forein key constraint',
       );
     }
+  }
+
+  async cancelInvoice(
+    ctx: RequestContext,
+    id: number,
+  ): Promise<InvoiceOutputDto> {
+    this.logger.log(ctx, `${this.cancelInvoice.name} was called`);
+
+    this.logger.log(ctx, `calling ${InvoiceRepository.name}.getById`);
+    const invoice = await this.repository.getById(id);
+
+    const actor: Actor = ctx.user;
+
+    const isAllowed = this.aclService
+      .forActor(actor)
+      .canDoAction(Action.Update, invoice);
+    if (!isAllowed) {
+      throw new UnauthorizedException();
+    }
+
+    console.log('================ 1 ==================');
+
+    const connection = this.repository.manager.connection;
+    const queryRunner = connection.createQueryRunner();
+    await queryRunner.connect();
+    try {
+      await queryRunner.startTransaction();
+      // update Invoice
+
+      queryRunner.query(`
+        UPDATE invoices
+        SET status = '${INVOICE_STATUS.CANCELLED}'
+        WHERE id = ${id};
+      `);
+
+      // update Travels
+      queryRunner.query(`
+        UPDATE travels
+        SET invoiceId = NULL
+        WHERE invoiceId = ${id};
+      `);
+
+      await queryRunner.commitTransaction();
+    } catch (err) {
+      await queryRunner.rollbackTransaction();
+    } finally {
+      await queryRunner.release();
+    }    
+
+    return plainToInstance(
+      InvoiceOutputDto,
+      {
+        ...invoice,
+        status: INVOICE_STATUS.CANCELLED,
+      },
+      { excludeExtraneousValues: true },
+    );
+  }
+
+  
+  async getStatistics(
+    ctx: RequestContext,
+  ) : Promise<InvoiceStatsOutputDto> {
+    this.logger.log(ctx, `${this.getStatistics.name} was called`);
+
+    this.logger.log(ctx, `calling ${InvoiceRepository.name}.getStatistics`);
+    const stats = await this.repository.getStatistics();
+
+    return plainToInstance(InvoiceStatsOutputDto, stats, {
+      excludeExtraneousValues: true,
+    });
   }
 }

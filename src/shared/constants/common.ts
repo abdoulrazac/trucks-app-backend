@@ -18,3 +18,10 @@ export const DOCS_TYPES = [
   '.pdf',
 ];
 export const DOCS_TYPES_AVATAR = ['.png', '.jpg', '.jpeg'];
+
+export enum REFERENCE_TYPE {
+  INVOICE = 'INVOICE',
+  BREAKDOWN = 'BREAKDOWN',
+  CONTRACT = 'CONTRACT',
+  FINANCE = 'FINANCE',
+}

@@ -1,8 +1,8 @@
 import {Injectable} from '@nestjs/common';
 
-import {ROLE} from '../../shared/constants';
 import {BaseAclService} from '../../shared/acl/acl.service';
 import {Action} from '../../shared/acl/action.constant';
+import {ROLE} from '../../shared/constants';
 import {CheckPoint} from '../entities/check-point.entity';
 
 @Injectable()

@@ -31,6 +31,7 @@ import {UserCreateDto} from '../dtos/user-create.dto';
 import {UserOrderDto} from '../dtos/user-order.dto';
 import {UserOutputDto} from '../dtos/user-output.dto';
 import {UserParamDto} from '../dtos/user-param.dto';
+import { UserStatsOutputDto } from '../dtos/user-stats-output.dto';
 import {UserUpdateDto} from '../dtos/user-update-input.dto';
 import {UserService} from '../services/user.service';
 
@@ -198,7 +199,6 @@ export class UserController {
   })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(ROLE.ADMIN, ROLE.MANAGER, ROLE.ACCOUNTANT)
   async getAvatar(
     @ReqContext() ctx: RequestContext,
     @Param('id') id: number,
@@ -208,5 +208,30 @@ export class UserController {
 
     const filePath = await this.userService.downloadAvatarByUserId(ctx, id);
     return res.sendFile(filePath);
+  }
+
+  
+
+  @Get('/read/:id/statistics')
+  @UseInterceptors(ClassSerializerInterceptor)
+  @ApiOperation({ summary: 'Get user statistics by id API' })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    type: SwaggerBaseApiResponse(BufferOutputDto),
+  })
+  @ApiResponse({
+    status: HttpStatus.NOT_FOUND,
+    type: BaseApiErrorResponse,
+  })
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  async getStatistics(
+    @ReqContext() ctx: RequestContext,
+    @Param('id') id: number,
+  ) : Promise<BaseApiResponse<UserStatsOutputDto>> {
+    this.logger.log(ctx, `${this.getUser.name} was called`);
+
+    const stats = await this.userService.getStatisticsById(ctx, id);
+    return { data: stats, meta: {} };
   }
 }

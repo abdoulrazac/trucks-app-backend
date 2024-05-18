@@ -392,3 +392,6 @@ dist
 .local/
 documentation
 test-report.xml
+
+
+files/

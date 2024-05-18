@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 
-import { ROLE } from '../../shared/constants';
 import { BaseAclService } from '../../shared/acl/acl.service';
 import { Action } from '../../shared/acl/action.constant';
+import { ROLE } from '../../shared/constants';
 import { Company } from '../entities/company.entity';
 
 @Injectable()
@@ -17,6 +17,6 @@ export class CompanyAclService extends BaseAclService<Company> {
     this.canDo(ROLE.ACCOUNTANT, [Action.Read, Action.List]);
 
     //user can read himself or any other user
-    this.canDo(ROLE.CONDUCTOR, []);
+    this.canDo(ROLE.CONDUCTOR, [Action.Read, Action.List]);
   }
 }

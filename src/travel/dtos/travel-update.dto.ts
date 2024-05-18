@@ -20,7 +20,6 @@ export class TravelUpdateDto {
   @ApiProperty()
   @IsOptional()
   @IsNotEmpty()
-  @Transform(({ value }) => new Date(value), { toClassOnly: true })
   @IsDateString()
   signatureDate: Date;
 
@@ -39,14 +38,12 @@ export class TravelUpdateDto {
   @ApiProperty()
   @IsOptional()
   @IsNotEmpty()
-  @Transform(({ value }) => new Date(value), { toClassOnly: true })
   @IsDateString()
   departureDate: Date;
 
   @ApiProperty()
   @IsOptional()
   @IsNotEmpty()
-  @Transform(({ value }) => new Date(value), { toClassOnly: true })
   @IsDateString()
   arrivalDate: Date;
 
@@ -79,7 +76,7 @@ export class TravelUpdateDto {
   @IsNotEmpty()
   @IsNumber()
   @Min(0)
-  @Transform(({ value }) => parseInt(value, 10), { toClassOnly: true })
+  @Transform(({ value }) => parseFloat(value), { toClassOnly: true })
   departureWeight: number ;
 
   @ApiProperty()
@@ -87,7 +84,7 @@ export class TravelUpdateDto {
   @IsNotEmpty()
   @IsNumber()
   @Min(0)
-  @Transform(({ value }) => parseInt(value, 10), { toClassOnly: true })
+  @Transform(({ value }) => parseFloat(value), { toClassOnly: true })
   truckWeight: number ;
 
   @ApiProperty()
@@ -95,7 +92,7 @@ export class TravelUpdateDto {
   @IsNotEmpty()
   @IsNumber()
   @Min(0)
-  @Transform(({ value }) => parseInt(value, 10), { toClassOnly: true })
+  @Transform(({ value }) => parseFloat(value), { toClassOnly: true })
   arrivalWeight: number ;
   
 
@@ -127,4 +124,12 @@ export class TravelUpdateDto {
   @Min(0)
   @Transform(({ value }) => parseInt(value, 10), { toClassOnly: true })
   invoiceId: number ;
+
+  @ApiProperty()
+  @IsOptional()
+  @IsNotEmpty()
+  @IsNumber()
+  @Min(0)
+  @Transform(({ value }) => parseInt(value, 10), { toClassOnly: true })
+  routeId: number ;
 }

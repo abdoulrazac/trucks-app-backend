@@ -82,7 +82,7 @@ export class TravelCreateDto {
   @IsNotEmpty()
   @IsNumber()
   @Min(0)
-  @Transform(({ value }) => parseInt(value, 10), { toClassOnly: true })
+  @Transform(({ value }) => parseFloat(value), { toClassOnly: true })
   truckWeight: number;
 
   @ApiProperty()
@@ -90,7 +90,7 @@ export class TravelCreateDto {
   @IsNotEmpty()
   @IsNumber()
   @Min(0)
-  @Transform(({ value }) => parseInt(value, 10), { toClassOnly: true })
+  @Transform(({ value }) => parseFloat(value), { toClassOnly: true })
   departureWeight: number;
 
   @ApiProperty()
@@ -98,7 +98,7 @@ export class TravelCreateDto {
   @IsNotEmpty()
   @IsNumber()
   @Min(0)
-  @Transform(({ value }) => parseInt(value, 10), { toClassOnly: true })
+  @Transform(({ value }) => parseFloat(value), { toClassOnly: true })
   arrivalWeight: number;
 
   @ApiProperty()
@@ -114,4 +114,12 @@ export class TravelCreateDto {
   @Min(0)
   @Transform(({ value }) => parseInt(value, 10), { toClassOnly: true })
   truckId: number;
+
+  @ApiProperty()
+  @IsOptional()
+  @IsNotEmpty()
+  @IsNumber()
+  @Min(0)
+  @Transform(({ value }) => parseInt(value, 10), { toClassOnly: true })
+  routeId: number;
 }

@@ -1,14 +1,13 @@
 import {ApiProperty} from '@nestjs/swagger';
-import {IsNotEmpty, IsString, MaxLength, MinLength} from "class-validator";
+import {IsNotEmpty, IsOptional, IsString, MaxLength, MinLength} from "class-validator";
 
 
 export class RouteCreateDto {
-
   @ApiProperty()
   @IsNotEmpty({ message: 'Code is required' })
   @IsString()
   @MinLength(2)
-  @MaxLength(20, { message: 'Code max length is 20' })
+  @MaxLength(50, { message: 'Code max length is 50' })
   code: string;
 
   @ApiProperty()
@@ -18,8 +17,7 @@ export class RouteCreateDto {
   label: string;
 
   @ApiProperty()
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
-  @MinLength(2)
   description: string;
 }

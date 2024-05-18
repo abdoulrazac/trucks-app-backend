@@ -23,9 +23,12 @@ export class FileRepository extends Repository<File>{
       where: { id },
       relations : {
         author : true,
-        expense : true,
+        finance : true,
         vehicle : true,
-        company : true
+        company : true,
+        travel : true,
+        invoice : true,
+        breakdown : true,
       } });
     if (!file) {
       throw new NotFoundException();
@@ -33,7 +36,7 @@ export class FileRepository extends Repository<File>{
     return file;
   }
 
-  async getFileExpensesById(id: number): Promise<File> {
+  async getFileFinancesById(id: number): Promise<File> {
     const file = await this.findOne({
       where: { id }
     });
@@ -48,11 +51,12 @@ export class FileRepository extends Repository<File>{
     return await this.find({
       relations : {
         author : true,
-        expense : true,
+        finance : true,
         vehicle : true,
         company : true,
         travel : true,
-        invoice : true
+        invoice : true,
+        breakdown : true,
       },
       where: [
         {notification : true, expireAt : Between(currentDate.toDate(), currentDate.add(1, 'days').toDate())},

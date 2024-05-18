@@ -4,11 +4,13 @@ import {
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { plainToInstance } from 'class-transformer';
 import * as path from 'path';
 
 import { Action } from '../../shared/acl/action.constant';
 import { Actor } from '../../shared/acl/actor.constant';
+import { DOCS_TYPES_AVATAR } from '../../shared/constants';
 import { createUploadFile, getFilePath, orderClean, whereClauseClean } from '../../shared/helpers';
 import { AppLogger } from '../../shared/logger/logger.service';
 import { RequestContext } from '../../shared/request-context/request-context.dto';
@@ -16,12 +18,11 @@ import { CompanyCreateDto } from '../dtos/company-create.dto';
 import { CompanyOrderDto } from '../dtos/company-order.dto';
 import { CompanyOutputDto } from '../dtos/company-output.dto';
 import { CompanyParamDto } from '../dtos/company-param.dto';
+import { CompanyStatsOutputDto } from '../dtos/company-stats-output.dto';
 import { CompanyUpdateDto } from '../dtos/company-update.dto';
 import { Company } from '../entities/company.entity';
 import { CompanyRepository } from '../repositories/company.repository';
 import { CompanyAclService } from './company-acl.service';
-import { ConfigService } from '@nestjs/config';
-import { DOCS_TYPES_AVATAR } from '../../shared/constants';
 
 @Injectable()
 export class CompanyService {
@@ -337,5 +338,27 @@ export class CompanyService {
       throw new NotFoundException('Avatar Not Found');
     }
     return filePath
+  }
+
+  async getStatisticsById(
+    ctx: RequestContext,
+    companyId: number,
+  ): Promise<CompanyStatsOutputDto> {
+    this.logger.log(ctx, `${this.getStatisticsById.name} was called`);
+
+    this.logger.log(ctx, `calling ${CompanyRepository.name}.getById`);
+    const company = await this.repository.getById(companyId);
+
+    const actor: Actor = ctx.user;
+    const isAllowed = this.aclService
+      .forActor(actor)
+      .canDoAction(Action.Read, company);
+    if (!isAllowed) {
+      throw new UnauthorizedException();
+    }
+
+    this.logger.log(ctx, `calling ${CompanyRepository.name}.getStatisticsById`);
+    const stats = await this.repository.getStatisticsById(companyId);
+    return plainToInstance(CompanyStatsOutputDto, stats, {excludeExtraneousValues: true});
   }
 }

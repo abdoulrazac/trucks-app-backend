@@ -17,6 +17,7 @@ import {UserCreateDto} from '../dtos/user-create.dto';
 import {UserOrderDto} from '../dtos/user-order.dto';
 import {UserOutputDto} from '../dtos/user-output.dto';
 import {UserParamDto} from '../dtos/user-param.dto';
+import { UserStatsOutputDto } from '../dtos/user-stats-output.dto';
 import {UserUpdateDto} from '../dtos/user-update-input.dto';
 import {EmailVerification} from "../entities/email-verification.entity";
 import { PasswordReset } from '../entities/password-reset.entity';
@@ -409,6 +410,7 @@ export class UserService {
   ): Promise<string> {
     this.logger.log(ctx, `${this.downloadAvatarByUserId.name} was called`);
 
+    this.logger.log(ctx, `calling ${UserRepository.name}.getById`);
     const user = await this.repository.getById(userId);
 
     const actor: Actor = ctx.user;
@@ -419,6 +421,7 @@ export class UserService {
       throw new UnauthorizedException();
     }
 
+    this.logger.log(ctx, `calling ${getFilePath.name}`);
     const filePath =  await getFilePath(user.avatar)
     if (!user.avatar || !filePath ){
       throw new NotFoundException('Avatar Not Found');
@@ -476,5 +479,28 @@ export class UserService {
     return plainToInstance(UserOutputDto, user, {
       excludeExtraneousValues: true,
     });
+  }
+
+  async getStatisticsById(
+    ctx: RequestContext,
+    id: number,
+  ): Promise<UserStatsOutputDto> {
+    this.logger.log(ctx, `${this.getStatisticsById.name} was called`);
+
+    const actor: Actor = ctx.user;
+
+    this.logger.log(ctx, `calling ${UserRepository.name}.getById`);
+    const user = await this.repository.getById(id);
+
+    const isAllowed = this.aclService
+      .forActor(actor)
+      .canDoAction(Action.Read, user);
+    if (!isAllowed) {
+      throw new UnauthorizedException();
+    }
+
+    this.logger.log(ctx, `calling ${UserRepository.name}.getStatisticsById`);
+    const stats = await this.repository.getStatisticsById(id);
+    return plainToInstance(UserStatsOutputDto, stats, {excludeExtraneousValues: true});
   }
 } 

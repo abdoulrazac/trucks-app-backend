@@ -5,14 +5,12 @@ import {IsNotEmpty, IsNumber, IsOptional, IsString, MaxLength, Min, MinLength} f
 export class TravelCheckPointUpdateDto {
 
   @ApiProperty()
-  @IsOptional()
   @IsNotEmpty()
   @IsString()
-  @MinLength(5)
+  @MinLength(3)
   description: string;
 
   @ApiProperty()
-  @IsOptional()
   @IsNotEmpty()
   @IsNumber()
   @Min(0)
@@ -20,7 +18,6 @@ export class TravelCheckPointUpdateDto {
   travelId: number;
 
   @ApiProperty()
-  @IsOptional()
   @IsNotEmpty()
   @IsNumber()
   @Min(0)

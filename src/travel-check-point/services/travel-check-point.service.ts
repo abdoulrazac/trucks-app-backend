@@ -81,7 +81,7 @@ export class TravelCheckPointService {
     ctx: RequestContext,
     input: TravelCheckPointCreateDto,
   ): Promise<TravelCheckPointOutputDto> {
-    this.logger.log(ctx, `${this.createTravelCheckPoint.name} was called`);
+    this.logger.log(ctx, `${this.saveTravelCheckPoint.name} was called`);
 
     const travelCheckPoint = plainToInstance(TravelCheckPoint, input);
 
@@ -122,24 +122,6 @@ export class TravelCheckPointService {
           `TravelCheckPoint CheckPoint with ID '${input.checkPointId}' is Not Found`,
         );
       }
-    }
-    
-
-    try {
-      this.logger.log(ctx, `calling ${TravelCheckPointRepository.name}.save`);
-      const travelCheckPoint = await this.repository.findOne({
-        where: {
-          travelId: input.travelId,
-          checkPointId: input.checkPointId,
-        },
-      });
-      if (travelCheckPoint) {
-        throw new BadRequestException('TravelCheckPoint already exists');
-      }
-    } catch {
-      throw new BadRequestException(
-        `TravelCheckPoint with travelId '${input.travelId}' and checkPointId '${input.checkPointId}' is Not checkable`,
-      );
     }
 
     this.logger.log(ctx, `calling ${TravelCheckPointRepository.name}.save`);

@@ -5,6 +5,8 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
+import { REFERENCE_TYPE } from 'src/shared/constants';
+import { nextReference } from 'src/shared/helpers/reference-generator';
 
 import { Action } from '../../shared/acl/action.constant';
 import { Actor } from '../../shared/acl/actor.constant';
@@ -92,6 +94,10 @@ export class BreakdownService {
         `Author with ID '${input.vehicleId}'  Not Found`,
       );
     }
+
+    // get last breakdown to generate the next reference
+    const lastBreakdown = await this.repository.find({ order: { id: 'DESC' }, take: 1});
+    breakdown.refBreakdown = nextReference(REFERENCE_TYPE.BREAKDOWN, lastBreakdown[0]?.refBreakdown)
 
     this.logger.log(ctx, `calling ${BreakdownRepository.name}.save`);
     const savedBreakdown= await this.repository.save(breakdown);

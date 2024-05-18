@@ -21,9 +21,7 @@ export class CheckPointUpdateDto {
 
   @ApiProperty()
   @IsOptional()
-  @IsNotEmpty()
   @IsString()
-  @MinLength(5)
   description: string;
 
   @ApiProperty()

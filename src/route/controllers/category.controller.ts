@@ -56,6 +56,7 @@ export class RouteController {
     @ReqContext() ctx: RequestContext,
     @Body() input: RouteCreateDto,
   ): Promise<BaseApiResponse<RouteOutputDto>> {
+    this.logger.log(ctx, `${this.createRoute.name} was called`);
     const route = await this.routeService.createRoute(ctx, input);
     return { data: route, meta: {} };
   }

@@ -6,7 +6,7 @@ import {JwtAuthStrategy} from '../auth/strategies/jwt-auth.strategy';
 import { BreakdownModule } from '../breakdown/breakdown.module';
 import {CompanyModule} from '../company/company.module';
 import { ContractModule } from '../contract/contract.module';
-import {ExpenseModule} from '../expense/expense.module';
+import {FinanceModule} from '../finance/finance.module';
 import {InvoiceModule} from "../invoice/invoice.module";
 import {SharedModule} from '../shared/shared.module';
 import { TravelModule } from '../travel/travel.module';
@@ -23,7 +23,7 @@ import {FileAclService} from './services/file-acl.service';
     TypeOrmModule.forFeature([File]),
     UserModule,
     CompanyModule,
-    ExpenseModule,
+    FinanceModule,
     InvoiceModule,
     ContractModule,
     BreakdownModule,

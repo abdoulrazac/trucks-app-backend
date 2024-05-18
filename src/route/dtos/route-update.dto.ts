@@ -8,7 +8,7 @@ export class RouteUpdateDto {
   @IsNotEmpty()
   @IsString()
   @MinLength(2)
-  @MaxLength(20, { message: 'Code max length is 20' })
+  @MaxLength(50, { message: 'Code max length is 50' })
   code: string;
 
   @ApiProperty()
@@ -20,8 +20,6 @@ export class RouteUpdateDto {
 
   @ApiProperty()
   @IsOptional()
-  @IsNotEmpty()
   @IsString()
-  @MinLength(5)
   description: string;
 }

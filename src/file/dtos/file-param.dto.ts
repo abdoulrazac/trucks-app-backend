@@ -70,7 +70,7 @@ export class FileParamDto {
   @IsNumber()
   @Min(0)
   @Transform(({ value }) => parseInt(value, 10), { toClassOnly: true })
-  expenseId: number;
+  financeId: number;
 
   @ApiPropertyOptional()
   @IsOptional()

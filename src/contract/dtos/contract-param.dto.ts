@@ -12,7 +12,13 @@ import {
 
 import { transformToBoolean } from '../../shared/helpers';
 
-export class ContractParamDto {
+export class ContractParamDto {  
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  refContract: string;
+
   @ApiPropertyOptional()
   @IsOptional()
   @IsString()
